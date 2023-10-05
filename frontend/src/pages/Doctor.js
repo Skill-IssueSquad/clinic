@@ -1,10 +1,10 @@
 import AppBar from "../components/appBar";
-
+import Appointments from "../components/Appointments";
 const Doctor = () => {
   return (
     <div>
       <AppBar />
-      <div>home</div>
+      <Appointments />
     </div>
   );
 };
