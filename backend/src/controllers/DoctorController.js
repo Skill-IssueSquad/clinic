@@ -2,12 +2,29 @@ const Doctor = require("../models/Doctor");
 
 const getDoctor = async (req, res) => {
   const doctor = await Doctor.find({ name: "Mohamed Bahy" }).catch((err) => {
-    res.status(500).json({ message: "Doctor not found" });
+    const send = {
+      success: false,
+      data: null,
+      message: `${err.message}`,
+    };
+    res.status(500).json(send);
+    return;
   });
   if (!doctor) {
-    res.status(404).json({ message: "Doctor not found" });
+    const send = {
+      success: false,
+      data: null,
+      message: "Doctor not found",
+    };
+    res.status(404).json(send);
+    return;
   }
-  res.status(200).json(doctor);
+  const send = {
+    success: true,
+    data: doctor,
+    message: "Doctor found successfully",
+  };
+  res.status(200).json(send);
 };
 
 const createDoctor = async (req, res) => {
@@ -41,9 +58,19 @@ const createDoctor = async (req, res) => {
       throw new Error("Doctor not created");
     }
     // console.log("I am here");
-    res.status(200).json(doctor);
+    const send = {
+      success: true,
+      data: doctor,
+      message: "Doctor created successfully",
+    };
+    res.status(200).json(send);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    res.status(500).json(send);
     return;
   }
 };
