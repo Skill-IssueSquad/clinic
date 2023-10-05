@@ -1,15 +1,21 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import AppBar  from './components/appBar';
-
-const root = ReactDOM.createRoot(document.getElementById('root'));
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import AppBar from "./components/appBar";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Doctor from "./pages/Doctor";
+import DoctorProfile from "./pages/DoctorProfile";
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <AppBar hh="" gklh=""/>
-    <App />
+    <BrowserRouter>
+      <Routes>
+        <Route exact path="/" element={<Doctor />} />
+        <Route exact path="/profile" element={<DoctorProfile />} />
+      </Routes>
+    </BrowserRouter>
   </React.StrictMode>
 );
 
