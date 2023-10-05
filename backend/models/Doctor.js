@@ -27,7 +27,7 @@ const doctorSchema = new Schema({
   },
   affiliatedHospital: {
     type: String,
-    required: false,
+    required: true,
   },
   educationalBackground: {
     type: String,
