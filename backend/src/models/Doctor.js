@@ -46,7 +46,10 @@ const doctorSchema = new Schema({
   patientList: {
     type: [
       {
-        type: String,
+        patient_id: {
+          type: mongoose.Schema.Types.ObjectId,
+        },
+        ref: "Patient", //what is that idk
       },
     ],
     required: false,
