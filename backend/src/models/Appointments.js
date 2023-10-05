@@ -28,7 +28,8 @@ const appointmentSchema = new Schema({
   prescription_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Prescription",
-    required: false,
+    required: true,
+    default: null
   },
   status: {
     type: String,

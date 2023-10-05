@@ -9,18 +9,21 @@ const prescriptionSchema = new mongoose.Schema({
     type: Boolean,
     required: true,
   },
-  medicines: [
-    {
-      medcineName: {
-        type: String,
-        required: true,
+  medicines: {
+    type: [
+      {
+        medcineName: {
+          type: String,
+          required: true,
+        },
+        dose: {
+          type: String,
+          required: true,
+        },
       },
-      dose: {
-        type: String,
-        required: true,
-      },
-    },
-  ],
+    ],
+    default: [],
+  }
 });
 
 const Prescription = mongoose.model("Prescription", prescriptionSchema);

@@ -51,20 +51,23 @@ const patientSchema = new Schema({
   healthPackageType: {
     status: {
       type: String,
-      enum: ["active", "inactive"],
-      default: "inactive",
+      enum: ["subscribed", "unsubscribed", "canceled"],
+      default: "unsubscribed",
     },
     type: {
       type: String,
-      enum: ["basic", "premium"],
-      default: "basic",
+      enum: ["silver", "platinum", "gold"],
+      default: "",
     },
     renewal: {
-      type: Boolean,
-      default: false,
+      type: Date,
+      required: true,
+      default: Date.now(),
     },
     endDate: {
       type: Date,
+      required: true,
+      default: Date.now(),
     },
   },
   creditCards: [
@@ -87,22 +90,25 @@ const patientSchema = new Schema({
       },
     },
   ],
-  healthRecords: [
-    {
-      documentType: {
-        type: String,
-        required: true,
+  healthRecords: {
+    type: [
+      {
+        documentType: {
+          type: String,
+          required: true,
+        },
+        documentName: {
+          type: String,
+          required: true,
+        },
+        documentFile: {
+          type: Buffer, //not sure abt this tho
+          required: true,
+        },
       },
-      documentName: {
-        type: String,
-        required: true,
-      },
-      documentFile: {
-        type: String, //not sure abt this tho
-        required: true,
-      },
-    },
-  ],
+    ],
+    default: [],
+  },
   extfamilyMembers: [
     {
       name: {
@@ -111,6 +117,7 @@ const patientSchema = new Schema({
       },
       relation: {
         type: String,
+        enum: ["wife", "husband", "son", "daughter"],
         required: true,
       },
       age: {
@@ -129,27 +136,30 @@ const patientSchema = new Schema({
       healthPackageType: {
         status: {
           type: String,
-          enum: ["active", "inactive"],
-          default: "inactive",
+          enum: ["subscribed", "unsubscribed", "canceled"],
+          default: "unsubscribed",
         },
         type: {
           type: String,
-          enum: ["basic", "premium"],
-          default: "basic",
+          enum: ["silver", "platinum", "gold"],
+          default: "",
         },
         renewal: {
-          type: Boolean,
-          default: false,
+          type: Date,
+          required: true,
+          default: Date.now(),
         },
         endDate: {
           type: Date,
+          required: true,
+          default: Date.now(),
         },
       },
     },
   ],
   linkedAccounts: [
     {
-      patient_ids: {
+      patient_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Patient",
       },
@@ -165,5 +175,5 @@ const patientSchema = new Schema({
   ],
 });
 
-patientModel = mongoose.model("Patient", patientSchema);
+const patientModel = mongoose.model("Patient", patientSchema);
 module.exports = patientModel;

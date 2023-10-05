@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const doctorRequestSchema = new Schema({
   status: {
     type: String,
-    enum: ["pending", "approved", "rejected"],
+    enum: ["pending", "requiresDocuments", "approved", "rejected"],
     default: "pending",
   },
   username: {
@@ -39,22 +39,25 @@ const doctorRequestSchema = new Schema({
     type: String,
     required: true,
   },
-  documents: [
-    {
-      documentType: {
-        type: String,
-        required: true,
+  documents: {
+    type: [
+      {
+        documentType: {
+          type: String,
+          required: true,
+        },
+        documentName: {
+          type: String,
+          required: true,
+        },
+        documentFile: {
+          type: Buffer, //not sure abt this tho
+          required: true,
+        },
       },
-      documentName: {
-        type: String,
-        required: true,
-      },
-      documentFile: {
-        type: String, //not sure abt this tho
-        required: true,
-      },
-    },
-  ],
+    ],
+    default: []
+  },
 });
 
 const doctorRequest = mongoose.model("DoctorRequest", doctorRequestSchema);

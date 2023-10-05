@@ -41,7 +41,8 @@ const doctorSchema = new Schema({
         },
       },
     ],
-    required: false,
+    required: true,
+    default: []
   },
   patientList: {
     type: [
@@ -52,7 +53,8 @@ const doctorSchema = new Schema({
         ref: "Patient", //what is that idk
       },
     ],
-    required: false,
+    required: true,
+    default: []
   },
 });
 

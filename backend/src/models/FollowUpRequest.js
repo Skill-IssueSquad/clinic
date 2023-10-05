@@ -22,7 +22,7 @@ const followUpRequestSchema = new Schema({
   },
   previous_appointment_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Appointment",
+    ref: "Appointments",
   },
   status: {
     type: String,
@@ -31,5 +31,5 @@ const followUpRequestSchema = new Schema({
   },
 });
 
-followUpRequest = mongoose.model("FollowUpRequest", followUpRequestSchema);
+const followUpRequest = mongoose.model("FollowUpRequest", followUpRequestSchema);
 module.exports = followUpRequest;
