@@ -13,7 +13,7 @@ root.render(
     <BrowserRouter>
       <Routes>
         <Route exact path="/" element={<Doctor />} />
-        <Route exact path="/profile" element={<DoctorProfile />} />
+        <Route exact path="/Doctor_Profile" element={<DoctorProfile />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

@@ -38,7 +38,7 @@ function ResponsiveAppBar() {
     if (setting === "Profile") {
       // Redirect to profile page
       console.log("Redirecting to profile page");
-      navigate("/profile");
+      navigate("/Doctor_Profile");
     }
   };
 
