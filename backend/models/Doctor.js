@@ -38,10 +38,10 @@ const doctorSchema = new Schema({
       {
         markupOnSalary: {
           type: Number,
-          required: true,
         },
       },
     ],
+    required: false,
   },
   patientList: {
     type: [
@@ -49,6 +49,7 @@ const doctorSchema = new Schema({
         type: String,
       },
     ],
+    required: false,
   },
 });
 
