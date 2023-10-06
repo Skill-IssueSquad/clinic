@@ -1,3 +1,4 @@
+const { time } = require("console");
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
@@ -54,6 +55,22 @@ const doctorSchema = new Schema({
           type: mongoose.Schema.Types.ObjectId,
         },
         //ref: "Patient", //what is that idk
+      },
+    ],
+    required: true,
+    default: []
+  },
+  availableSlots: {
+    type: [
+      {
+        starttime: {
+          type: Date,
+          required: true,
+        },
+        endtime: { 
+          type: Date,
+          required: true,
+        },
       },
     ],
     required: true,
