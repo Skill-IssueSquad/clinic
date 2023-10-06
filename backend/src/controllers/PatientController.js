@@ -62,7 +62,7 @@ const addFamMember = async (req, res) => {
     });
   });
 
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     data: newPatient,
     message: "Family member added successfully",
@@ -89,7 +89,7 @@ const getFamMembers = async (req, res) => {
     });
   }
 
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     data: patient.extfamilyMembers,
     message: "Family members retrieved successfully",
@@ -143,7 +143,7 @@ const getPrescriptions = async (req, res) => {
   });
 
   //return the results
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     data: prescriptions,
     message: "Prescriptions retrieved successfully",
