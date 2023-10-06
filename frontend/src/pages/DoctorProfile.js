@@ -16,9 +16,7 @@ import Loading from "../components/Loading";
 
 const UserProfile = () => {
   const [user, setUser] = useState(null);
-  // Replace with your user data
   useEffect(() => {
-    // console.log("use effect ran");
     const f = async () => {
       try {
         const username = "opa%20nseet%20esmy";
@@ -27,7 +25,6 @@ const UserProfile = () => {
         const Doctor = {
           ...data,
         };
-        // console.log(Doctor);
         setUser(Doctor);
       } catch (error) {
         console.error(error);

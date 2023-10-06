@@ -1,99 +1,61 @@
-import * as React from "react";
+import React, { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
-
+import Loading from "./Loading";
+import { Container } from "@mui/material";
 const columns = [
   { field: "id", headerName: "ID", width: 100 },
-  { field: "date", headerName: "Date", width: 130 },
+  { field: "date", headerName: "Date", width: 200 },
   { field: "status", headerName: "Status", width: 130 },
-  {
-    field: "fullName",
-    headerName: "Full name",
-    sortable: false,
-    width: 160,
-    valueGetter: (params) =>
-      `${params.row.firstName || ""} ${params.row.lastName || ""}`,
-  },
-];
-
-const rows = [
-  {
-    id: 1,
-    lastName: "Snow",
-    firstName: "Jon",
-    status: "Pending",
-    date: "2022-01-01",
-  },
-  {
-    id: 2,
-    lastName: "Lannister",
-    firstName: "Cersei",
-    status: "Approved",
-    date: "2022-01-02",
-  },
-  {
-    id: 3,
-    lastName: "Lannister",
-    firstName: "Jaime",
-    status: "Pending",
-    date: "2022-01-03",
-  },
-  {
-    id: 4,
-    lastName: "Stark",
-    firstName: "Arya",
-    status: "Approved",
-    date: "2022-01-04",
-  },
-  {
-    id: 5,
-    lastName: "Targaryen",
-    firstName: "Daenerys",
-    status: "Pending",
-    date: "2022-01-05",
-  },
-  {
-    id: 6,
-    lastName: "Melisandre",
-    firstName: null,
-    status: "Approved",
-    date: "2022-01-06",
-  },
-  {
-    id: 7,
-    lastName: "Clifford",
-    firstName: "Ferrara",
-    status: "Pending",
-    date: "2022-01-07",
-  },
-  {
-    id: 8,
-    lastName: "Frances",
-    firstName: "Rossini",
-    status: "Approved",
-    date: "2022-01-08",
-  },
-  {
-    id: 9,
-    lastName: "Roxie",
-    firstName: "Harvey",
-    status: "Pending",
-    date: "2022-01-09",
-  },
+  { field: "name", headerName: "Name", width: 130 },
 ];
 
 export default function Appointments() {
+  const [rows, setRows] = useState(null);
+
+  useEffect(() => {
+    console.log("useEffect called");
+    const f = async () => {
+      const username = "opa%20nseet%20esmy";
+      const res = await fetch(`/doctor/appointments/${username}`);
+      const response = await res.json();
+      setRows(
+        response.data.map((appointment, index) => {
+          return {
+            id: index + 1,
+            date: appointment.date,
+            status: appointment.status,
+            name: appointment.name,
+          };
+        })
+      );
+      console.log(response);
+      console.log(response.data);
+    };
+
+    f();
+  }, []);
+
   return (
     <div style={{ height: "100%", width: "100%" }}>
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: { page: 0, pageSize: 5 },
-          },
-        }}
-        pageSizeOptions={[5, 10]}
-      />
+      {rows ? (
+        // <Loading  />
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          initialState={{
+            pagination: {
+              paginationModel: { page: 0, pageSize: 5 },
+            },
+          }}
+          pageSizeOptions={[5, 10]}
+        />
+      ) : (
+        <Container
+          sx={{ display: "flex", justifyContent: "center", marginTop: "20%" }}
+        >
+          <Loading />
+        </Container>
+      )}
     </div>
   );
 }
