@@ -7,7 +7,9 @@ const mongoose = require("mongoose");
 mongoose
   .connect(process.env.DATABASE_URL, { useNewUrlParser: true })
   .then(() => {
-    app.listen(8000, () => console.log("Server Started"));
+    app.listen(8000, () => { 
+      console.log("Server started");
+    });
   })
   .catch((err) => console.log(err));
 

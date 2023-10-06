@@ -161,7 +161,7 @@ const patientSchema = new Schema({
     {
       patient_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Patient",
+        //ref: "Patient",
       },
     },
   ],
