@@ -22,7 +22,7 @@ router.get("/:username/doctors", viewAllDoctors);
 router.patch("/:username/addFamMember", addFamMember);
 
 //get family members route
-router.get("/username/getFamMember", getFamMembers);
+router.get("/:username/getFamMember", getFamMembers);
 
 //get prescriptions route
 router.get("/:username/getPrescriptions", getPrescriptions);
