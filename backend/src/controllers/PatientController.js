@@ -10,144 +10,150 @@ const addFamMember = async (req, res) => {
     req.body;
   const { username } = req.params;
 
-  const patient = await Patient.findOne({ username: username }).catch((err) => {
+  try {
+    const patient = await getPatient(username);
+    if (patient) {
+      //check if extFamilyMembers array is undefined
+      if (!patient.extfamilyMembers) {
+        patient.extfamilyMembers = [];
+      }
+
+      //add new family member info to extfamilyMembers array
+      patient.extfamilyMembers.push({
+        name: name,
+        national_id: nationalID,
+        relation: relation, //wife, husband, son, daughter
+        age: age,
+        gender: gender, //M, F, Bahy
+        healthPackageType: healthPackageType,
+      });
+
+      //update the existing patient
+      await Patient.findByIdAndUpdate(patient._id, {
+        extfamilyMembers: patient.extfamilyMembers,
+      }).catch((err) => {
+        return res.status(500).json({
+          success: false,
+          data: null,
+          message: "${err.message}",
+        });
+      });
+
+      const newPatient = await Patient.findOne({
+        username: req.params.username,
+      }).catch((err) => {
+        return res.status(500).json({
+          success: false,
+          data: null,
+          message: "${err.message}",
+        });
+      });
+
+      return res.status(200).json({
+        success: true,
+        data: newPatient,
+        message: "Family member added successfully",
+      });
+    } else {
+      return res.status(404).json({
+        success: false,
+        data: null,
+        message: "Patient not found",
+      });
+    }
+  } catch (error) {
     return res.status(500).json({
       success: false,
       data: null,
-      message: "${err.message}",
-    });
-  });
-
-  if (!patient) {
-    return res.status(404).json({
-      success: false,
-      data: null,
-      message: "Patient not found",
+      message:
+        err.message || "Some error occurred while retrieving appointments.",
     });
   }
-
-  //check if extFamilyMembers array is undefined
-  if (!patient.extfamilyMembers) {
-    patient.extfamilyMembers = [];
-  }
-
-  //add new family member info to extfamilyMembers array
-  patient.extfamilyMembers.push({
-    name: name,
-    national_id: nationalID,
-    relation: relation, //wife, husband, son, daughter
-    age: age,
-    gender: gender, //M, F, Bahy
-    healthPackageType: healthPackageType,
-  });
-
-  //update the existing patient
-  await Patient.findByIdAndUpdate(patient._id, {
-    extfamilyMembers: patient.extfamilyMembers,
-  }).catch((err) => {
-    return res.status(500).json({
-      success: false,
-      data: null,
-      message: "${err.message}",
-    });
-  });
-
-  const newPatient = await Patient.findOne({
-    username: req.params.username,
-  }).catch((err) => {
-    return res.status(500).json({
-      success: false,
-      data: null,
-      message: "${err.message}",
-    });
-  });
-
-  return res.status(200).json({
-    success: true,
-    data: newPatient,
-    message: "Family member added successfully",
-  });
 };
 
 //get registered family members
 const getFamMembers = async (req, res) => {
   const { username } = req.params;
 
-  const patient = await Patient.findOne({ username: username }).catch((err) => {
+  try {
+    const patient = await getPatient(username);
+    if (patient) {
+      return res.status(200).json({
+        success: true,
+        data: patient.extfamilyMembers,
+        message: "Family members retrieved successfully",
+      });
+    } else {
+      return res.status(404).json({
+        success: false,
+        data: null,
+        message: "Patient not found",
+      });
+    }
+  } catch (error) {
     return res.status(500).json({
       success: false,
       data: null,
-      message: "${err.message}",
-    });
-  });
-
-  if (!patient) {
-    return res.status(404).json({
-      success: false,
-      data: null,
-      message: "Patient not found",
+      message:
+        err.message || "Some error occurred while retrieving appointments.",
     });
   }
-
-  return res.status(200).json({
-    success: true,
-    data: patient.extfamilyMembers,
-    message: "Family members retrieved successfully",
-  });
 };
 
 //get prescriptions
 const getPrescriptions = async (req, res) => {
   const { username } = req.params;
 
-  const patient = await Patient.findOne({ username: username }).catch((err) => {
+  try {
+    const patient = await getPatient(username);
+    if (patient) {
+      //print all prescription ids
+      console.log("Here are the prescription ids:");
+      console.log(patient.perscreption_ids);
+
+      const prescriptions = [];
+
+      //go look for those prescriptions
+      patient.perscreption_ids.forEach(async (prescription) => {
+        const prescription_id = prescription.prescription_id;
+        const prescriptionObj = await Prescription.findById(
+          prescription_id
+        ).catch((err) => {
+          return res.status(500).json({
+            success: false,
+            data: null,
+            message: "${err.message}",
+          });
+        });
+
+        //print the prescription object
+        console.log(prescriptionObj);
+
+        //add the prescription object to the prescriptions array
+        prescriptions.push(prescriptionObj);
+      });
+
+      //return the results
+      return res.status(200).json({
+        success: true,
+        data: prescriptions,
+        message: "Prescriptions retrieved successfully",
+      });
+    } else {
+      return res.status(404).json({
+        success: false,
+        data: null,
+        message: "Patient not found",
+      });
+    }
+  } catch (error) {
     return res.status(500).json({
       success: false,
       data: null,
-      message: "${err.message}",
-    });
-  });
-
-  if (!patient) {
-    return res.status(404).json({
-      success: false,
-      data: null,
-      message: "Patient not found",
+      message:
+        err.message || "Some error occurred while retrieving appointments.",
     });
   }
-
-  //print all prescription ids
-  console.log("Here are the prescription ids:");
-  console.log(patient.perscreption_ids);
-
-  const prescriptions = [];
-
-  //go look for those prescriptions
-  patient.perscreption_ids.forEach(async (prescription) => {
-    const prescription_id = prescription.prescription_id;
-    const prescriptionObj = await Prescription.findById(prescription_id).catch(
-      (err) => {
-        return res.status(500).json({
-          success: false,
-          data: null,
-          message: "${err.message}",
-        });
-      }
-    );
-
-    //print the prescription object
-    console.log(prescriptionObj);
-
-    //add the prescription object to the prescriptions array
-    prescriptions.push(prescriptionObj);
-  });
-
-  //return the results
-  return res.status(200).json({
-    success: true,
-    data: prescriptions,
-    message: "Prescriptions retrieved successfully",
-  });
 };
 
 async function getPatient(username) {

@@ -19,12 +19,12 @@ router.get("/:username/appointments/status", getAppointmentsByStatus);
 router.get("/:username/doctors", viewAllDoctors);
 
 //add family member route
-router.patch("/addFamMember/:username", addFamMember);
+router.patch("/:username/addFamMember", addFamMember);
 
 //get family members route
-router.get("/getFamMembers/:username", getFamMembers);
+router.get("/username/getFamMember", getFamMembers);
 
 //get prescriptions route
-router.get("/getPrescriptions/:username", getPrescriptions);
+router.get("/:username/getPrescriptions", getPrescriptions);
 
 module.exports = router;
