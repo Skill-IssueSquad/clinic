@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import {
   Container,
   Typography,
@@ -17,17 +18,27 @@ const UserProfile = () => {
   const [user, setUser] = useState(null);
   // Replace with your user data
   useEffect(() => {
+    // console.log("use effect ran");
     const f = async () => {
-      const initialUser = {
-        name: "John Doe",
-        profilePicture: "/static/images/doc2.png", // URL to the profile picture
-        email: "john@example.com",
-        dop: "29/4/2002",
-        rate: "50$",
-        hospital: "دار الفؤاد",
-        education: "طب وجراحة عين شمس",
-      };
-      setUser(initialUser);
+      try {
+        const username = "opaNseetEsmy";
+        const response = await axios.get(`/doctor/${username}`);
+        const data = response.data.data[0];
+        // console.log(data);
+        const dateOfBirth = new Date(data.dateOfBirth).toLocaleDateString();
+        const Doctor = {
+          name: data.name,
+          email: data.email,
+          dop: dateOfBirth,
+          rate: data.hourlyRate,
+          hospital: data.affiliatedHospital,
+          education: data.educationalBackground,
+        };
+        // console.log(Doctor);
+        setUser(Doctor);
+      } catch (error) {
+        console.error(error);
+      }
     };
     f();
   }, []);
@@ -41,13 +52,11 @@ const UserProfile = () => {
   const handleSaveClick = async () => {
     const updatedUser = user;
     setUser(null);
-    // Save the edited user data here (e.g., make an API request)
-    console.log("Saving user data", user);
-    // For this example, we'll just toggle back to view mode
+    const username = "opaNseetEsmy";
+    const response = await axios.post(`/doctor/update/${username}`);
+    console.log("response: ", response);
     setIsEditing(false);
-    setTimeout(() => {
-      setUser(updatedUser);
-    }, 1000);
+    setUser(updatedUser);
   };
 
   const handleInputChange = (event) => {

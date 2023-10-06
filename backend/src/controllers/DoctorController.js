@@ -1,7 +1,10 @@
 const Doctor = require("../models/Doctor");
 
 const getDoctor = async (req, res) => {
-  const doctor = await Doctor.find({ name: "Mohamed Bahy" }).catch((err) => {
+  // console.log("I am here");
+  const { username } = req.params;
+  // console.log(username);
+  const doctor = await Doctor.find({ username }).catch((err) => {
     const send = {
       success: false,
       data: null,
@@ -10,7 +13,7 @@ const getDoctor = async (req, res) => {
     res.status(500).json(send);
     return;
   });
-  if (!doctor) {
+  if (doctor.length === 0) {
     const send = {
       success: false,
       data: null,
