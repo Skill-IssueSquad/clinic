@@ -37,7 +37,7 @@ function ResponsiveAppBar() {
     setAnchorElUser(null);
     if (setting === "Profile") {
       // Redirect to profile page
-      console.log("Redirecting to profile page");
+      // console.log("Redirecting to profile pasge");
       navigate("/Doctor_Profile");
     }
   };
@@ -50,8 +50,8 @@ function ResponsiveAppBar() {
           <Typography
             variant="h6"
             noWrap
-            component={Link}
-            to="/Doctor_Home"
+            // component={Link}
+            // to="/Doctor_Home"
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -94,11 +94,24 @@ function ResponsiveAppBar() {
                 display: { xs: "block", md: "none" },
               }}
             >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
-                </MenuItem>
-              ))}
+              {pages.map((page) => {
+                const componentProps = {
+                  component: Link,
+                };
+                if (page == "Appointments") {
+                  // console.log("inside the if");
+                  componentProps["to"] = "/Doctor_Home";
+                }
+                return (
+                  <MenuItem
+                    key={page}
+                    onClick={handleCloseNavMenu}
+                    {...componentProps}
+                  >
+                    <Typography textAlign="center">{page}</Typography>
+                  </MenuItem>
+                );
+              })}
             </Menu>
           </Box>
           {/* <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} /> */}
@@ -106,8 +119,8 @@ function ResponsiveAppBar() {
           <Typography
             variant="h5"
             noWrap
-            component={Link}
-            to="/Doctor_Home"
+            // component={Link}
+            // to="/Doctor_Home"
             sx={{
               mr: 2,
               display: { xs: "flex", md: "none" },
@@ -124,15 +137,24 @@ function ResponsiveAppBar() {
           {/* </Link> */}
 
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: "white", display: "block" }}
-              >
-                {page}
-              </Button>
-            ))}
+            {pages.map((page) => {
+              const componentProps = {
+                component: Link,
+              };
+              if (page === "Appointments") {
+                componentProps.to = "/Doctor_Home";
+              }
+              return (
+                <Button
+                  key={page}
+                  onClick={handleCloseNavMenu}
+                  sx={{ my: 2, color: "white", display: "block" }}
+                  {...componentProps}
+                >
+                  {page}
+                </Button>
+              );
+            })}
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>

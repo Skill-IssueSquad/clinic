@@ -13,7 +13,7 @@ export default function Appointments() {
   const [rows, setRows] = useState(null);
 
   useEffect(() => {
-    console.log("useEffect called");
+    // console.log("useEffect called");
     const f = async () => {
       const username = "opa%20nseet%20esmy";
       const res = await fetch(`/doctor/appointments/${username}`);
@@ -28,8 +28,8 @@ export default function Appointments() {
           };
         })
       );
-      console.log(response);
-      console.log(response.data);
+      // console.log(response);
+      // console.log(response.data);
     };
 
     f();
