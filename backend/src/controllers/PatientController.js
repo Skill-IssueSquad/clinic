@@ -70,4 +70,31 @@ const addFamMember = async (req, res) => {
   });
 };
 
-module.exports = { addFamMember };
+//get registered family members
+const getFamMembers = async (req, res) => {
+  const { username } = req.params;
+
+  const patient = await Patient.findOne({ username: username }).catch((err) => {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: "${err.message}",
+    });
+  });
+
+  if (!patient) {
+    return res.status(404).json({
+      success: false,
+      data: null,
+      message: "Patient not found",
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    data: patient.extfamilyMembers,
+    message: "Family members retrieved successfully",
+  });
+};
+
+module.exports = { addFamMember, getFamMembers };
