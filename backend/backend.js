@@ -3,7 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
-const doctorRouter = require("./routes/DoctorRouter");
+const doctorRouter = require("./src/routes/DoctorRouter");
 
 mongoose
   .connect(process.env.DATABASE_URL, { useNewUrlParser: true })
