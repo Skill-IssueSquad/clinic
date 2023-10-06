@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
 
 const packagesSchema = new mongoose.Schema({
+  packageType: {
+    type: String,
+    required: true,
+    unique: true,
+  },
   price_per_year: {
     type: Number,
     required: true,
