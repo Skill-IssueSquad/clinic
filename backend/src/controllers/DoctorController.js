@@ -1,6 +1,7 @@
 const Doctor = require("../models/Doctor");
 const Patient = require("../models/Patient");
 const Appointments = require("../models/Appointments");
+
 const getDoctor = async (req, res) => {
   // console.log("I am here");
   const { username } = req.params;
@@ -81,8 +82,8 @@ const createDoctor = async (req, res) => {
 
 const updateDoctor = async (req, res) => {
   const { username } = req.params;
-  const idDoctor = await Doctor.findOne({ username });
   try {
+    const idDoctor = await Doctor.findOne({ username });
     const doctor = await Doctor.findByIdAndUpdate(
       { _id: idDoctor._id },
       {
@@ -118,9 +119,10 @@ const updateDoctor = async (req, res) => {
 };
 
 const getAppointments = async (req, res) => {
-  const { username } = req.params;
-  const result = [];
   try {
+    const { username } = req.params;
+    const result = [];
+  
     const doctor = await Doctor.findOne({ username });
     if (!doctor) {
       throw new Error("Doctor not found");
