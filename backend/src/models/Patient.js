@@ -69,6 +69,7 @@ const patientSchema = new Schema({
       required: true,
       default: Date.now(),
     },
+    // default: {},
   },
   creditCards: [
     {
