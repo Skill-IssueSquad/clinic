@@ -1,5 +1,6 @@
 const Patient = require("../models/Patient");
 const Doctor = require("../models/Doctor");
+const Appointments = require("../models/Appointments");
 const Prescription = require("../models/Prescription");
 
 //assuming the patient already exists (otherwise they would
