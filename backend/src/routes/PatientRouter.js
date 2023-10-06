@@ -3,6 +3,7 @@ const router = express.Router();
 const {
   addFamMember,
   getFamMembers,
+  getPrescriptions,
 } = require("../controllers/PatientController");
 
 router.get("/", (req, res) => {});
@@ -12,5 +13,8 @@ router.patch("/addFamMember/:username", addFamMember);
 
 //get family members route
 router.get("/getFamMembers/:username", getFamMembers);
+
+//get prescriptions route
+router.get("/getPrescriptions/:username", getPrescriptions);
 
 module.exports = router;
