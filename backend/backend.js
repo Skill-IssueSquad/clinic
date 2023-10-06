@@ -16,4 +16,4 @@ app.use(express.json());
 app.use("/doctor", doctorRouter);
 
 //const subscribersRouter = require('./routes/subscribers')
-//app.use('/subscribers', subscribersRouter)
+//app.use('/subscribers', subscribersRouter
