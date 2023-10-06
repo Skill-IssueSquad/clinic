@@ -16,6 +16,7 @@ export default function Appointments() {
     // console.log("useEffect called");
     const f = async () => {
       const username = "opa%20nseet%20esmy";
+      const test = "test";
       const res = await fetch(`/doctor/appointments/${username}`);
       const response = await res.json();
       setRows(

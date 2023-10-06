@@ -122,7 +122,7 @@ const getAppointments = async (req, res) => {
   try {
     const { username } = req.params;
     const result = [];
-  
+
     const doctor = await Doctor.findOne({ username });
     if (!doctor) {
       throw new Error("Doctor not found");
@@ -252,6 +252,60 @@ const createAppointment = async (req, res) => {
   }
 };
 
+const getPatients = async (req, res) => {
+  try {
+    const { username } = req.params;
+    const doctor = await Doctor.findOne({ username });
+    if (!doctor) {
+      throw new Error("Doctor not found");
+    }
+    const doctorId = doctor._id;
+    const patients = await Patient.find({});
+    const result = [];
+    var i = 0;
+    for (const patient of patients) {
+      const patientId = patient._id;
+      const patientName = patient.name;
+      var isWithMe = false;
+      const upcoming = [];
+      for (const client of doctor.patientList) {
+        if (client.patient_id.toString() === patientId.toString()) {
+          isWithMe = true;
+          const appointments = await Appointments.find({
+            patient_id: patientId,
+            doctor_id: doctorId,
+          });
+          appointments.forEach((appointment) => {
+            upcoming.push(appointment.status);
+          });
+        }
+      }
+      i++;
+      const patientInfo = {
+        name: patientName,
+        isWithMe,
+        upcoming,
+        index: i,
+      };
+      result.push(patientInfo);
+    }
+
+    const send = {
+      success: true,
+      data: result,
+      message: "Patients found successfully",
+    };
+    res.status(200).json(send);
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    res.status(500).json(send);
+  }
+};
+
 module.exports = {
   getDoctor,
   createDoctor,
@@ -259,4 +313,5 @@ module.exports = {
   getAppointments,
   createPatient,
   createAppointment,
+  getPatients,
 };

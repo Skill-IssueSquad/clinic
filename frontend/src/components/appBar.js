@@ -102,6 +102,10 @@ function ResponsiveAppBar() {
                   // console.log("inside the if");
                   componentProps["to"] = "/Doctor_Home";
                 }
+                if (page == "Patients") {
+                  // console.log("inside the if");
+                  componentProps["to"] = "/Doctor_Patients";
+                }
                 return (
                   <MenuItem
                     key={page}
@@ -143,6 +147,9 @@ function ResponsiveAppBar() {
               };
               if (page === "Appointments") {
                 componentProps.to = "/Doctor_Home";
+              }
+              if (page === "Patients") {
+                componentProps.to = "/Doctor_Patients";
               }
               return (
                 <Button
