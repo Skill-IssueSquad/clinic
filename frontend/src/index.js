@@ -8,13 +8,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Doctor from "./pages/Doctor";
 import DoctorProfile from "./pages/DoctorProfile";
 import Patients from "./pages/Patients";
-import MultiFilter from "./components/MultiFilter";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route exact path="/" element={<MultiFilter />} />
         <Route exact path="/Doctor_Home" element={<Doctor />} />
         <Route exact path="/Doctor_Profile" element={<DoctorProfile />} />
         <Route exact path="/Doctor_Patients" element={<Patients />} />
