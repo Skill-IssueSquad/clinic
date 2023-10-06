@@ -65,8 +65,7 @@ const addFamMember = async (req, res) => {
     return res.status(500).json({
       success: false,
       data: null,
-      message:
-        err.message || "Some error occurred while retrieving appointments.",
+      message: err.message || "Some error occurred while retrieving patients.",
     });
   }
 };
@@ -94,8 +93,7 @@ const getFamMembers = async (req, res) => {
     return res.status(500).json({
       success: false,
       data: null,
-      message:
-        err.message || "Some error occurred while retrieving appointments.",
+      message: err.message || "Some error occurred while retrieving patients.",
     });
   }
 };
@@ -150,8 +148,7 @@ const getPrescriptions = async (req, res) => {
     return res.status(500).json({
       success: false,
       data: null,
-      message:
-        err.message || "Some error occurred while retrieving appointments.",
+      message: err.message || "Some error occurred while retrieving patients.",
     });
   }
 };
