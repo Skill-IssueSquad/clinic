@@ -78,4 +78,42 @@ const createDoctor = async (req, res) => {
   }
 };
 
-module.exports = { getDoctor, createDoctor };
+const updateDoctor = async (req, res) => {
+  const { username } = req.params;
+  const idD = await Doctor.findOne({ username });
+  try {
+    const doctor = await Doctor.findByIdAndUpdate(
+      { _id: idD._id },
+      {
+        ...req.body,
+      },
+      { new: true }
+    );
+
+    if (!doctor) {
+      const send = {
+        success: false,
+        data: null,
+        message: "Doctor not found",
+      };
+      res.status(404).json(send);
+      return;
+    }
+    const send = {
+      success: true,
+      data: doctor,
+      message: "Doctor updated successfully",
+    };
+    // console.log(doctor);
+    res.status(200).json(send);
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    res.status(500).json(send);
+  }
+};
+
+module.exports = { getDoctor, createDoctor, updateDoctor };

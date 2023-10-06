@@ -21,18 +21,11 @@ const UserProfile = () => {
     // console.log("use effect ran");
     const f = async () => {
       try {
-        const username = "opaNseetEsmy";
+        const username = "opa%20nseet%20esmy";
         const response = await axios.get(`/doctor/${username}`);
         const data = response.data.data[0];
-        // console.log(data);
-        const dateOfBirth = new Date(data.dateOfBirth).toLocaleDateString();
         const Doctor = {
-          name: data.name,
-          email: data.email,
-          dop: dateOfBirth,
-          rate: data.hourlyRate,
-          hospital: data.affiliatedHospital,
-          education: data.educationalBackground,
+          ...data,
         };
         // console.log(Doctor);
         setUser(Doctor);
@@ -52,11 +45,23 @@ const UserProfile = () => {
   const handleSaveClick = async () => {
     const updatedUser = user;
     setUser(null);
-    const username = "opaNseetEsmy";
-    const response = await axios.post(`/doctor/update/${username}`);
+    const username = "opa%20nseet%20esmy";
+
+    const res = await fetch(`/doctor/update/${username}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...updatedUser,
+      }),
+    });
+    const response = await res.json();
     console.log("response: ", response);
-    setIsEditing(false);
-    setUser(updatedUser);
+    if (response.success) {
+      setIsEditing(false);
+      setUser(updatedUser);
+    }
   };
 
   const handleInputChange = (event) => {
@@ -75,22 +80,11 @@ const UserProfile = () => {
           <div style={{ textAlign: "center", marginTop: "20px" }}>
             <Avatar
               alt={user.name}
-              src={user.profilePicture}
+              src={"/static/images/doc2.png"}
               sx={{ width: 150, height: 150 }}
             />
           </div>
           <Typography variant="h4" align="center" gutterBottom>
-            {/* {isEditing ? (
-          <TextField
-            name="name"
-            label="Name"
-            value={user.name}
-            onChange={handleInputChange}
-            fullWidth
-          />
-        ) : (
-          `Name: ${user.name}`
-        )} */}
             Name: {user.name}
           </Typography>
           <Typography variant="body1" align="center" gutterBottom>
@@ -106,60 +100,34 @@ const UserProfile = () => {
               `Email: ${user.email}`
             )}
           </Typography>
-          <Typography variant="body1" align="center" gutterBottom>
-            {/* {isEditing ? (
-          <TextField
-            name="dop"
-            label="dop"
-            value={user.dop}
-            onChange={handleInputChange}
-            fullWidth
-          />
-        ) : (
-          `Date of birth: ${user.dop}`
-        )} */}
-            Date of birth: {user.dop}
-          </Typography>
+
           <Typography variant="body1" align="center" gutterBottom>
             {isEditing ? (
               <TextField
-                name="rate"
-                label="rate"
-                value={user.rate}
+                name="hourlyRate"
+                label="hourlyRate"
+                value={user.hourlyRate}
                 onChange={handleInputChange}
                 fullWidth
               />
             ) : (
-              `Hourly rate: ${user.rate}`
+              `Hourly rate: ${user.hourlyRate}`
             )}
           </Typography>
           <Typography variant="body1" align="center" gutterBottom>
             {isEditing ? (
               <TextField
-                name="hospital"
-                label="hospital"
-                value={user.hospital}
+                name="affiliatedHospital"
+                label="affiliatedHospital"
+                value={user.affiliatedHospital}
                 onChange={handleInputChange}
                 fullWidth
               />
             ) : (
-              `Hospital: ${user.hospital}`
+              `Hospital: ${user.affiliatedHospital}`
             )}
           </Typography>
-          <Typography variant="body1" align="center" gutterBottom>
-            {/* {isEditing ? (
-          <TextField
-            name="education"
-            label="education"
-            value={user.education}
-            onChange={handleInputChange}
-            fullWidth
-          />
-        ) : (
-          `Education: ${user.education}`
-        )} */}
-            Education: {user.education}
-          </Typography>
+
           <div style={{ textAlign: "center" }}>
             {isEditing ? (
               <Button
