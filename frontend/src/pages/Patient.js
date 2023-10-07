@@ -1,11 +1,15 @@
-import MultiLevelFilterTable from "../components/MultiLevelFilterTable";
 import PatientDetails from "../components/PatientDetails";
 //import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import AddFamilyMember from "../components/addFamilyMember";
 
 const Patient = () => {
   const [patient, setPatient] = useState(null);
+
+  const submitFamMember = async (formData) => {
+    console.log(formData);
+  };
 
   useEffect(() => {
     //getParam();
@@ -24,7 +28,8 @@ const Patient = () => {
     <div className="patient">
       <h2>Patient</h2>
       <PatientDetails patient={patient} />
-      <MultiLevelFilterTable />
+      <p></p>
+      <AddFamilyMember onSubmit={submitFamMember} />
     </div>
   );
 };
