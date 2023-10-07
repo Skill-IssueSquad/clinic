@@ -12,7 +12,10 @@ import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import SortIcon from "@mui/icons-material/Sort";
 import Loading from "./Loading";
-import { Container, dividerClasses } from "@mui/material";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import { Container } from "@mui/material";
 
 const statusOptions = ["upcoming", "completed", "cancelled", "rescheduled"];
 const dateOperators = [">", "<", ">=", "<=", "="];
@@ -23,11 +26,12 @@ const MultiLevelFilterTable = () => {
   const [dateOperand, setDateOperand] = useState("");
   const [rows, setRows] = useState(null);
   const [sorting, setSorting] = useState({ field: "", order: "" });
+  const [selectedRow, setSelectedRow] = useState(null); // State to store the selected row
+  const [openDialog, setOpenDialog] = useState(false); // State for controlling the dialog visibility
 
   useEffect(() => {
-    const f = async () => {
+    const fetchData = async () => {
       const username = "opa%20nseet%20esmy";
-      const test = "test";
       const res = await fetch(`/doctor/appointments/${username}`);
       const response = await res.json();
       if (res.ok) {
@@ -36,12 +40,20 @@ const MultiLevelFilterTable = () => {
       }
     };
 
-    f();
+    fetchData();
   }, []);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilter((prevFilter) => ({ ...prevFilter, [name]: value }));
+  };
+
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
   };
 
   const handleStatusChange = (e) => {
@@ -87,6 +99,12 @@ const MultiLevelFilterTable = () => {
     }
   };
 
+  const handleRowClick = (row) => {
+    // Store the selected row's data in state
+    setSelectedRow(row);
+    // Open the dialog
+    handleOpenDialog();
+  };
   const filteredRows = (rows || []).filter((row) => {
     var cond1 = row.name.toLowerCase().includes(filter.name.toLowerCase());
     var cond2 = true;
@@ -122,7 +140,6 @@ const MultiLevelFilterTable = () => {
     }
     return cond1 && cond2 && cond3;
   });
-
   return (
     <div>
       {rows ? (
@@ -162,7 +179,7 @@ const MultiLevelFilterTable = () => {
             SelectProps={{
               native: true,
             }}
-            style={{ margin: "8px", width: "150px" }} // Updated width here
+            style={{ margin: "8px", width: "150px" }}
           >
             <option value=""></option>
             {dateOperators.map((operator) => (
@@ -258,7 +275,11 @@ const MultiLevelFilterTable = () => {
               </TableHead>
               <TableBody>
                 {filteredRows.map((row) => (
-                  <TableRow key={row.id}>
+                  <TableRow
+                    key={row.id}
+                    onClick={() => handleRowClick(row)} // Handle row click
+                    style={{ cursor: "pointer" }} // Add a pointer cursor
+                  >
                     <TableCell>{row.id}</TableCell>
                     <TableCell>{row.name}</TableCell>
                     <TableCell>{row.status}</TableCell>
@@ -268,6 +289,22 @@ const MultiLevelFilterTable = () => {
               </TableBody>
             </Table>
           </TableContainer>
+          {selectedRow && (
+            <Dialog open={openDialog} onClose={handleCloseDialog}>
+              <DialogTitle>{selectedRow.name}</DialogTitle>
+              <DialogContent>
+                {Object.entries(selectedRow).map(([key, value]) =>
+                  key !== "id" ? (
+                    <div key={key}>
+                      <span>{key}: </span>
+                      <span>{value}</span>
+                    </div>
+                  ) : null
+                )}
+                <img src="/docp/doc.png" alt="" />
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
       ) : (
         <Container

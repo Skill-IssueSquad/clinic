@@ -141,6 +141,11 @@ const getAppointments = async (req, res) => {
         date: appointmentDate,
         status: appointment.status,
         name: patientName,
+        gender: patient.gender,
+        age: patient.age,
+        type: appointment.type,
+        mobileNumber: patient.mobileNumber,
+        healthRecords: patient.healthRecords,
       };
       result.push(appointmentInfo);
     }
@@ -309,6 +314,12 @@ const getPatients = async (req, res) => {
   }
 };
 
+const saveFile = async (req, res) => {
+  console.log(req.body);
+  console.log(req.files);
+  res.status(200).json({ success: true });
+};
+
 module.exports = {
   getDoctor,
   createDoctor,
@@ -317,4 +328,5 @@ module.exports = {
   createPatient,
   createAppointment,
   getPatients,
+  saveFile,
 };
