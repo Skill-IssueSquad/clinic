@@ -11,11 +11,12 @@ const {
   getAppointmentsByStatus,
   viewAllDoctors,
   viewAllDoctorsAvailable,
-  createDoc
+  createDoc,
+  getPatientAPI,
 } = require("../controllers/PatientController");
 const { create } = require("../models/Patient");
 
-router.get("/", (req, res) => {});
+router.get("/:username", getPatientAPI);
 router.get("/:username/appointments", getAllAppointments);
 router.get("/:username/appointments/date", getAppointmentsByDate);
 router.get("/:username/appointments/status", getAppointmentsByStatus);
