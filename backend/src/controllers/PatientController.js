@@ -393,6 +393,138 @@ const viewAllDoctors = async (req, res) => {
   }
 };
 
+const viewAllDoctorsAvailable = async (req, res) => {
+  // ASSUMES JWT AUTHENTICATION
+  // EXPECTED INPUT: param: username, { datetime: "2022-05-01T00:00:00.000+00:00" }
+  try {
+    const username = req.params.username;
+    const patient = await getPatient(username);
+
+    if (!patient) {
+      return res.status(404).json({
+        success: false,
+        data: username,
+        message: `Patient with username ${username} does not exist`,
+      });
+    }
+
+    // try to validate datetime
+    if (isNaN(Date.parse(req.body.datetime))) {
+      return res.status(400).json({
+        success: false,
+        data: "" + req.body.datetime,
+        message: "Invalid datetime format",
+      });
+    }
+
+    let doctors = await Doctor.find({
+      availableSlots: {
+        $elemMatch: {
+          starttime: { $lte: req.body.datetime },
+          endtime: { $gt: req.body.datetime },
+        },
+      },
+    }).catch((err) => {
+      if (err) {
+        return res.status(500).json({
+          success: false,
+          data: null,
+          message:
+            err.message || "Some error occurred while retrieving doctors.",
+        });
+      }
+    });
+
+    doctors = doctors.map((doctor) => {
+      // get each doctors markup from contract
+      if (doctor.contracts.length > 0) {
+        const markup = doctor.contracts[0].markupOnSalary;
+
+        // check on health package type for discount
+        let discount = 0;
+        if (patient.healthPackageType) {
+          if (patient.healthPackageType.status === "subscribed") {
+            if (patient.healthPackageType.type === "silver") {
+              discount = 0.4;
+            } else if (patient.healthPackageType.type === "platinum") {
+              discount = 0.8;
+            } else if (patient.healthPackageType.type === "gold") {
+              discount = 0.6;
+            }
+          }
+        }
+
+        const sessionPrice =
+          (doctor.hourlyRate + 0.1 * markup) * (1 - discount);
+
+        // Return a new object with the modified properties
+        return { ...doctor._doc, sessionPrice };
+      } else {
+        // no contract for this doctor
+        const sessionPrice = -1;
+
+        // Return a new object with the modified properties
+        return { ...doctor._doc, sessionPrice };
+      }
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: doctors,
+      message: "Successfully retrieved all doctors",
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: err.message || "Some error occurred while retrieving doctors.",
+    });
+  }
+};
+
+const createDoc = async (req, res) => { //TESTING PURPOSES
+  const rest = await Doctor.create({
+    username: "NewDoc1",
+    name: "NewDoc1",
+    email: "NewDoc2@gmail.com",
+    password: "123",
+    dateOfBirth: "2023-10-05T21:00:00.000Z",
+    hourlyRate: 13,
+    affiliatedHospital: "Dar el Skill issue",
+    educationalBackground: "GUC - Surgery",
+    contracts: [],
+    patientList: [
+      {
+        patient_id: "651fe76c2bbcb5711192f24f",
+      },
+      {
+        patient_id: "651fe7a92bbcb5711192f258",
+      },
+      {
+        patient_id: "651fe96d145ccbfc3bde95f3",
+      },
+      {
+        patient_id: "651fe981145ccbfc3bde95f6",
+      },
+      {
+        patient_id: "651fe991145ccbfc3bde95f9",
+      },
+    ],
+    availableSlots: [
+      {
+        starttime: "2021-05-01T00:00:00.000+00:00",
+        endtime: "2021-05-01T06:00:00.000+00:00",
+      },
+    ],
+  }).catch((err) => {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: err.message || "Some error occurred while creating doctor.",
+    });
+  });
+};
+
 module.exports = {
   addFamMember,
   getFamMembers,
@@ -401,4 +533,6 @@ module.exports = {
   getAppointmentsByDate,
   getAppointmentsByStatus,
   viewAllDoctors,
+  viewAllDoctorsAvailable,
+  createDoc,
 };
