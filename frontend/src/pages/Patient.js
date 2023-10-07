@@ -8,7 +8,22 @@ const Patient = () => {
   const [patient, setPatient] = useState(null);
 
   const submitFamMember = async (formData) => {
-    console.log(formData);
+    //console.log(formData);
+    await axios
+      .patch("http://localhost:8000/patient/john_doe/addFamMember", formData)
+      .then((res) => {
+        console.log(res.data);
+
+        if (res.status === 200) {
+          return { message: res.data.message };
+        } else {
+          return { message: res.data.message };
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        return { message: "Something went wrong" };
+      });
   };
 
   useEffect(() => {
@@ -20,7 +35,7 @@ const Patient = () => {
     };
 
     fetchPatient();
-  }, []);
+  }, [submitFamMember]);
 
   if (!patient) return null;
 

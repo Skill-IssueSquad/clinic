@@ -19,13 +19,14 @@ const AddFamilyMemberForm = ({ onSubmit }) => {
   });
 
   const [errors, setErrors] = useState({});
+  const [responseMessage, setResponseMessage] = useState(null); // New state for response message
 
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // Validate required fields
     const newErrors = {};
     for (const field in formData) {
@@ -36,8 +37,15 @@ const AddFamilyMemberForm = ({ onSubmit }) => {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-    } else {
-      onSubmit(formData);
+      return; // Don't submit if there are errors
+    }
+
+    try {
+      const response = await onSubmit(formData);
+      if (response && response.message) {
+        setResponseMessage(response.message);
+      }
+      // Clear the form on successful submission
       setFormData({
         name: "",
         relation: "",
@@ -46,11 +54,15 @@ const AddFamilyMemberForm = ({ onSubmit }) => {
         gender: "",
       });
       setErrors({});
+    } catch (error) {
+      console.error(error);
+      // Handle any error that occurs during submission
     }
   };
 
   return (
     <Box maxWidth={400} mx="auto" p={2}>
+      {responseMessage && <div>{responseMessage}</div>}
       <TextField
         fullWidth
         label="Name"
