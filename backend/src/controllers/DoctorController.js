@@ -83,16 +83,20 @@ const createDoctor = async (req, res) => {
 const updateDoctor = async (req, res) => {
   const { username } = req.params;
   try {
-    const idDoctor = await Doctor.findOne({ username });
-    const doctor = await Doctor.findByIdAndUpdate(
-      { _id: idDoctor._id },
+    const oldDoctor = await Doctor.findOne({ username });
+    var { hourlyRate, email, affiliatedHospital } = req.body;
+    // console.log(hourlyRate, email, affiliatedHospital);
+    const newDoctor = await Doctor.findByIdAndUpdate(
+      { _id: oldDoctor._id },
       {
-        ...req.body,
+        email,
+        hourlyRate,
+        affiliatedHospital,
       },
       { new: true }
     );
-
-    if (!doctor) {
+    // console.log(newDoctor);
+    if (!newDoctor) {
       const send = {
         success: false,
         data: null,
@@ -103,7 +107,7 @@ const updateDoctor = async (req, res) => {
     }
     const send = {
       success: true,
-      data: doctor,
+      data: newDoctor,
       message: "Doctor updated successfully",
     };
     // console.log(doctor);
@@ -112,7 +116,7 @@ const updateDoctor = async (req, res) => {
     const send = {
       success: false,
       data: null,
-      message: `${error.message}`,
+      message: "Email already exists",
     };
     res.status(500).json(send);
   }
