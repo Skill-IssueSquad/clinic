@@ -50,8 +50,8 @@ function ResponsiveAppBar() {
           <Typography
             variant="h6"
             noWrap
-            // component={Link}
-            // to="/Doctor_Home"
+            component={Link}
+            to="/Doctor_Home"
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -94,7 +94,7 @@ function ResponsiveAppBar() {
                 display: { xs: "block", md: "none" },
               }}
             >
-              {pages.map((page) => {
+              {/* {pages.map((page) => {
                 const componentProps = {
                   component: Link,
                 };
@@ -115,7 +115,7 @@ function ResponsiveAppBar() {
                     <Typography textAlign="center">{page}</Typography>
                   </MenuItem>
                 );
-              })}
+              })} */}
             </Menu>
           </Box>
           {/* <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} /> */}
@@ -123,8 +123,8 @@ function ResponsiveAppBar() {
           <Typography
             variant="h5"
             noWrap
-            // component={Link}
-            // to="/Doctor_Home"
+            component={Link}
+            to="/Doctor_Home"
             sx={{
               mr: 2,
               display: { xs: "flex", md: "none" },
@@ -141,7 +141,7 @@ function ResponsiveAppBar() {
           {/* </Link> */}
 
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {pages.map((page) => {
+            {/* {pages.map((page) => {
               const componentProps = {
                 component: Link,
               };
@@ -161,7 +161,7 @@ function ResponsiveAppBar() {
                   {page}
                 </Button>
               );
-            })}
+            })} */}
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>

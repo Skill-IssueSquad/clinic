@@ -15,7 +15,6 @@ root.render(
       <Routes>
         <Route exact path="/Doctor_Home" element={<Doctor />} />
         <Route exact path="/Doctor_Profile" element={<DoctorProfile />} />
-        <Route exact path="/Doctor_Patients" element={<Patients />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
