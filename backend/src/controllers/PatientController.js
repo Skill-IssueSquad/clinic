@@ -3,6 +3,33 @@ const Doctor = require("../models/Doctor");
 const Appointments = require("../models/Appointments");
 const Prescription = require("../models/Prescription");
 
+const getPatientAPI = async (req, res) => {
+  const { username } = req.params;
+
+  try {
+    const patient = await getPatient(username);
+    if (patient) {
+      return res.status(200).json({
+        success: true,
+        data: patient,
+        message: "Patient retrieved successfully",
+      });
+    } else {
+      return res.status(404).json({
+        success: false,
+        data: null,
+        message: "Patient not found",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: err.message || "Some error occurred while retrieving patients.",
+    });
+  }
+};
+
 //assuming the patient already exists (otherwise they would
 //be filling the registration form and we would be creating a new patient)
 const addFamMember = async (req, res) => {
@@ -537,4 +564,5 @@ module.exports = {
   viewAllDoctors,
   viewAllDoctorsAvailable,
   createDoc,
+  getPatientAPI,
 };
