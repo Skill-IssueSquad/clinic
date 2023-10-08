@@ -16,6 +16,7 @@ import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { Container } from "@mui/material";
+import PDFViewer from "./pdf";
 
 const statusOptions = ["upcoming", "completed", "cancelled", "rescheduled"];
 const dateOperators = [">", "<", ">=", "<=", "="];
@@ -301,7 +302,8 @@ const MultiLevelFilterTable = () => {
                     </div>
                   ) : null
                 )}
-                <img src="/docp/doc.png" alt="" />
+                {/* <img src="/DoctorStaticData/doc.png" alt="" /> */}
+                <PDFViewer pdfUrl="DoctorStaticData/test.pdf" />
               </DialogContent>
             </Dialog>
           )}
