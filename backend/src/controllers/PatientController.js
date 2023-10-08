@@ -444,6 +444,7 @@ const viewAllDoctorsAvailable = async (req, res) => {
         let discount = 0;
         if (patient.healthPackageType) {
           if (patient.healthPackageType.status === "subscribed") {
+            // TODO: change to use of .discountOnSession
             if (patient.healthPackageType.type === "silver") {
               discount = 0.4;
             } else if (patient.healthPackageType.type === "platinum") {
@@ -482,7 +483,8 @@ const viewAllDoctorsAvailable = async (req, res) => {
   }
 };
 
-const createDoc = async (req, res) => { //TESTING PURPOSES
+const createDoc = async (req, res) => {
+  //TESTING PURPOSES
   const rest = await Doctor.create({
     username: "NewDoc1",
     name: "NewDoc1",
