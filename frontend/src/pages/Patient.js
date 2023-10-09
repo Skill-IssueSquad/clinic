@@ -3,6 +3,7 @@ import PatientDetails from "../components/PatientDetails";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import AddFamilyMember from "../components/addFamilyMember";
+import NavBar from "../components/navBar";
 
 const Patient = () => {
   const [patient, setPatient] = useState(null);
@@ -41,7 +42,7 @@ const Patient = () => {
 
   return (
     <div className="patient">
-      <h2>Patient</h2>
+      <NavBar name={"Patient Dashboard"} />
       <PatientDetails patient={patient} />
       <p></p>
       <AddFamilyMember onSubmit={submitFamMember} />

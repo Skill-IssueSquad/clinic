@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import TextField from "@mui/material/TextField";
+import Popup from "reactjs-popup";
+import "reactjs-popup/dist/index.css";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -12,7 +14,9 @@ import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import axios from "axios";
 
-const MultiLevelFilterTable = ({ columns, API_GET_URL }) => {
+let fullRows = [];
+
+const PatientMultiLevel = ({ columns, API_GET_URL }) => {
   const initFilter = {};
   columns.forEach((key) => {
     initFilter[key] = "";
@@ -27,7 +31,7 @@ const MultiLevelFilterTable = ({ columns, API_GET_URL }) => {
       try {
         const response = await axios.get(API_GET_URL);
         const initialRows = response.data.data;
-        
+        fullRows = initialRows;
 
         const rows = initialRows.map((row) => {
           let resJson = {};
@@ -153,10 +157,45 @@ const MultiLevelFilterTable = ({ columns, API_GET_URL }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredRows.map((row) => (
+            {filteredRows.map((row, i) => (
               <TableRow key={Object.values(row)[0]}>
                 {Object.keys(row).map((key) => (
-                  <TableCell key={key}>{row[key]}</TableCell>
+                  <React.Fragment key={key}>
+                    {key === "name" ? (
+                      <TableCell key={key}>
+                        <Popup
+                          trigger={
+                            <button className="button">{row[key]}</button>
+                          }
+                          modal
+                        >
+                          <span>
+                            {console.log("Current Doc Data ", fullRows[i])}
+                            {Object.keys(fullRows[i]).map((innerKey) =>
+                              innerKey === "patientList" ? null : innerKey ===
+                                "availableSlots" ? (
+                                <div key={innerKey}>
+                                  <p>Available slots</p>
+                                  {fullRows[i][innerKey].map((slot) => (
+                                    <div key={slot.starttime}>
+                                      <p>starttime: {slot.starttime}</p>
+                                      <p>endtime: {slot.endtime}</p>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : (
+                                <p key={innerKey}>
+                                  {innerKey}: {fullRows[i][innerKey]}
+                                </p>
+                              )
+                            )}
+                          </span>
+                        </Popup>
+                      </TableCell>
+                    ) : (
+                      <TableCell key={key}>{row[key]}</TableCell>
+                    )}
+                  </React.Fragment>
                 ))}
               </TableRow>
             ))}
@@ -167,4 +206,4 @@ const MultiLevelFilterTable = ({ columns, API_GET_URL }) => {
   );
 };
 
-export default MultiLevelFilterTable;
+export default PatientMultiLevel;
