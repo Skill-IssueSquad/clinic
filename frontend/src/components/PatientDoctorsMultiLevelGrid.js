@@ -122,7 +122,7 @@ const PatientMultiLevel = ({ columns, API_GET_URL }) => {
     <div>
       {columns.map((key) => (
         <TextField
-          key={key}
+          
           label={"Filter by " + key}
           name={key}
           value={filter[key] || ""}
@@ -135,7 +135,7 @@ const PatientMultiLevel = ({ columns, API_GET_URL }) => {
           <TableHead>
             <TableRow>
               {columns.map((key) => (
-                <TableCell key={key}>
+                <TableCell >
                   {key.toUpperCase()}{" "}
                   <Button
                     size="small"
@@ -158,11 +158,11 @@ const PatientMultiLevel = ({ columns, API_GET_URL }) => {
           </TableHead>
           <TableBody>
             {filteredRows.map((row, i) => (
-              <TableRow key={Object.values(row)[0]}>
+              <TableRow >
                 {Object.keys(row).map((key) => (
-                  <React.Fragment key={key}>
+                  <React.Fragment >
                     {key === "name" ? (
-                      <TableCell key={key}>
+                      <TableCell >
                         <Popup
                           trigger={
                             <button className="button">{row[key]}</button>
@@ -174,17 +174,17 @@ const PatientMultiLevel = ({ columns, API_GET_URL }) => {
                             {Object.keys(fullRows[i]).map((innerKey) =>
                               innerKey === "patientList" ? null : innerKey ===
                                 "availableSlots" ? (
-                                <div key={innerKey}>
+                                <div >
                                   <p>Available slots</p>
                                   {fullRows[i][innerKey].map((slot) => (
-                                    <div key={slot.starttime}>
+                                    <div >
                                       <p>starttime: {slot.starttime}</p>
                                       <p>endtime: {slot.endtime}</p>
                                     </div>
                                   ))}
                                 </div>
                               ) : (
-                                <p key={innerKey}>
+                                <p >
                                   {innerKey}: {fullRows[i][innerKey]}
                                 </p>
                               )
@@ -193,7 +193,7 @@ const PatientMultiLevel = ({ columns, API_GET_URL }) => {
                         </Popup>
                       </TableCell>
                     ) : (
-                      <TableCell key={key}>{row[key]}</TableCell>
+                      <TableCell >{row[key]}</TableCell>
                     )}
                   </React.Fragment>
                 ))}

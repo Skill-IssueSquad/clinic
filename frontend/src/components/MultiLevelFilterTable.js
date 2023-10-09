@@ -27,7 +27,6 @@ const MultiLevelFilterTable = ({ columns, API_GET_URL }) => {
       try {
         const response = await axios.get(API_GET_URL);
         const initialRows = response.data.data;
-        
 
         const rows = initialRows.map((row) => {
           let resJson = {};
@@ -118,7 +117,6 @@ const MultiLevelFilterTable = ({ columns, API_GET_URL }) => {
     <div>
       {columns.map((key) => (
         <TextField
-          key={key}
           label={"Filter by " + key}
           name={key}
           value={filter[key] || ""}
@@ -131,7 +129,7 @@ const MultiLevelFilterTable = ({ columns, API_GET_URL }) => {
           <TableHead>
             <TableRow>
               {columns.map((key) => (
-                <TableCell key={key}>
+                <TableCell>
                   {key.toUpperCase()}{" "}
                   <Button
                     size="small"
@@ -154,9 +152,9 @@ const MultiLevelFilterTable = ({ columns, API_GET_URL }) => {
           </TableHead>
           <TableBody>
             {filteredRows.map((row) => (
-              <TableRow key={Object.values(row)[0]}>
+              <TableRow>
                 {Object.keys(row).map((key) => (
-                  <TableCell key={key}>{row[key]}</TableCell>
+                  <TableCell>{row[key]}</TableCell>
                 ))}
               </TableRow>
             ))}
