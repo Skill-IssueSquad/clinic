@@ -11,6 +11,7 @@ import Button from "@mui/material/Button";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import axios from "axios";
+import CircularProgress from "@mui/joy/CircularProgress";
 
 const MultiLevelFilterTable = ({ columns, API_GET_URL }) => {
   const initFilter = {};
@@ -110,7 +111,7 @@ const MultiLevelFilterTable = ({ columns, API_GET_URL }) => {
   });
 
   if (loading) {
-    return <div>Loading data...</div>; // Render a loading message
+    return <CircularProgress variant="solid" />; // Render a loading message
   }
 
   return (

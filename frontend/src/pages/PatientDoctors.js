@@ -8,7 +8,7 @@ function PatientDoctors() {
       <h2>Doctors</h2>
       <PatientMultiLevel
         columns={["name", "email", "sessionPrice", "educationalBackground"]}
-        API_GET_URL="http://localhost:8000/patient/john_doe/doctors"
+        API_GET_URL="http://localhost:8000/patient/bahyone/doctors"
       />
     </div>
   );
