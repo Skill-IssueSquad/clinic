@@ -102,6 +102,7 @@ const MultiLevelFilterTable = () => {
 
   const handleRowClick = (row) => {
     // Store the selected row's data in state
+    console.log("The Selected row is :", row);
     setSelectedRow(row);
     // Open the dialog
     handleOpenDialog();
@@ -294,14 +295,28 @@ const MultiLevelFilterTable = () => {
             <Dialog open={openDialog} onClose={handleCloseDialog}>
               <DialogTitle>{selectedRow.name}</DialogTitle>
               <DialogContent>
-                {Object.entries(selectedRow).map(([key, value]) =>
-                  key !== "id" ? (
-                    <div key={key}>
-                      <span>{key}: </span>
-                      <span>{value}</span>
-                    </div>
-                  ) : null
-                )}
+                {Object.entries(selectedRow).map(([key, value]) => {
+                  // console.log(key, value);
+                  if (key !== "id" && key != "healthRecords") {
+                    return (
+                      <div key={key}>
+                        <span>{key}: </span>
+                        <span>{value}</span>
+                      </div>
+                    );
+                  } else {
+                    if (key === "healthRecords") {
+                      return (
+                        <div key="healthRecords">
+                          <span>healthRecords: </span>
+                          {/* <span>{value}</span> */}
+                        </div>
+                      );
+                    } else {
+                      return null;
+                    }
+                  }
+                })}
                 {/* <img src="/DoctorStaticData/doc.png" alt="" /> */}
                 <PDFViewer pdfUrl="DoctorStaticData/test.pdf" />
               </DialogContent>

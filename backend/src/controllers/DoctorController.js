@@ -1,6 +1,9 @@
 const Doctor = require("../models/Doctor");
 const Patient = require("../models/Patient");
 const Appointments = require("../models/Appointments");
+const fs = require("fs");
+const numberToWords = require("number-to-words");
+const Prescription = require("../models/Prescription");
 
 const getDoctor = async (req, res) => {
   // console.log("I am here");
@@ -173,7 +176,7 @@ const getAppointments = async (req, res) => {
 const createPatient = async (req, res) => {
   // console.log(req.body);
   try {
-    const {
+    var {
       username,
       name,
       email,
@@ -185,24 +188,53 @@ const createPatient = async (req, res) => {
       creditCards,
       healthPackageType,
     } = req.body;
-    const patient = await Patient.create({
-      username,
-      name,
-      email,
-      password,
-      dateOfBirth,
-      gender,
-      mobileNumber,
-      emergencyContact,
-      creditCards,
-      healthPackageType,
-    });
-    if (!patient) {
-      throw new Error("Patient not created");
+    const patients = [];
+    for (var i = 1; i < 6; i++) {
+      const addition = numberToWords.toWords(i);
+      const newUsername = `${username}${addition}`;
+      const newEmail = `${addition}${email}`;
+      const newName = `${name}${addition}`;
+      const records = [];
+      const pdf = fs.readFileSync("DoctorStaticData/test.pdf");
+      const healthRecord = {
+        documentType: "pdf",
+        documentName: "test",
+        documentFile: pdf,
+      };
+      records.push(healthRecord);
+      const pres = await Prescription.create({
+        PharmacySubmitStatus: false,
+        isFilled: false,
+      });
+      const id = pres._id;
+      const prescriptions = [
+        {
+          prescription_id: id,
+        },
+      ];
+      const patient = await Patient.create({
+        username: newUsername,
+        name: newName,
+        email: newEmail,
+        password,
+        dateOfBirth,
+        gender,
+        mobileNumber,
+        emergencyContact,
+        creditCards,
+        healthPackageType,
+        healthRecords: records,
+        perscreption_ids: prescriptions,
+      });
+      if (!patient) {
+        throw new Error("Patient not created");
+      }
+      patients.push(patient);
     }
+
     const send = {
       success: true,
-      data: patient,
+      data: patients,
       message: "Patient created successfully",
     };
     res.status(200).json(send);
@@ -224,28 +256,30 @@ const createAppointment = async (req, res) => {
     const patients = await Patient.find({});
 
     patients.forEach(async (patient) => {
-      const patientId = patient._id;
-      doctor.patientList.push({ patient_id: patientId });
-      await Doctor.findByIdAndUpdate(
-        { _id: doctorId },
-        {
-          patientList: doctor.patientList,
-        },
-        { new: true }
-      );
-      const types = ["followUp", "appointment"];
-      const randomType = types[Math.floor(Math.random() * types.length)];
-      const status = ["upcoming", "completed", "cancelled", "rescheduled"];
-      const randomStatus = status[Math.floor(Math.random() * status.length)];
-      const appointment = await Appointments.create({
-        doctor_id: doctorId,
-        type: randomType,
-        date: "2021-05-01",
-        time: 1,
-        patient_id: patientId,
-        prescription_id: null,
-        status: randomStatus,
-      });
+      if (!(patient.username === "john_doe")) {
+        const patientId = patient._id;
+        doctor.patientList.push({ patient_id: patientId });
+        await Doctor.findByIdAndUpdate(
+          { _id: doctorId },
+          {
+            patientList: doctor.patientList,
+          },
+          { new: true }
+        );
+        const types = ["followUp", "appointment"];
+        const randomType = types[Math.floor(Math.random() * types.length)];
+        const status = ["upcoming", "completed", "cancelled", "rescheduled"];
+        const randomStatus = status[Math.floor(Math.random() * status.length)];
+        const appointment = await Appointments.create({
+          doctor_id: doctorId,
+          type: randomType,
+          date: "2021-05-01",
+          time: 1,
+          patient_id: patientId,
+          prescription_id: null,
+          status: randomStatus,
+        });
+      }
     });
     const send = {
       success: true,
@@ -319,9 +353,7 @@ const getPatients = async (req, res) => {
 };
 
 const saveFile = async (req, res) => {
-  console.log(req.body);
-  console.log(req.files);
-  res.status(200).json({ success: true });
+  const pdf = fs.readFileSync("../../DoctorStaticData/test.pdf");
 };
 
 module.exports = {
