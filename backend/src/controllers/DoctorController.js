@@ -195,11 +195,11 @@ const createPatient = async (req, res) => {
       const newEmail = `${addition}${email}`;
       const newName = `${name}${addition}`;
       const records = [];
-      const pdf = fs.readFileSync("DoctorStaticData/test.pdf");
+      // const pdf = fs.readFileSync("DoctorStaticData/test.pdf");
       const healthRecord = {
         documentType: "pdf",
         documentName: "test",
-        documentFile: pdf,
+        documentUrl: "DoctorStaticData/test.pdf",
       };
       records.push(healthRecord);
       const pres = await Prescription.create({
@@ -252,11 +252,12 @@ const createPatient = async (req, res) => {
 const createAppointment = async (req, res) => {
   const doctor = await Doctor.findOne({ username: "opa nseet esmy" });
   const doctorId = doctor._id;
+  const apps = [];
   try {
     const patients = await Patient.find({});
 
     patients.forEach(async (patient) => {
-      if (!(patient.username === "john_doe")) {
+      if (patient.username.includes("bahy")) {
         const patientId = patient._id;
         doctor.patientList.push({ patient_id: patientId });
         await Doctor.findByIdAndUpdate(
@@ -279,12 +280,13 @@ const createAppointment = async (req, res) => {
           prescription_id: null,
           status: randomStatus,
         });
+        apps.push(appointment);
       }
     });
     const send = {
       success: true,
-      data: patients,
-      message: "Appointment created successfully",
+      data: apps,
+      message: "Appointments created successfully",
     };
     res.status(200).json(send);
   } catch (error) {

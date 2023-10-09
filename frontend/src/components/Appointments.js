@@ -309,7 +309,14 @@ const MultiLevelFilterTable = () => {
                       return (
                         <div key="healthRecords">
                           <span>healthRecords: </span>
-                          {/* <span>{value}</span> */}
+                          {selectedRow.healthRecords.map((record, index) => {
+                            return (
+                              <div key={`record-${index}`}>
+                                <span>Name: {record.documentName}</span>
+                                <PDFViewer pdfUrl={record.documentUrl} />
+                              </div>
+                            );
+                          })}
                         </div>
                       );
                     } else {
@@ -318,7 +325,6 @@ const MultiLevelFilterTable = () => {
                   }
                 })}
                 {/* <img src="/DoctorStaticData/doc.png" alt="" /> */}
-                <PDFViewer pdfUrl="DoctorStaticData/test.pdf" />
               </DialogContent>
             </Dialog>
           )}
