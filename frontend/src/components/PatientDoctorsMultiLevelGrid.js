@@ -13,7 +13,7 @@ import Button from "@mui/material/Button";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import axios from "axios";
-import CircularProgress from '@mui/joy/CircularProgress';
+import CircularProgress from "@mui/joy/CircularProgress";
 
 let fullRows = [];
 
@@ -96,13 +96,65 @@ const PatientMultiLevel = ({ columns, API_GET_URL }) => {
       let rowValue = row[key];
       let filterValue = filter[key];
 
+      let query = String(filterValue);
+
       console.log(rowValue, filterValue);
 
       if (filterValue === undefined) {
         // Exclude the row if the filter input is empty
         return false;
       } else {
-        if (typeof rowValue === "string") {
+        var regexType1 = /([<>]=?)\s*(-?\d+(\.\d+)?)/; // number 1 sided range
+        var regexType2 = /([<>]=?)\s*(-?\d+(\.\d+)?)\s*([<>]=?)\s*(-?\d+(\.\d+)?)/; // number 2 sided range
+
+        var matchType1 = query.match(regexType1);
+        var matchType2 = query.match(regexType2);
+        var item = parseFloat(rowValue);
+
+        if (matchType1 && !matchType2) {
+          var operator = matchType1[1];
+          var value = parseFloat(matchType1[2]);
+          
+          accumCond =
+            accumCond &&
+            (operator === "<"
+              ? item < value
+              : operator === "<="
+              ? item <= value
+              : operator === ">"
+              ? item > value
+              : operator === ">="
+              ? item >= value
+              : false);
+
+        } else if (matchType2) {
+          var operator1 = matchType2[1];
+          var value1 = parseFloat(matchType2[2]);
+          var operator2 = matchType2[3];
+          var value2 = parseFloat(matchType2[4]);
+          
+
+          accumCond =
+            accumCond &&
+            (operator1 === "<"
+              ? item < value1
+              : operator1 === "<="
+              ? item <= value1
+              : operator1 === ">"
+              ? item > value1
+              : operator1 === ">="
+              ? item >= value1
+              : false) &&
+            (operator2 === "<"
+              ? item < value2
+              : operator2 === "<="
+              ? item <= value2
+              : operator2 === ">"
+              ? item > value2
+              : operator2 === ">="
+              ? item >= value2
+              : false);
+        } else if (typeof rowValue === "string") {
           accumCond =
             accumCond &&
             rowValue.toLowerCase().includes(filterValue.toLowerCase());
@@ -123,7 +175,6 @@ const PatientMultiLevel = ({ columns, API_GET_URL }) => {
     <div>
       {columns.map((key) => (
         <TextField
-          
           label={"Filter by " + key}
           name={key}
           value={filter[key] || ""}
@@ -136,7 +187,7 @@ const PatientMultiLevel = ({ columns, API_GET_URL }) => {
           <TableHead>
             <TableRow>
               {columns.map((key) => (
-                <TableCell >
+                <TableCell>
                   {key.toUpperCase()}{" "}
                   <Button
                     size="small"
@@ -159,11 +210,11 @@ const PatientMultiLevel = ({ columns, API_GET_URL }) => {
           </TableHead>
           <TableBody>
             {filteredRows.map((row, i) => (
-              <TableRow >
+              <TableRow>
                 {Object.keys(row).map((key) => (
-                  <React.Fragment >
+                  <React.Fragment>
                     {key === "name" ? (
-                      <TableCell >
+                      <TableCell>
                         <Popup
                           trigger={
                             <button className="button">{row[key]}</button>
@@ -175,17 +226,17 @@ const PatientMultiLevel = ({ columns, API_GET_URL }) => {
                             {Object.keys(fullRows[i]).map((innerKey) =>
                               innerKey === "patientList" ? null : innerKey ===
                                 "availableSlots" ? (
-                                <div >
+                                <div>
                                   <p>Available slots</p>
                                   {fullRows[i][innerKey].map((slot) => (
-                                    <div >
+                                    <div>
                                       <p>starttime: {slot.starttime}</p>
                                       <p>endtime: {slot.endtime}</p>
                                     </div>
                                   ))}
                                 </div>
                               ) : (
-                                <p >
+                                <p>
                                   {innerKey}: {fullRows[i][innerKey]}
                                 </p>
                               )
@@ -194,7 +245,7 @@ const PatientMultiLevel = ({ columns, API_GET_URL }) => {
                         </Popup>
                       </TableCell>
                     ) : (
-                      <TableCell >{row[key]}</TableCell>
+                      <TableCell>{row[key]}</TableCell>
                     )}
                   </React.Fragment>
                 ))}

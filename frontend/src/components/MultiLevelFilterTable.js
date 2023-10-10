@@ -91,13 +91,65 @@ const MultiLevelFilterTable = ({ columns, API_GET_URL }) => {
       let rowValue = row[key];
       let filterValue = filter[key];
 
+      let query = String(filterValue);
+
       console.log(rowValue, filterValue);
 
       if (filterValue === undefined) {
         // Exclude the row if the filter input is empty
         return false;
       } else {
-        if (typeof rowValue === "string") {
+        var regexType1 = /([<>]=?)\s*(-?\d+(\.\d+)?)/; // number 1 sided range
+        var regexType2 = /([<>]=?)\s*(-?\d+(\.\d+)?)\s*([<>]=?)\s*(-?\d+(\.\d+)?)/; // number 2 sided range
+
+        var matchType1 = query.match(regexType1);
+        var matchType2 = query.match(regexType2);
+        var item = parseFloat(rowValue);
+
+        if (matchType1 && !matchType2) {
+          var operator = matchType1[1];
+          var value = parseFloat(matchType1[2]);
+          
+          accumCond =
+            accumCond &&
+            (operator === "<"
+              ? item < value
+              : operator === "<="
+              ? item <= value
+              : operator === ">"
+              ? item > value
+              : operator === ">="
+              ? item >= value
+              : false);
+
+        } else if (matchType2) {
+          var operator1 = matchType2[1];
+          var value1 = parseFloat(matchType2[2]);
+          var operator2 = matchType2[3];
+          var value2 = parseFloat(matchType2[4]);
+          
+
+          accumCond =
+            accumCond &&
+            (operator1 === "<"
+              ? item < value1
+              : operator1 === "<="
+              ? item <= value1
+              : operator1 === ">"
+              ? item > value1
+              : operator1 === ">="
+              ? item >= value1
+              : false) &&
+            (operator2 === "<"
+              ? item < value2
+              : operator2 === "<="
+              ? item <= value2
+              : operator2 === ">"
+              ? item > value2
+              : operator2 === ">="
+              ? item >= value2
+              : false);
+        } else if (typeof rowValue === "string") {
           accumCond =
             accumCond &&
             rowValue.toLowerCase().includes(filterValue.toLowerCase());
