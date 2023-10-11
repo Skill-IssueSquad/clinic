@@ -4,9 +4,11 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import AddFamilyMember from "../components/addFamilyMember";
 import NavBar from "../components/navBar";
+import MultiLevelFilterTable from "../components/MultiLevelFilterTable";
 
 const Patient = () => {
   const [patient, setPatient] = useState(null);
+  const [prescriptions, setPrescriptions] = useState(null);
 
   const submitFamMember = async (formData) => {
     //console.log(formData);
@@ -35,10 +37,20 @@ const Patient = () => {
       });
     };
 
+    const fetchPrescriptions = async () => {
+      await axios
+        .get("http://localhost:8000/patient/john_doe/getPrescriptions")
+        .then((res) => {
+          setPrescriptions(res.data.data);
+        });
+    };
+
     fetchPatient();
+    fetchPrescriptions();
   }, [submitFamMember]);
 
   if (!patient) return null;
+  if (!prescriptions) return null;
 
   return (
     <div className="patient">
@@ -46,6 +58,15 @@ const Patient = () => {
       <PatientDetails patient={patient} />
       <p></p>
       <AddFamilyMember onSubmit={submitFamMember} />
+      <p></p>
+      <MultiLevelFilterTable
+        columns={[
+          prescriptions.doctor_name,
+          prescriptions.date,
+          prescriptions.time,
+          prescriptions.prescription.isFilled,
+        ]}
+      />
     </div>
   );
 };
