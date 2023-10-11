@@ -25,10 +25,12 @@ const MultiLevelFilterTable = () => {
   const [filter, setFilter] = useState({ name: "", status: "", date: "" });
   const [dateOperator, setDateOperator] = useState("");
   const [dateOperand, setDateOperand] = useState("");
+  const [endDateOperator, setEndDateOperator] = useState(""); // Add end date operator state
+  const [endDateOperand, setEndDateOperand] = useState(""); // Add end date operand state
   const [rows, setRows] = useState(null);
   const [sorting, setSorting] = useState({ field: "", order: "" });
-  const [selectedRow, setSelectedRow] = useState(null); // State to store the selected row
-  const [openDialog, setOpenDialog] = useState(false); // State for controlling the dialog visibility
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,7 +47,7 @@ const MultiLevelFilterTable = () => {
   }, []);
 
   const handleFilterChange = (e) => {
-    const { name, value } = e.target;
+    var { name, value } = e.target;
     setFilter((prevFilter) => ({ ...prevFilter, [name]: value }));
   };
 
@@ -58,55 +60,47 @@ const MultiLevelFilterTable = () => {
   };
 
   const handleStatusChange = (e) => {
-    const { value } = e.target;
+    var { value } = e.target;
     setFilter((prevFilter) => ({ ...prevFilter, status: value }));
   };
 
   const handleDateOperatorChange = (e) => {
-    const { value } = e.target;
+    var { value } = e.target;
     setDateOperator(value);
   };
 
   const handleDateOperandChange = (e) => {
-    const { value } = e.target;
+    var { value } = e.target;
     setDateOperand(value);
+  };
+
+  const handleEndDateOperatorChange = (e) => {
+    var { value } = e.target;
+    setEndDateOperator(value);
+  };
+
+  const handleEndDateOperandChange = (e) => {
+    var { value } = e.target;
+    setEndDateOperand(value);
   };
 
   const handleSort = (field) => {
     if (field === sorting.field) {
-      // Toggle sorting order
       setSorting({
         field,
         order: sorting.order === "asc" ? "desc" : "asc",
       });
-      // Reverse the rows
       setRows([...rows].reverse());
     } else {
-      // Set the field to sort and default order (asc)
       setSorting({
         field,
         order: "asc",
       });
-      // Sort the rows by the selected field in ascending order
-      // setRows(
-      //   [...rows].sort((a, b) => {
-      //     if (field === "date") {
-      //       return new Date(a[field]) - new Date(b[field]);
-      //     } else {
-      //       return a[field] > b[field] ? 1 : -1;
-      //     }
-      //   })
-      // );
       setRows(
         [...rows].sort((a, b) => {
           if (field === "date") {
             const [aDay, aMonth, aYear] = a[field].split("/");
             const [bDay, bMonth, bYear] = b[field].split("/");
-            console.log(aDay, aMonth, aYear);
-            console.log(bDay, bMonth, bYear);
-            // const aDate = Date.UTC(aYear, aMonth - 1, aDay);
-            // const bDate = Date.UTC(bYear, bMonth - 1, bDay);
-            // return aDate - bDate;
             if (aYear === bYear) {
               if (aMonth === bMonth) {
                 return aDay - bDay;
@@ -124,16 +118,16 @@ const MultiLevelFilterTable = () => {
   };
 
   const handleRowClick = (row) => {
-    // Store the selected row's data in state
-    console.log("The Selected row is :", row);
     setSelectedRow(row);
-    // Open the dialog
     handleOpenDialog();
   };
+
   const filteredRows = (rows || []).filter((row) => {
     var cond1 = row.name.toLowerCase().includes(filter.name.toLowerCase());
     var cond2 = true;
     var cond3 = true;
+    var start = true;
+    var end = true;
     if (filter.status) {
       cond2 = row.status === filter.status;
     }
@@ -144,10 +138,9 @@ const MultiLevelFilterTable = () => {
       const filterDay = dateOperand.split("/")[0];
       const filterMonth = dateOperand.split("/")[1];
       const filterYear = dateOperand.split("/")[2];
-      console.log(rowDay, rowMonth, rowYear);
       switch (dateOperator) {
         case ">":
-          cond3 =
+          start =
             rowYear == filterYear
               ? rowMonth == filterMonth
                 ? rowDay > filterDay
@@ -155,7 +148,7 @@ const MultiLevelFilterTable = () => {
               : rowYear > filterYear;
           break;
         case "<":
-          cond3 =
+          start =
             rowYear == filterYear
               ? rowMonth == filterMonth
                 ? rowDay < filterDay
@@ -163,7 +156,7 @@ const MultiLevelFilterTable = () => {
               : rowYear < filterYear;
           break;
         case ">=":
-          cond3 =
+          start =
             rowYear == filterYear
               ? rowMonth == filterMonth
                 ? rowDay >= filterDay
@@ -171,7 +164,7 @@ const MultiLevelFilterTable = () => {
               : rowYear >= filterYear;
           break;
         case "<=":
-          cond3 =
+          start =
             rowYear == filterYear
               ? rowMonth == filterMonth
                 ? rowDay <= filterDay
@@ -179,7 +172,7 @@ const MultiLevelFilterTable = () => {
               : rowYear <= filterYear;
           break;
         case "=":
-          cond3 =
+          start =
             rowYear == filterYear
               ? rowMonth == filterMonth
                 ? rowDay == filterDay
@@ -187,36 +180,68 @@ const MultiLevelFilterTable = () => {
               : rowYear == filterYear;
           break;
         default:
-          cond3 = true;
+          start = true;
       }
     }
-    //   const rowDate = new Date(row.date);
-    //   const filterDate = new Date(dateOperand);
-    //   switch (dateOperator) {
-    //     case ">":
-    //       cond3 = rowDate > filterDate;
-    //       break;
-    //     case "<":
-    //       cond3 = rowDate < filterDate;
-    //       break;
-    //     case ">=":
-    //       cond3 = rowDate >= filterDate;
-    //       break;
-    //     case "<=":
-    //       cond3 = rowDate <= filterDate;
-    //       break;
-    //     case "=":
-    //       cond3 =
-    //         rowDate.getDate() === filterDate.getDate() &&
-    //         rowDate.getMonth() === filterDate.getMonth() &&
-    //         rowDate.getFullYear() === filterDate.getFullYear();
-    //       break;
-    //     default:
-    //       cond3 = true;
-    //   }
-    // }
+
+    if (endDateOperator && endDateOperand) {
+      const rowDay = row.date.split("/")[0];
+      const rowMonth = row.date.split("/")[1];
+      const rowYear = row.date.split("/")[2];
+      const filterDay = endDateOperand.split("/")[0];
+      const filterMonth = endDateOperand.split("/")[1];
+      const filterYear = endDateOperand.split("/")[2];
+      switch (endDateOperator) {
+        case ">":
+          end =
+            rowYear == filterYear
+              ? rowMonth == filterMonth
+                ? rowDay > filterDay
+                : rowMonth > filterMonth
+              : rowYear > filterYear;
+          break;
+        case "<":
+          end =
+            rowYear == filterYear
+              ? rowMonth == filterMonth
+                ? rowDay < filterDay
+                : rowMonth < filterMonth
+              : rowYear < filterYear;
+          break;
+        case ">=":
+          end =
+            rowYear == filterYear
+              ? rowMonth == filterMonth
+                ? rowDay >= filterDay
+                : rowMonth >= filterMonth
+              : rowYear >= filterYear;
+          break;
+        case "<=":
+          end =
+            rowYear == filterYear
+              ? rowMonth == filterMonth
+                ? rowDay <= filterDay
+                : rowMonth <= filterMonth
+              : rowYear <= filterYear;
+          break;
+        case "=":
+          end =
+            rowYear == filterYear
+              ? rowMonth == filterMonth
+                ? rowDay == filterDay
+                : rowMonth == filterMonth
+              : rowYear == filterYear;
+          break;
+        default:
+          end = true;
+      }
+    }
+
+    cond3 = start && end;
+
     return cond1 && cond2 && cond3;
   });
+
   return (
     <div>
       {rows ? (
@@ -228,7 +253,6 @@ const MultiLevelFilterTable = () => {
             onChange={handleFilterChange}
             style={{ margin: "8px", width: "180px" }}
           />
-
           <TextField
             label="Filter by Status"
             select
@@ -270,6 +294,31 @@ const MultiLevelFilterTable = () => {
             name="dateOperand"
             value={dateOperand}
             onChange={handleDateOperandChange}
+            style={{ margin: "8px", width: "200px" }}
+          />
+          <TextField
+            label="End Date Operator"
+            select
+            name="endDateOperator"
+            value={endDateOperator}
+            onChange={handleEndDateOperatorChange}
+            SelectProps={{
+              native: true,
+            }}
+            style={{ margin: "8px", width: "200px" }}
+          >
+            <option value=""></option>
+            {dateOperators.map((operator) => (
+              <option key={operator} value={operator}>
+                {operator}
+              </option>
+            ))}
+          </TextField>
+          <TextField
+            label="End Date Operand"
+            name="endDateOperand"
+            value={endDateOperand}
+            onChange={handleEndDateOperandChange}
             style={{ margin: "8px", width: "200px" }}
           />
           <TableContainer component={Paper}>
@@ -354,8 +403,8 @@ const MultiLevelFilterTable = () => {
                 {filteredRows.map((row) => (
                   <TableRow
                     key={row.id}
-                    onClick={() => handleRowClick(row)} // Handle row click
-                    style={{ cursor: "pointer" }} // Add a pointer cursor
+                    onClick={() => handleRowClick(row)}
+                    style={{ cursor: "pointer" }}
                   >
                     <TableCell>{row.id}</TableCell>
                     <TableCell>{row.name}</TableCell>
@@ -371,7 +420,6 @@ const MultiLevelFilterTable = () => {
               <DialogTitle>{selectedRow.name}</DialogTitle>
               <DialogContent>
                 {Object.entries(selectedRow).map(([key, value]) => {
-                  // console.log(key, value);
                   if (key !== "id" && key != "healthRecords") {
                     return (
                       <div key={key}>
@@ -399,7 +447,6 @@ const MultiLevelFilterTable = () => {
                     }
                   }
                 })}
-                {/* <img src="/DoctorStaticData/doc.png" alt="" /> */}
               </DialogContent>
             </Dialog>
           )}
