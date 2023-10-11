@@ -240,6 +240,10 @@ const PrescriptionsMultiLevelFilterTable = ({ columns, API_GET_URL }) => {
                           </span>
                         </Popup>
                       </TableCell>
+                    ) : key === "date" ? (
+                      <TableCell>
+                        {new Date(row[key]).toLocaleDateString("fr-FR")}
+                      </TableCell>
                     ) : (
                       <TableCell>{row[key]}</TableCell>
                     )}
