@@ -1,14 +1,14 @@
 const express = require("express");
 const router = express.Router();
-const Doctor = require("../models/Doctor");
+const Doctor = require("../models/DoctorRequest");
 
 //reply to get requests with hello
 router.get("/", (req, res) => {
   res.json({ msg: "hello" });
 });
 
-//Register a doctor
-router.post("/registerDoctor", async (req, res) => {
+//Request registeration as doctor
+router.post("/", async (req, res) => {
   const {
     username,
     name,
@@ -21,15 +21,15 @@ router.post("/registerDoctor", async (req, res) => {
   } = req.body;
 
   try {
-    const patient = await Patient.create({
+    const patient = await Doctor.create({
       username,
       name,
       email,
       password,
       dateOfBirth,
-      gender,
-      mobileNumber,
-      emergencyContact,
+      hourlyRate,
+      affiliatedHospital,
+      educationalBackground,
     });
     res.status(200).json({ msg: patient + " created patient successfully" });
   } catch (err) {
