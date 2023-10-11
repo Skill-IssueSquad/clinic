@@ -1,12 +1,11 @@
 //import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import {
-  NavBar,
-  PrescriptionsMultiLevelFilterTable,
-  AddFamilyMember,
-  PatientDetails,
-} from "../components/";
+
+import NavBar from "../components/navBar";
+import PrescriptionsMultiLevelFilterTable from "../components/PrescriptionsMultiLevelFilterTable";
+import AddFamilyMember from "../components/addFamilyMember";
+import PatientDetails from "../components/PatientDetails";
 
 const Patient = () => {
   const [patient, setPatient] = useState(null);
