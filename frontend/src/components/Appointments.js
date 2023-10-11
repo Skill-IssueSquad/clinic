@@ -102,7 +102,8 @@ const MultiLevelFilterTable = () => {
           if (field === "date") {
             const [aDay, aMonth, aYear] = a[field].split("/");
             const [bDay, bMonth, bYear] = b[field].split("/");
-            // console.log(aDay, aMonth, aYear);
+            console.log(aDay, aMonth, aYear);
+            console.log(bDay, bMonth, bYear);
             // const aDate = Date.UTC(aYear, aMonth - 1, aDay);
             // const bDate = Date.UTC(bYear, bMonth - 1, bDay);
             // return aDate - bDate;
@@ -143,7 +144,7 @@ const MultiLevelFilterTable = () => {
       const filterDay = dateOperand.split("/")[0];
       const filterMonth = dateOperand.split("/")[1];
       const filterYear = dateOperand.split("/")[2];
-      // console.log(rowDay, rowMonth, rowYear);
+      console.log(rowDay, rowMonth, rowYear);
       switch (dateOperator) {
         case ">":
           cond3 =

@@ -13,7 +13,7 @@ const PDFViewer = ({ pdfUrl }) => {
         file={pdfUrl}
         options={{ workerSrc: pdfjs.GlobalWorkerOptions.workerSrc }}
       >
-        <Page pageNumber={1} />
+        <Page pageNumber={1} renderTextLayer={false} />
       </Document>
     </div>
   );
