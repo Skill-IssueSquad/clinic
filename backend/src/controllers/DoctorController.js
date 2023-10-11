@@ -358,6 +358,30 @@ const saveFile = async (req, res) => {
   const pdf = fs.readFileSync("../../DoctorStaticData/test.pdf");
 };
 
+const createAnAppointment = async (req, res) => {
+  const patientUsername = "bahyfive";
+  const patient = await Patient.findOne({ username: patientUsername });
+  const patientId = patient._id;
+  const doctorUsername = "opa nseet esmy";
+  const doctor = await Doctor.findOne({ username: doctorUsername });
+  const doctorId = doctor._id;
+  const appoinment = await Appointments.create({
+    doctor_id: doctorId,
+    type: "appointment",
+    date: "2019-06-29",
+    time: 1,
+    patient_id: patientId,
+    prescription_id: null,
+    status: "completed",
+  });
+  const send = {
+    success: true,
+    data: appoinment,
+    message: "Appointment created successfully",
+  };
+  res.status(200).json(send);
+};
+
 module.exports = {
   getDoctor,
   createDoctor,
@@ -367,4 +391,5 @@ module.exports = {
   createAppointment,
   getPatients,
   saveFile,
+  createAnAppointment,
 };
