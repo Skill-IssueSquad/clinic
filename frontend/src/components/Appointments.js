@@ -88,10 +88,32 @@ const MultiLevelFilterTable = () => {
         order: "asc",
       });
       // Sort the rows by the selected field in ascending order
+      // setRows(
+      //   [...rows].sort((a, b) => {
+      //     if (field === "date") {
+      //       return new Date(a[field]) - new Date(b[field]);
+      //     } else {
+      //       return a[field] > b[field] ? 1 : -1;
+      //     }
+      //   })
+      // );
       setRows(
         [...rows].sort((a, b) => {
           if (field === "date") {
-            return new Date(a[field]) - new Date(b[field]);
+            const [aDay, aMonth, aYear] = a[field].split("/");
+            const [bDay, bMonth, bYear] = b[field].split("/");
+            // console.log(aDay, aMonth, aYear);
+            // const aDate = Date.UTC(aYear, aMonth - 1, aDay);
+            // const bDate = Date.UTC(bYear, bMonth - 1, bDay);
+            // return aDate - bDate;
+            if (aYear === bYear) {
+              if (aMonth === bMonth) {
+                return aDay - bDay;
+              } else {
+                return aMonth - bMonth;
+              }
+            }
+            return aYear - bYear;
           } else {
             return a[field] > b[field] ? 1 : -1;
           }
@@ -115,31 +137,83 @@ const MultiLevelFilterTable = () => {
       cond2 = row.status === filter.status;
     }
     if (dateOperator && dateOperand) {
-      const rowDate = new Date(row.date);
-      const filterDate = new Date(dateOperand);
+      const rowDay = row.date.split("/")[0];
+      const rowMonth = row.date.split("/")[1];
+      const rowYear = row.date.split("/")[2];
+      const filterDay = dateOperand.split("/")[0];
+      const filterMonth = dateOperand.split("/")[1];
+      const filterYear = dateOperand.split("/")[2];
+      // console.log(rowDay, rowMonth, rowYear);
       switch (dateOperator) {
         case ">":
-          cond3 = rowDate > filterDate;
+          cond3 =
+            rowYear == filterYear
+              ? rowMonth == filterMonth
+                ? rowDay > filterDay
+                : rowMonth > filterMonth
+              : rowYear > filterYear;
           break;
         case "<":
-          cond3 = rowDate < filterDate;
+          cond3 =
+            rowYear == filterYear
+              ? rowMonth == filterMonth
+                ? rowDay < filterDay
+                : rowMonth < filterMonth
+              : rowYear < filterYear;
           break;
         case ">=":
-          cond3 = rowDate >= filterDate;
+          cond3 =
+            rowYear == filterYear
+              ? rowMonth == filterMonth
+                ? rowDay >= filterDay
+                : rowMonth >= filterMonth
+              : rowYear >= filterYear;
           break;
         case "<=":
-          cond3 = rowDate <= filterDate;
+          cond3 =
+            rowYear == filterYear
+              ? rowMonth == filterMonth
+                ? rowDay <= filterDay
+                : rowMonth <= filterMonth
+              : rowYear <= filterYear;
           break;
         case "=":
           cond3 =
-            rowDate.getDate() === filterDate.getDate() &&
-            rowDate.getMonth() === filterDate.getMonth() &&
-            rowDate.getFullYear() === filterDate.getFullYear();
+            rowYear == filterYear
+              ? rowMonth == filterMonth
+                ? rowDay == filterDay
+                : rowMonth == filterMonth
+              : rowYear == filterYear;
           break;
         default:
           cond3 = true;
       }
     }
+    //   const rowDate = new Date(row.date);
+    //   const filterDate = new Date(dateOperand);
+    //   switch (dateOperator) {
+    //     case ">":
+    //       cond3 = rowDate > filterDate;
+    //       break;
+    //     case "<":
+    //       cond3 = rowDate < filterDate;
+    //       break;
+    //     case ">=":
+    //       cond3 = rowDate >= filterDate;
+    //       break;
+    //     case "<=":
+    //       cond3 = rowDate <= filterDate;
+    //       break;
+    //     case "=":
+    //       cond3 =
+    //         rowDate.getDate() === filterDate.getDate() &&
+    //         rowDate.getMonth() === filterDate.getMonth() &&
+    //         rowDate.getFullYear() === filterDate.getFullYear();
+    //       break;
+    //     default:
+    //       cond3 = true;
+    //   }
+    // }
     return cond1 && cond2 && cond3;
   });
   return (

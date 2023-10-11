@@ -1,4 +1,6 @@
 import React from "react";
+import "react-pdf/dist/esm/Page/TextLayer.css";
+
 import { Document, Page, pdfjs } from "react-pdf";
 
 // Configure the worker URL for pdfjs

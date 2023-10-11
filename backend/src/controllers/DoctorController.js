@@ -142,7 +142,15 @@ const getAppointments = async (req, res) => {
       const patient = await Patient.findById({ _id: patientId });
       const patientName = patient.name;
       i++;
-      const appointmentDate = new Date(appointment.date).toLocaleDateString();
+      //const appointmentDate = new Date(appointment.date).toLocaleDateString();
+      const appointmentDate = new Date(appointment.date).toLocaleDateString(
+        "en-GB",
+        {
+          day: "numeric",
+          month: "numeric",
+          year: "numeric",
+        }
+      );
       const appointmentInfo = {
         id: i,
         date: appointmentDate,
