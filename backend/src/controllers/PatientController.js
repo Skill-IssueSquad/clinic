@@ -25,7 +25,8 @@ const getPatientAPI = async (req, res) => {
     return res.status(500).json({
       success: false,
       data: null,
-      message: err.message || "Some error occurred while retrieving patients.",
+      message:
+        error.message || "Some error occurred while retrieving patients.",
     });
   }
 };
@@ -62,7 +63,7 @@ const addFamMember = async (req, res) => {
         return res.status(500).json({
           success: false,
           data: null,
-          message: "${err.message}",
+          message: err.message || "Some error occurred while updating patient.",
         });
       });
 
@@ -72,7 +73,8 @@ const addFamMember = async (req, res) => {
         return res.status(500).json({
           success: false,
           data: null,
-          message: "${err.message}",
+          message:
+            err.message || "Some error occurred while retrieving patient.",
         });
       });
 
@@ -92,7 +94,8 @@ const addFamMember = async (req, res) => {
     return res.status(500).json({
       success: false,
       data: null,
-      message: err.message || "Some error occurred while retrieving patients.",
+      message:
+        error.message || "Some error occurred while retrieving patients.",
     });
   }
 };
@@ -120,7 +123,8 @@ const getFamMembers = async (req, res) => {
     return res.status(500).json({
       success: false,
       data: null,
-      message: err.message || "Some error occurred while retrieving patients.",
+      message:
+        error.message || "Some error occurred while retrieving patients.",
     });
   }
 };
@@ -136,34 +140,37 @@ const getPrescriptions = async (req, res) => {
       console.log("Here are the prescription ids:");
       console.log(patient.perscreption_ids);
 
-      const prescriptions = [];
+      //create an array to store the prescriptions
+      var prescriptions = [];
 
       //go look for those prescriptions
-      patient.perscreption_ids.forEach(async (prescription) => {
-        const prescription_id = prescription.prescription_id;
-        const prescriptionObj = await Prescription.findById(
-          prescription_id
-        ).catch((err) => {
-          return res.status(500).json({
-            success: false,
-            data: null,
-            message: "${err.message}",
+      patient.perscreption_ids
+        .forEach(async (prescription) => {
+          const prescription_id = prescription.prescription_id;
+          const prescriptionObj = await Prescription.findById(
+            prescription_id
+          ).catch((err) => {
+            return res.status(500).json({
+              success: false,
+              data: null,
+              message: "${err.message}",
+            });
+          });
+
+          //print the prescription object
+          console.log(prescriptionObj);
+
+          //add the prescription object to the prescriptions array
+          prescriptions.push(prescriptionObj);
+        })
+        .then((prescriptions) => {
+          //return the results
+          return res.status(200).json({
+            success: true,
+            data: prescriptions,
+            message: "Prescriptions retrieved successfully",
           });
         });
-
-        //print the prescription object
-        console.log(prescriptionObj);
-
-        //add the prescription object to the prescriptions array
-        prescriptions.push(prescriptionObj);
-      });
-
-      //return the results
-      return res.status(200).json({
-        success: true,
-        data: prescriptions,
-        message: "Prescriptions retrieved successfully",
-      });
     } else {
       return res.status(404).json({
         success: false,
@@ -175,7 +182,8 @@ const getPrescriptions = async (req, res) => {
     return res.status(500).json({
       success: false,
       data: null,
-      message: err.message || "Some error occurred while retrieving patients.",
+      message:
+        error.message || "Some error occurred while retrieving patients.",
     });
   }
 };
