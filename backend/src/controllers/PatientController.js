@@ -162,8 +162,9 @@ const getPrescriptions = async (req, res) => {
           prescription_id: prescription_id,
           doctor_name: null,
           date: null,
-          time: null,
-          prescription: prescriptionObj,
+          PharmacySubmitStatus: prescriptionObj.PharmacySubmitStatus,
+          isFilled: prescriptionObj.isFilled.toString(),
+          medicines: prescriptionObj.medicines,
         };
 
         const appointObj = await Appointments.findOne({
@@ -182,7 +183,6 @@ const getPrescriptions = async (req, res) => {
         if (appointObj) {
           //search for doctor name
           finalObj.date = appointObj.date;
-          finalObj.time = appointObj.time;
 
           const doctorObj = await Doctor.findById(appointObj.doctor_id).catch(
             (err) => {
