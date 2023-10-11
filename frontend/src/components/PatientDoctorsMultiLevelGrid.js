@@ -17,7 +17,7 @@ import CircularProgress from "@mui/joy/CircularProgress";
 
 let fullRows = [];
 
-const PatientMultiLevel = ({ columns, API_GET_URL }) => {
+const PatientMultiLevel = ({ columns, API_GET_URL, reqBody }) => {
   const initFilter = {};
   columns.forEach((key) => {
     initFilter[key] = "";
@@ -30,7 +30,7 @@ const PatientMultiLevel = ({ columns, API_GET_URL }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(API_GET_URL);
+        const response = await axios.post(API_GET_URL, reqBody);
         const initialRows = response.data.data;
         fullRows = initialRows;
 
@@ -55,7 +55,7 @@ const PatientMultiLevel = ({ columns, API_GET_URL }) => {
     };
 
     fetchData();
-  }, [API_GET_URL, columns]);
+  }, [API_GET_URL, columns, reqBody]);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -105,7 +105,8 @@ const PatientMultiLevel = ({ columns, API_GET_URL }) => {
         return false;
       } else {
         var regexType1 = /([<>]=?)\s*(-?\d+(\.\d+)?)/; // number 1 sided range
-        var regexType2 = /([<>]=?)\s*(-?\d+(\.\d+)?)\s*([<>]=?)\s*(-?\d+(\.\d+)?)/; // number 2 sided range
+        var regexType2 =
+          /([<>]=?)\s*(-?\d+(\.\d+)?)\s*([<>]=?)\s*(-?\d+(\.\d+)?)/; // number 2 sided range
 
         var matchType1 = query.match(regexType1);
         var matchType2 = query.match(regexType2);
@@ -114,7 +115,7 @@ const PatientMultiLevel = ({ columns, API_GET_URL }) => {
         if (matchType1 && !matchType2) {
           var operator = matchType1[1];
           var value = parseFloat(matchType1[2]);
-          
+
           accumCond =
             accumCond &&
             (operator === "<"
@@ -126,13 +127,11 @@ const PatientMultiLevel = ({ columns, API_GET_URL }) => {
               : operator === ">="
               ? item >= value
               : false);
-
         } else if (matchType2) {
           var operator1 = matchType2[1];
           var value1 = parseFloat(matchType2[2]);
           var operator2 = matchType2[3];
           var value2 = parseFloat(matchType2[4]);
-          
 
           accumCond =
             accumCond &&
