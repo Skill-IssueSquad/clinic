@@ -143,34 +143,39 @@ const getPrescriptions = async (req, res) => {
       //create an array to store the prescriptions
       var prescriptions = [];
 
-      //go look for those prescriptions
-      patient.perscreption_ids
-        .forEach(async (prescription) => {
-          const prescription_id = prescription.prescription_id;
-          const prescriptionObj = await Prescription.findById(
-            prescription_id
-          ).catch((err) => {
-            return res.status(500).json({
-              success: false,
-              data: null,
-              message: "${err.message}",
-            });
-          });
-
-          //print the prescription object
-          console.log(prescriptionObj);
-
-          //add the prescription object to the prescriptions array
-          prescriptions.push(prescriptionObj);
-        })
-        .then((prescriptions) => {
-          //return the results
-          return res.status(200).json({
-            success: true,
-            data: prescriptions,
-            message: "Prescriptions retrieved successfully",
+      for (const prescription of patient.perscreption_ids) {
+        const prescription_id = prescription.prescription_id;
+        const prescriptionObj = await Prescription.findById(
+          prescription_id
+        ).catch((err) => {
+          return res.status(500).json({
+            success: false,
+            data: null,
+            message:
+              err.message ||
+              "Some error occurred while retrieving prescriptions.",
           });
         });
+
+        //print the prescription object
+        console.log(prescriptionObj);
+
+        //add the prescription object to the prescriptions array
+        prescriptions.push(prescriptionObj);
+
+        //print the prescriptions array
+        //console.log("Here is the prescriptions array (in):");
+        //console.log(prescriptions);
+      }
+
+      //console.log("Here is the prescriptions array (out):");
+      //console.log(prescriptions);
+
+      return res.status(200).json({
+        success: true,
+        data: prescriptions,
+        message: "Prescriptions retrieved successfully",
+      });
     } else {
       return res.status(404).json({
         success: false,
