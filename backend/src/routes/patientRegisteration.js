@@ -31,9 +31,17 @@ router.post("/", async (req, res) => {
       mobileNumber,
       emergencyContact,
     });
-    res.status(200).json({ msg: patient + " created patient successfully" });
+    res.status(200).json({
+      messgage: " created patient successfully",
+      status: true,
+      data: patient,
+    });
   } catch (err) {
-    res.status(400).json({ msg: err.message });
+    res.status(400).json({
+      messgage: " Failed to create patient.",
+      status: false,
+      data: null,
+    });
   }
 });
 

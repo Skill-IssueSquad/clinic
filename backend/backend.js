@@ -23,8 +23,8 @@ app.use((req, res, next) => {
 // app.use("/", (req, res) => {
 //   res.send("hello");
 // });
-app.use("/api/register/patient", PatientRegisteration);
-app.use("/api/register/doctor", DoctorRegisteration);
+app.use("/register/patient", PatientRegisteration);
+app.use("/register/doctor", DoctorRegisteration);
 
 //connect to mongodb
 mongoose

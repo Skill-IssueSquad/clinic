@@ -61,7 +61,7 @@ const patientSchema = new Schema({
     },
     type: {
       type: String,
-      enum: ["silver", "platinum", "gold"],
+      enum: ["silver", "platinum", "gold", ""],
       default: "",
     },
     renewal: {
