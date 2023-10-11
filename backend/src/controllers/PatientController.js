@@ -145,6 +145,19 @@ const getPrescriptions = async (req, res) => {
 
       for (const prescription of patient.perscreption_ids) {
         const prescription_id = prescription.prescription_id;
+        const appointObj = await Appointments.findOne({
+          prescription_id: prescription_id,
+          patient_id: patient._id,
+        }).catch((err) => {
+          return res.status(500).json({
+            success: false,
+            data: null,
+            message:
+              err.message ||
+              "Some error occurred while retrieving appointments.",
+          });
+        });
+
         const prescriptionObj = await Prescription.findById(
           prescription_id
         ).catch((err) => {
@@ -157,11 +170,40 @@ const getPrescriptions = async (req, res) => {
           });
         });
 
+        let finalObj = {
+          prescription_id: prescription_id,
+          doctor_name: null,
+          date: null,
+          time: null,
+          prescription: prescriptionObj.prescription,
+        };
+
+        if (appointObj) {
+          //search for doctor name
+          finalObj.date = appointObj.date;
+          finalObj.time = appointObj.time;
+
+          const doctorObj = await Doctor.findById(appointObj.doctor_id).catch(
+            (err) => {
+              return res.status(500).json({
+                success: false,
+                data: null,
+                message:
+                  err.message ||
+                  "Some error occurred while retrieving doctors.",
+              });
+            }
+          );
+
+          if (doctorObj) {
+            finalObj.doctor_name = doctorObj.name;
+          }
+        }
         //print the prescription object
-        console.log(prescriptionObj);
+        console.log(finalObj);
 
         //add the prescription object to the prescriptions array
-        prescriptions.push(prescriptionObj);
+        prescriptions.push(finalObj);
 
         //print the prescriptions array
         //console.log("Here is the prescriptions array (in):");
