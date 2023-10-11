@@ -249,7 +249,7 @@ const createPatient = async (req, res) => {
   }
 };
 
-const createAppointment = async (req, res) => {
+const createAppointments = async (req, res) => {
   const doctor = await Doctor.findOne({ username: "opa nseet esmy" });
   const doctorId = doctor._id;
   const apps = [];
@@ -358,7 +358,7 @@ const saveFile = async (req, res) => {
   const pdf = fs.readFileSync("../../DoctorStaticData/test.pdf");
 };
 
-const createAnAppointment = async (req, res) => {
+const createAppointment = async (req, res) => {
   const patientUsername = "bahyfive";
   const patient = await Patient.findOne({ username: patientUsername });
   const patientId = patient._id;
@@ -391,5 +391,5 @@ module.exports = {
   createAppointment,
   getPatients,
   saveFile,
-  createAnAppointment,
+  createAppointments,
 };

@@ -26,18 +26,18 @@ const {
   updateDoctor,
   getAppointments,
   createPatient,
-  createAppointment,
+  createAppointments,
   getPatients,
   saveFile,
-  createAnAppointment,
+  createAppointment,
 } = require("../controllers/DoctorController");
 router.get("/:username", getDoctor);
 router.post("/create", createDoctor);
 router.put("/update/:username", updateDoctor);
 router.get("/appointments/:username", getAppointments);
 router.post("/createPatient", createPatient);
-router.post("/createAppointment", createAppointment);
+router.post("/createAppointments", createAppointments);
 router.get("/getPatients/:username", getPatients);
-router.post("/createAnAppointment", createAnAppointment);
+router.post("/createAppointment", createAppointment);
 router.post("/saveFile", upload.any(), saveFile);
 module.exports = router;
