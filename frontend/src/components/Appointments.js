@@ -248,7 +248,7 @@ const MultiLevelFilterTable = () => {
             ))}
           </TextField>
           <TextField
-            label="Date Operator"
+            label="Start Date Operator"
             select
             name="dateOperator"
             value={dateOperator}
@@ -256,7 +256,7 @@ const MultiLevelFilterTable = () => {
             SelectProps={{
               native: true,
             }}
-            style={{ margin: "8px", width: "150px" }}
+            style={{ margin: "8px", width: "200px" }}
           >
             <option value=""></option>
             {dateOperators.map((operator) => (
@@ -266,11 +266,11 @@ const MultiLevelFilterTable = () => {
             ))}
           </TextField>
           <TextField
-            label="Date Operand"
+            label="Start Date Operand"
             name="dateOperand"
             value={dateOperand}
             onChange={handleDateOperandChange}
-            style={{ margin: "8px", width: "150px" }}
+            style={{ margin: "8px", width: "200px" }}
           />
           <TableContainer component={Paper}>
             <Table>
