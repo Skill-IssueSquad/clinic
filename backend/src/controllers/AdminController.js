@@ -48,6 +48,7 @@ const createAdmin =  async (req,res) => {
 
 //Remove an admin
 const removeAdmin = async (req,res) => {
+    console.log(req.params);
     const condition = {username: req.params.username};
     Admin.deleteOne(condition)
      .then(() =>{
@@ -195,6 +196,7 @@ const viewHealthPackages = async (req,res) => {
 //Add health package
 const addHealthPackage = async (req,res) => {
     const attributes = {... req.body};
+    attributes.packageType = attributes.packageType.charAt(0).toUpperCase() + attributes.packageType.slice(1);
     try{
         const newHealthPackage = await HealthPackage.create(attributes);
         const reply = {
@@ -217,6 +219,8 @@ const addHealthPackage = async (req,res) => {
 const updateHealthPackage = async (req,res) => { 
     const condition = {packageType: req.params.packageType};
     const updateData = req.body;
+    console.log(updateData);
+    console.log(condition);
     const update = { $set: updateData};
     HealthPackage.updateOne(condition, update)
      .then(() => {
