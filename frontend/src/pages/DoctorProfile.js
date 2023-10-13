@@ -83,6 +83,7 @@ const UserProfile = () => {
       setIsEditing(false);
       setUser(response.data);
       setOldDoctor(response.data);
+      setError(null);
     } else {
       // console.log("error");
       setError(response.message);
