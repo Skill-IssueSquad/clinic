@@ -12,28 +12,23 @@ const Patient = () => {
   //const [prescriptions, setPrescriptions] = useState(null);
 
   const submitFamMember = async (formData) => {
-    //console.log(formData);
-    await axios
-      .patch("http://localhost:8000/patient/john_doe/addFamMember", formData)
-      .then((res) => {
-        console.log(res.data);
-
-        if (res.status === 200) {
-          return { message: res.data.message };
-        } else {
-          return { message: res.data.message };
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        return { message: "Something went wrong" };
-      });
+    try {
+      const res = await axios.patch(
+        "http://localhost:8000/patient/bahyone/addFamMember",
+        formData
+      );
+      console.log(res.data);
+      return { message: res.data.message };
+    } catch (error) {
+      console.log(error);
+      return { message: error.message };
+    }
   };
 
   useEffect(() => {
     //getParam();
     const fetchPatient = async () => {
-      await axios.get("http://localhost:8000/patient/john_doe").then((res) => {
+      await axios.get("http://localhost:8000/patient/bahyone").then((res) => {
         setPatient(res.data.data);
       });
     };
@@ -62,7 +57,7 @@ const Patient = () => {
       <p></p>
       <PrescriptionsMultiLevelFilterTable
         columns={["doctor_name", "date", "isFilled", "View Prescriptions"]}
-        API_GET_URL={"http://localhost:8000/patient/john_doe/getPrescriptions"}
+        API_GET_URL={"http://localhost:8000/patient/bahyone/getPrescriptions"}
       />
     </div>
   );
