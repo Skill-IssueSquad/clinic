@@ -14,7 +14,7 @@ const Patient = () => {
   const submitFamMember = async (formData) => {
     //console.log(formData);
     await axios
-      .patch("http://localhost:8000/patient/john_doe/addFamMember", formData)
+      .patch("http://localhost:8000/patient/bahyone/addFamMember", formData)
       .then((res) => {
         console.log(res.data);
 
@@ -33,7 +33,7 @@ const Patient = () => {
   useEffect(() => {
     //getParam();
     const fetchPatient = async () => {
-      await axios.get("http://localhost:8000/patient/john_doe").then((res) => {
+      await axios.get("http://localhost:8000/patient/bahyone").then((res) => {
         setPatient(res.data.data);
       });
     };
