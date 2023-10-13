@@ -1,8 +1,9 @@
+import React, { useState } from "react";
+
 const Home = () => {
   return (
-    <div className="home">
-      <h2>Home</h2>
-      <h2>Homer lol</h2>
+    <div>
+      <h1>Home</h1>
     </div>
   );
 };
