@@ -12,22 +12,17 @@ const Patient = () => {
   //const [prescriptions, setPrescriptions] = useState(null);
 
   const submitFamMember = async (formData) => {
-    //console.log(formData);
-    await axios
-      .patch("http://localhost:8000/patient/bahyone/addFamMember", formData)
-      .then((res) => {
-        console.log(res.data);
-
-        if (res.status === 200) {
-          return { message: res.data.message };
-        } else {
-          return { message: res.data.message };
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        return { message: "Something went wrong" };
-      });
+    try {
+      const res = await axios.patch(
+        "http://localhost:8000/patient/bahyone/addFamMember",
+        formData
+      );
+      console.log(res.data);
+      return { message: res.data.message };
+    } catch (error) {
+      console.log(error);
+      return { message: error.message };
+    }
   };
 
   useEffect(() => {
