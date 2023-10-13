@@ -62,7 +62,7 @@ const Patient = () => {
       <p></p>
       <PrescriptionsMultiLevelFilterTable
         columns={["doctor_name", "date", "isFilled", "View Prescriptions"]}
-        API_GET_URL={"http://localhost:8000/patient/john_doe/getPrescriptions"}
+        API_GET_URL={"http://localhost:8000/patient/bahyone/getPrescriptions"}
       />
     </div>
   );
