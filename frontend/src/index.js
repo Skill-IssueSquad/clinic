@@ -7,6 +7,7 @@ import AppBar from "./components/appBar";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Doctor from "./pages/Doctor";
 import DoctorProfile from "./pages/DoctorProfile";
+import Patients from "./pages/Patients";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>

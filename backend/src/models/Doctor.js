@@ -53,7 +53,23 @@ const doctorSchema = new Schema({
         patient_id: {
           type: mongoose.Schema.Types.ObjectId,
         },
-        // ref: "Patient", //what is that idk
+        //ref: "Patient", //what is that idk
+      },
+    ],
+    required: true,
+    default: [],
+  },
+  availableSlots: {
+    type: [
+      {
+        starttime: {
+          type: Date,
+          required: true,
+        },
+        endtime: {
+          type: Date,
+          required: true,
+        },
       },
     ],
     required: true,

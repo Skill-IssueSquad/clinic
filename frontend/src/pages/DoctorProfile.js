@@ -13,9 +13,12 @@ import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import AppBar from "../components/appBar";
 import Loading from "../components/Loading";
+const validator = require("validator");
 
 const UserProfile = () => {
   const [user, setUser] = useState(null);
+  const [error, setError] = useState(null);
+  const [oldDoctor, setOldDoctor] = useState(null);
   useEffect(() => {
     const f = async () => {
       try {
@@ -26,7 +29,9 @@ const UserProfile = () => {
           ...data,
         };
         setUser(Doctor);
+        setOldDoctor(Doctor);
       } catch (error) {
+        setError(error.message);
         console.error(error);
       }
     };
@@ -42,6 +47,25 @@ const UserProfile = () => {
   const handleSaveClick = async () => {
     const updatedUser = user;
     setUser(null);
+    if (!validator.isAlpha(updatedUser.affiliatedHospital.replace(/\s/g, ""))) {
+      setError("Invalid hospital name");
+      setUser(oldDoctor);
+      setIsEditing(false);
+      return;
+    }
+    if (!validator.isNumeric(updatedUser.hourlyRate.toString())) {
+      setError("Invalid hourly rate");
+      setUser(oldDoctor);
+      setIsEditing(false);
+      return;
+    }
+    if (!validator.isEmail(updatedUser.email)) {
+      setError("Invalid email");
+      setUser(oldDoctor);
+      setIsEditing(false);
+      return;
+    }
+
     const username = "opa%20nseet%20esmy";
 
     const res = await fetch(`/doctor/update/${username}`, {
@@ -54,10 +78,17 @@ const UserProfile = () => {
       }),
     });
     const response = await res.json();
-    console.log("response: ", response);
+    // console.log("response: ", response);
     if (response.success) {
       setIsEditing(false);
-      setUser(updatedUser);
+      setUser(response.data);
+      setOldDoctor(response.data);
+      setError(null);
+    } else {
+      // console.log("error");
+      setError(response.message);
+      setUser(oldDoctor);
+      setIsEditing(false);
     }
   };
 
@@ -141,6 +172,8 @@ const UserProfile = () => {
               </IconButton>
             )}
           </div>
+          <br />
+          {error && <Typography variant="h6">{error}</Typography>}
         </Container>
       ) : (
         <Box

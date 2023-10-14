@@ -69,7 +69,6 @@ const patientSchema = new Schema({
       required: true,
       default: Date.now(),
     },
-    // default: {},
   },
   creditCards: [
     {
@@ -102,8 +101,8 @@ const patientSchema = new Schema({
           type: String,
           required: true,
         },
-        documentFile: {
-          type: Buffer, //not sure abt this tho
+        documentUrl: {
+          type: String, //not sure abt this tho
           required: true,
         },
       },
@@ -162,7 +161,7 @@ const patientSchema = new Schema({
     {
       patient_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Patient",
+        //ref: "Patient",
       },
     },
   ],

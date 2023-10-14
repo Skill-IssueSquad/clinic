@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
+const cors = require("cors");
 const doctorRouter = require("./src/routes/DoctorRouter");
 
 mongoose
@@ -12,7 +13,11 @@ mongoose
   })
   .catch((err) => console.log(err));
 
+app.use(cors());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use("/DoctorStaticData", express.static("DoctorStaticData"));
+
 app.use("/doctor", doctorRouter);
 
 //const subscribersRouter = require('./routes/subscribers')
