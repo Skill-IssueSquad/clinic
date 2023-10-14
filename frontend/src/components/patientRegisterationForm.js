@@ -15,6 +15,7 @@ const PatientRegisterationForm = () => {
     emergencyContactNumber: "",
   });
   const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -66,103 +67,112 @@ const PatientRegisterationForm = () => {
         emergencyContactNumber: "",
       });
 
+      setSuccessMessage("Patient Registered Successfully");
+
       console.log("Patient Registered Successfully");
     }
   };
 
   return (
-    <form className="register patient" onSubmit={handleSubmit}>
-      <div>
-        <label>Username</label>
-        <input
-          type="text"
-          name="username"
-          value={formData.username}
-          onChange={handleChange}
-        />
-      </div>
-      <div>
-        <label>Real Name</label>
-        <input
-          type="text"
-          name="realName"
-          value={formData.realName}
-          onChange={handleChange}
-        />
-      </div>
-      <div>
-        <label>Password</label>
-        <input
-          type="password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-        />
-      </div>
-      <div>
-        <label>Email Address</label>
-        <input
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-        />
-      </div>
-      <div>
-        <label>Gender</label>
-        <input
-          type="radio"
-          name="gender"
-          value="M"
-          onChange={handleChange}
-        />{" "}
-        Male
-        <input
-          type="radio"
-          name="gender"
-          value="F"
-          onChange={handleChange}
-        />{" "}
-        Female
-      </div>
-      <div>
-        <label>Date of Birth</label>
-        <input
-          type="date"
-          name="dateOfBirth"
-          value={formData.dateOfBirth}
-          onChange={handleChange}
-        />
-      </div>
-      <div>
-        <label>Mobile Number</label>
-        <input
-          type="tel"
-          name="mobileNumber"
-          value={formData.mobileNumber}
-          onChange={handleChange}
-        />
-      </div>
-      <div>
-        <label>Emergency Contact Name</label>
-        <input
-          type="text"
-          name="emergencyContactName"
-          value={formData.emergencyContactName}
-          onChange={handleChange}
-        />
-      </div>
-      <div>
-        <label>Emergency Contact Number</label>
-        <input
-          type="tel"
-          name="emergencyContactNumber"
-          value={formData.emergencyContactNumber}
-          onChange={handleChange}
-        />
-      </div>
-      <button type="submit">Register</button>
-    </form>
+    <div>
+      <form className="register patient" onSubmit={handleSubmit}>
+        <div>
+          <label>Username</label>
+          <input
+            type="text"
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+          />
+        </div>
+        <div>
+          <label>Real Name</label>
+          <input
+            type="text"
+            name="realName"
+            value={formData.realName}
+            onChange={handleChange}
+          />
+        </div>
+        <div>
+          <label>Password</label>
+          <input
+            type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+          />
+        </div>
+        <div>
+          <label>Email Address</label>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+          />
+        </div>
+        <div>
+          <label>Gender</label>
+          <input
+            type="radio"
+            name="gender"
+            value="M"
+            onChange={handleChange}
+          />{" "}
+          Male
+          <input
+            type="radio"
+            name="gender"
+            value="F"
+            onChange={handleChange}
+          />{" "}
+          Female
+        </div>
+        <div>
+          <label>Date of Birth</label>
+          <input
+            type="date"
+            name="dateOfBirth"
+            value={formData.dateOfBirth}
+            onChange={handleChange}
+          />
+        </div>
+        <div>
+          <label>Mobile Number</label>
+          <input
+            type="tel"
+            name="mobileNumber"
+            value={formData.mobileNumber}
+            onChange={handleChange}
+          />
+        </div>
+        <div>
+          <label>Emergency Contact Name</label>
+          <input
+            type="text"
+            name="emergencyContactName"
+            value={formData.emergencyContactName}
+            onChange={handleChange}
+          />
+        </div>
+        <div>
+          <label>Emergency Contact Number</label>
+          <input
+            type="tel"
+            name="emergencyContactNumber"
+            value={formData.emergencyContactNumber}
+            onChange={handleChange}
+          />
+        </div>
+        <button type="submit">Register</button>
+      </form>
+
+      {error && <div className="error-message">{error}</div>}
+      {successMessage && (
+        <div className="success-message">{successMessage}</div>
+      )}
+    </div>
   );
 };
 
