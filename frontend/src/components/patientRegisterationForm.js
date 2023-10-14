@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { json } from "react-router-dom";
 
 const PatientRegisterationForm = () => {
   const [formData, setFormData] = useState({
@@ -24,28 +26,28 @@ const PatientRegisterationForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const patient = {
-      username: "",
-      realName: "",
-      password: "",
-      email: "",
-      gender: "",
-      dateOfBirth: "",
-      mobileNumber: "",
-      emergencyContactName: "",
-      emergencyContactNumber: "",
+      username: formData.username,
+      name: formData.realName,
+      password: formData.password,
+      email: formData.email,
+      gender: formData.gender,
+      dateOfBirth: formData.dateOfBirth,
+      mobileNumber: formData.mobileNumber,
+      emergencyContact: {
+        fullName: formData.emergencyContactName,
+        mobileNumber: formData.emergencyContactNumber,
+      },
     };
 
     console.log(formData);
+    console.log(patient);
 
-    const response = await fetch("/register/patient", {
-      method: "POST",
-      body: JSON.stringify(patient),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await axios.post(
+      "http://localhost:8000/register/patient",
+      patient
+    );
 
-    const patientData = await response.json();
+    const patientData = await json(response);
 
     if (!response.ok) {
       setError(patientData.message);
@@ -111,14 +113,14 @@ const PatientRegisterationForm = () => {
         <input
           type="radio"
           name="gender"
-          value="male"
+          value="M"
           onChange={handleChange}
         />{" "}
         Male
         <input
           type="radio"
           name="gender"
-          value="female"
+          value="F"
           onChange={handleChange}
         />{" "}
         Female

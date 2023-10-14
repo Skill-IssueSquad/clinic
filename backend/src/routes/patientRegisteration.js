@@ -6,7 +6,7 @@ router.get("/", (req, res) => {
   //fetch all patinets from DB
   Patient.find()
     .then((patients) => {
-      res.status(200).json(Patient, {
+      res.status(200).json({
         messgage: " fetched patients successfully",
         status: true,
         data: patients,
@@ -43,7 +43,10 @@ router.post("/", async (req, res) => {
       dateOfBirth,
       gender,
       mobileNumber,
-      emergencyContact,
+      emergencyContact: {
+        fullName: emergencyContact.fullName,
+        mobileNumber: emergencyContact.mobileNumber,
+      },
     });
     res.status(200).json({
       messgage: " created patient successfully",
@@ -52,7 +55,7 @@ router.post("/", async (req, res) => {
     });
   } catch (err) {
     res.status(400).json({
-      messgage: " Failed to create patient.",
+      messgage: err.message,
       status: false,
       data: null,
     });
