@@ -33,37 +33,8 @@ export default function DataTable() {
           <RequestDialouge rows={rows} username={params.row.username}/>
         ),
       },
-    //   {
-    //     field: 'accept',
-    //     headerName: 'Accept',
-    //     flex:1,
-    //     align: 'center',
-    //     headerAlign: 'center',
-    //     renderCell: (params) => (
-    //       <Button variant="contained" color="success"
-    //         onClick={() => handleRemove(params.row.username)} // Define the action handler
-    //       >
-    //         Accept
-    //       </Button>
-    //     ),
-    //   },
     ];
 
-
-    const handleRemove = async (username) => {
-      try{
-        const response = await fetch('/admin/removePatient/' +username, {method: 'DELETE'});
-        const json = await response.json();
-      
-        if(response.ok){
-          // Update the state with the fetched data
-          const message = json.message;
-          //console.log(message);
-        }
-      }catch(error){
-        console.error('Error fetching data:', error);
-      }
-    };
 
 
     // Simulate fetching data from a database
@@ -86,7 +57,7 @@ export default function DataTable() {
     };
 
     fetchDataFromDatabase();
-    }, [setRows, handleRemove]);
+    }, []);
 
 
     const isRowSelectable = (params) => false; // Function to make all rows unselectable

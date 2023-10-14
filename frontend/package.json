@@ -19,6 +19,8 @@
     "react-dom": "^18.2.0",
     "react-gauge-chart": "^0.4.1",
     "react-jvectormap": "^0.0.16",
+    "react-pdf": "^7.5.0",
+    "react-pdf-js": "^5.1.0",
     "react-router-dom": "^6.16.0",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"

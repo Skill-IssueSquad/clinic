@@ -8,6 +8,7 @@ import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
+import PDFViewer from './pdf';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -21,6 +22,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 export default function CustomizedDialogs({rows, username}) {
   const [open, setOpen] = React.useState(false);
   const [text, setText] = React.useState('');
+  const path = "AdminStaticData/Test.pdf";
 
 
   const handleClickOpen = () => {
@@ -69,9 +71,12 @@ export default function CustomizedDialogs({rows, username}) {
         </IconButton>
         <DialogContent dividers>
         {text && text.map((data, index) => (
-            <p>{data}</p>
+            <p>{data}
+            </p>
           ))
         }
+        {console.log("hi")}
+        <PDFViewer pdfUrl="http://localhost:8000/AdminStaticData/Test.pdf"/>
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={handleClose}>

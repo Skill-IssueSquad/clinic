@@ -23,7 +23,12 @@ import Avatar from '@mui/material/Avatar';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import { useNavigate } from 'react-router-dom';
-
+import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import Doctor from '@mui/icons-material/Person';
+import Patient from '@mui/icons-material/PersonOutline';
+import Request from '@mui/icons-material/StickyNote2';
+import Package from '@mui/icons-material/HealthAndSafety';
 
 const drawerWidth = 240;
 

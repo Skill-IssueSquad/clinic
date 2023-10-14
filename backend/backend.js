@@ -16,9 +16,10 @@ mongoose
   .catch((err) => console.log(err));
 
 
+app.use(cors());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use("/doctor", doctorRouter);
 app.use("/admin", adminRouter);
+app.use("/AdminStaticData", express.static("AdminStaticData"));
 
-//const subscribersRouter = require('./routes/subscribers')
-//app.use('/subscribers', subscribersRouter

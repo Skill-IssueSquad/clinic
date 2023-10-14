@@ -33,7 +33,7 @@ export default function AlertDialog({onClick}) {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {"Are you sure you want to remove this user?"}
+          {"Are you sure you want to remove this package?"}
         </DialogTitle>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
