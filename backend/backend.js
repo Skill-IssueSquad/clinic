@@ -20,9 +20,7 @@ app.use((req, res, next) => {
 });
 
 //routes
-// app.use("/", (req, res) => {
-//   res.send("hello");
-// });
+
 app.use("/register/patient", PatientRegisteration);
 app.use("/register/doctor", DoctorRegisteration);
 
