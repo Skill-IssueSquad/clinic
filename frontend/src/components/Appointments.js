@@ -244,6 +244,7 @@ const MultiLevelFilterTable = () => {
 
   return (
     <div>
+    <h2 style={{ textAlign: "center" }}>My Patients</h2>
       {rows ? (
         <div>
           <TextField
