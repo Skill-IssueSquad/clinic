@@ -6,7 +6,7 @@ const Doctor = require("../models/DoctorRequest");
 router.get("/", async (req, res) => {
   try {
     const doctors = await Doctor.find();
-    res.status(200).json(Doctor, {
+    res.status(200).json({
       messgage: " got all doctor requests successfully",
       status: true,
       data: doctors,

@@ -1,109 +1,47 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import DoctorRegisterationForm from "../components/doctorRegistrationForm";
 
 const DoctorRegisteration = () => {
-  const [formData, setFormData] = useState({
-    username: "",
-    realName: "",
-    password: "",
-    email: "",
-    password: "",
-    dateOfBirth: "",
-    hourlyRate: "",
-    affiliatedHospital: "",
-    educationalBackground: "",
-  });
+  const [doctors, setDoctors] = useState(null);
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/register/doctor");
+        const data = await response.json();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
+        if (response.ok) {
+          setDoctors(data.data);
+        } else {
+          console.error("Failed to fetch doctors data");
+        }
+      } catch (error) {
+        console.error("Error fetching doctors:", error);
+      }
+    };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    console.log(formData);
-  };
-
+    try {
+      fetchDoctors();
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
   return (
     //handle doctor data like patient data
-    <form onSubmit={handleSubmit}>
+    <div className="main page">
+      <h1>Doctor Registeration</h1>
+
+      <DoctorRegisterationForm />
+
       <div>
-        <label>Username</label>
-        <input
-          type="text"
-          name="username"
-          value={formData.username}
-          onChange={handleChange}
-        />
+        {doctors &&
+          doctors.map((doctor) => (
+            <div key={doctor._id}>
+              <h3>{doctor.name}</h3>
+              <p>{doctor.email}</p>
+            </div>
+          ))}
       </div>
-      <div>
-        <label>Real Name</label>
-        <input
-          type="text"
-          name="realName"
-          value={formData.realName}
-          onChange={handleChange}
-        />
-      </div>
-      <div>
-        <label>Password</label>
-        <input
-          type="password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-        />
-      </div>
-      <div>
-        <label>Email Address</label>
-        <input
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-        />
-      </div>
-      <div>
-        <label>Date of Birth</label>
-        <input
-          type="date"
-          name="dateOfBirth"
-          value={formData.dateOfBirth}
-          onChange={handleChange}
-        />
-      </div>
-      <div>
-        <label>Hourly Rate</label>
-        <input
-          type="number"
-          name="hourlyRate"
-          value={formData.hourlyRate}
-          onChange={handleChange}
-        />
-      </div>
-      <div>
-        <label>Affiliated Hospital</label>
-        <input
-          type="text"
-          name="affiliatedHospital"
-          value={formData.affiliatedHospital}
-          onChange={handleChange}
-        />
-      </div>
-      <div>
-        <label>Educational Background</label>
-        <input
-          type="text"
-          name="educationalBackground"
-          value={formData.educationalBackground}
-          onChange={handleChange}
-        />
-      </div>
-      <button type="submit">Submit</button>
-    </form>
+    </div>
   );
 };
 
