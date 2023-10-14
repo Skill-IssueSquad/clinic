@@ -518,6 +518,8 @@ const viewAllDoctorsAvailable = async (req, res) => {
       }
     });
 
+    console.log("DOCS MATCHING: ",doctors);
+
     doctors = doctors.map((doctor) => {
       // get each doctors markup from contract
       if (doctor.contracts.length > 0) {
@@ -569,9 +571,9 @@ const viewAllDoctorsAvailable = async (req, res) => {
 const createDoc = async (req, res) => {
   //TESTING PURPOSES
   const rest = await Doctor.create({
-    username: "NewDoc1",
+    username: "NewDoc1423",
     name: "NewDoc1",
-    email: "NewDoc2@gmail.com",
+    email: "NewDoc2324@gmail.com",
     password: "123",
     dateOfBirth: "2023-10-05T21:00:00.000Z",
     hourlyRate: 13,

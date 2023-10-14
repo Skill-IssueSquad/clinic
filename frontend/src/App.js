@@ -8,7 +8,6 @@ import PatientAppointments from "./pages/PatientAppointments";
 function App() {
   return (
     <BrowserRouter>
-      
       <Routes>
         <Route exact path="/" element={<Home />} />
         <Route exact path="/patient/" element={<Patient />} />

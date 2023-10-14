@@ -17,6 +17,18 @@ import CircularProgress from "@mui/joy/CircularProgress";
 
 let fullRows = [];
 
+function displayDate(date) {
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0'); // Month is zero-based, so add 1 and format to two digits.
+  const day = String(d.getDate()).padStart(2, '0');
+  const hour = String(d.getHours()).padStart(2, '0');
+  const minute = String(d.getMinutes()).padStart(2, '0');
+  const ampm = d.getHours() < 12 ? 'AM' : 'PM';
+
+  return `${year}/${month}/${day} ${hour}:${minute} ${ampm}`;
+}
+
 const PatientMultiLevel = ({ columns, API_GET_URL, reqBody }) => {
   const initFilter = {};
   columns.forEach((key) => {
@@ -225,14 +237,18 @@ const PatientMultiLevel = ({ columns, API_GET_URL, reqBody }) => {
                           <span>
                             {console.log("Current Doc Data ", fullRows[i])}
                             {Object.keys(fullRows[i]).map((innerKey) =>
-                              innerKey === "patientList" ? null : innerKey ===
+                              innerKey === "patientList" ? null : 
+                              innerKey === "password" ? null : 
+                              innerKey === "__v" ? null :
+                              innerKey === "_id" ? null :
+                              innerKey ===
                                 "availableSlots" ? (
                                 <div>
                                   <p>Available slots</p>
                                   {fullRows[i][innerKey].map((slot) => (
                                     <div>
-                                      <p>starttime: {slot.starttime}</p>
-                                      <p>endtime: {slot.endtime}</p>
+                                      <p>starttime: {displayDate(new Date(slot.starttime))}</p>
+                                      <p>endtime: {displayDate(new Date(slot.endtime))}</p>
                                     </div>
                                   ))}
                                 </div>
