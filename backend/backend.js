@@ -26,7 +26,7 @@ app.use("/register/doctor", DoctorRegisteration);
 
 //connect to mongodb
 mongoose
-  .connect(process.env.MONGODB_URI, {
+  .connect(process.env.DATABASE_URL, {
     useNewUrlParser: true,
   })
   .then(() => {
