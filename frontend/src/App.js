@@ -18,6 +18,7 @@ function App() {
   return (
     <div classname="app">
       <BrowserRouter>
+      <AppBar hh="" gklh="" />
         <div classname="pages">
           <Routes>
             <Route path="/" element={<Home />} />
