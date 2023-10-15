@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const followUpRequestSchema = new Schema({
   patient_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Patient",
+    //ref: "Patient",
     required: true,
   },
   relativeNationalID: {

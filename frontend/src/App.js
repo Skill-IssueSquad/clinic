@@ -13,6 +13,9 @@ import ViewPackages from "./pages/Admin/ViewPackages";
 import Patients from "./pages/Patients";
 import PatientRegisteration from "./pages/PatientRegisteration";
 import DoctorRegisteration from "./pages/DoctorRegisteration";
+import Patient from "./pages/Patient";
+import PatientDoctors from "./pages/PatientDoctors";
+import PatientAppointments from "./pages/PatientAppointments";
 
 function App() {
   return (
@@ -42,7 +45,14 @@ function App() {
               path="/doctorRegisteration"
               element={<DoctorRegisteration />}
             />
-          </Routes>
+            <Route exact path="/patient/" element={<Patient />} />
+        <Route exact path="/patient/doctors/" element={<PatientDoctors />} />
+        <Route
+          exact
+          path="/patient/appointments/"
+          element={<PatientAppointments />}
+        />
+      </Routes>
         </div>
       </BrowserRouter>
     </div>

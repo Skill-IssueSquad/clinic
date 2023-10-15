@@ -8,6 +8,7 @@ const doctorRouter = require("./src/routes/DoctorRouter");
 const adminRouter = require("./src/routes/AdminRouter");
 const PatientRegisteration = require("./src/routes/patientRegisteration");
 const DoctorRegisteration = require("./src/routes/doctorRegisteration");
+const patientRouter = require("./src/routes/PatientRouter");
 
 
 mongoose
@@ -27,4 +28,6 @@ app.use("/admin", adminRouter);
 app.use("/AdminStaticData", express.static("AdminStaticData"));
 app.use("/register/patient", PatientRegisteration);
 app.use("/register/doctor", DoctorRegisteration);
+app.use("/patient", patientRouter);
+
 
