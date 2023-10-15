@@ -11,7 +11,7 @@ import PatientDetails from "../components/PatientDetails";
 const Patient = () => {
   const [patient, setPatient] = useState(null);
 
-  const submitFamMember = useCallback(async (formData) => {
+  const submitFamMember =async (formData) => {
     try {
       const res = await axios.patch(
         "http://localhost:8000/patient/bahyone/addFamMember",
@@ -23,7 +23,7 @@ const Patient = () => {
       console.log(error);
       return { message: error.message };
     }
-  }, []); // Empty dependency array since this function doesn't depend on any changing variables
+  }; // Empty dependency array since this function doesn't depend on any changing variables
 
   useEffect(() => {
     const fetchPatient = async () => {
