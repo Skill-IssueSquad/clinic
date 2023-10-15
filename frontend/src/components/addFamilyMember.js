@@ -41,6 +41,8 @@ const AddFamilyMemberForm = ({ onSubmit }) => {
     }
 
     try {
+      console.log("form data:");
+      console.log(formData);
       const response = await onSubmit(formData);
       if (response && response.message) {
         setResponseMessage(response.message);
