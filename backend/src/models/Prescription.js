@@ -23,7 +23,7 @@ const prescriptionSchema = new mongoose.Schema({
       },
     ],
     default: [],
-  }
+  },
 });
 
 const Prescription = mongoose.model("Prescription", prescriptionSchema);

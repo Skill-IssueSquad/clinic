@@ -46,6 +46,7 @@ const doctorSchema = new Schema({
     ],
     required: true,
     default: [],
+    default: [],
   },
   patientList: {
     type: [

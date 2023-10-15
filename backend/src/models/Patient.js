@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const patientSchema = new Schema({
+  //Required info to register a patient
   username: {
     type: String,
     required: true,
@@ -44,6 +45,10 @@ const patientSchema = new Schema({
       required: true,
     },
   },
+
+  //--------------------------------------------------------//
+
+  //non-required info to register a patient
   walletBalance: {
     type: Number,
     default: 0,
@@ -56,7 +61,7 @@ const patientSchema = new Schema({
     },
     type: {
       type: String,
-      enum: ["silver", "platinum", "gold"],
+      enum: ["silver", "platinum", "gold", ""],
       default: "",
     },
     renewal: {

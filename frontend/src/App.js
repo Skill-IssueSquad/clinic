@@ -1,6 +1,7 @@
 import Home from "./pages/Home";
 import AppBar from "./components/appBar";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+//pages
 import Doctor from "./pages/Doctor";
 import DoctorProfile from "./pages/DoctorProfile";
 import Admin from "./pages/Admin/Admin";
@@ -10,12 +11,16 @@ import ViewPatients from "./pages/Admin/ViewPatients";
 import ViewRequests from "./pages/Admin/ViewRequests";
 import ViewPackages from "./pages/Admin/ViewPackages";
 import Patients from "./pages/Patients";
+import PatientRegisteration from "./pages/PatientRegisteration";
+import DoctorRegisteration from "./pages/DoctorRegisteration";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route exact path="/" element={<Home />} />
+    <div classname="app">
+      <BrowserRouter>
+        <div classname="pages">
+          <Routes>
+            <Route path="/" element={<Home />} />
         <Route exact path="/Doctor_Home" element={<Doctor />} />
         <Route exact path="/Doctor_Profile" element={<DoctorProfile />} />
         <Route exact path="/Admin" element={<Admin />} />
@@ -24,8 +29,22 @@ function App() {
         <Route exact path="/Admin/ViewPatients" element={<ViewPatients />} />
         <Route exact path="/Admin/ViewRequests" element={<ViewRequests />} />
         <Route exact path="/Admin/ViewPackages" element={<ViewPackages />} />
-      </Routes>
-    </BrowserRouter>
+
+            <Route
+              exact
+              path="/patientRegisteration"
+              element={<PatientRegisteration />}
+            />
+
+            <Route
+              exact
+              path="/doctorRegisteration"
+              element={<DoctorRegisteration />}
+            />
+          </Routes>
+        </div>
+      </BrowserRouter>
+    </div>
   );
 }
 

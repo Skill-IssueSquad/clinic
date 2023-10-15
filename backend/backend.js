@@ -6,6 +6,8 @@ const cors = require('cors');
 const mongoose = require("mongoose");
 const doctorRouter = require("./src/routes/DoctorRouter");
 const adminRouter = require("./src/routes/AdminRouter");
+const PatientRegisteration = require("./src/routes/patientRegisteration");
+const DoctorRegisteration = require("./src/routes/doctorRegisteration");
 
 
 mongoose
@@ -23,4 +25,6 @@ app.use("/DoctorStaticData", express.static("DoctorStaticData"));
 app.use("/doctor", doctorRouter);
 app.use("/admin", adminRouter);
 app.use("/AdminStaticData", express.static("AdminStaticData"));
+app.use("/register/patient", PatientRegisteration);
+app.use("/register/doctor", DoctorRegisteration);
 
