@@ -34,7 +34,7 @@ const getPatientAPI = async (req, res) => {
 //assuming the patient already exists (otherwise they would
 //be filling the registration form and we would be creating a new patient)
 const addFamMember = async (req, res) => {
-  const { name, nationalID, age, gender, relation, healthPackageType } =
+  const { name, national_id, age, gender, relation, healthPackageType } =
     req.body;
   const { username } = req.params;
 
@@ -49,7 +49,7 @@ const addFamMember = async (req, res) => {
       //add new family member info to extfamilyMembers array
       patient.extfamilyMembers.push({
         name: name,
-        national_id: nationalID,
+        national_id: national_id,
         relation: relation, //wife, husband, son, daughter
         age: age,
         gender: gender, //M, F, Bahy
