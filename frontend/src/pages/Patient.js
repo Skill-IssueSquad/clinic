@@ -1,6 +1,7 @@
 //import { useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
+
 
 import NavBar from "../components/navBar";
 import PrescriptionsMultiLevelFilterTable from "../components/PrescriptionsMultiLevelFilterTable";
@@ -9,9 +10,8 @@ import PatientDetails from "../components/PatientDetails";
 
 const Patient = () => {
   const [patient, setPatient] = useState(null);
-  //const [prescriptions, setPrescriptions] = useState(null);
 
-  const submitFamMember = async (formData) => {
+  const submitFamMember = useCallback(async (formData) => {
     try {
       const res = await axios.patch(
         "http://localhost:8000/patient/bahyone/addFamMember",
@@ -23,29 +23,20 @@ const Patient = () => {
       console.log(error);
       return { message: error.message };
     }
-  };
+  }, []); // Empty dependency array since this function doesn't depend on any changing variables
 
   useEffect(() => {
-    //getParam();
     const fetchPatient = async () => {
       await axios.get("http://localhost:8000/patient/bahyone").then((res) => {
         setPatient(res.data.data);
       });
     };
 
-    // const fetchPrescriptions = async () => {
-    //   await axios
-    //     .get("http://localhost:8000/patient/john_doe/getPrescriptions")
-    //     .then((res) => {
-    //       setPrescriptions(res.data.data);
-    //     });
-    // };
-
     fetchPatient();
-    //fetchPrescriptions();
-  }, [submitFamMember]);
+  }, [submitFamMember]); // Empty dependency array to run once on component mount
 
   if (!patient) return null;
+
   //if (!prescriptions) return null;
 
   return (
