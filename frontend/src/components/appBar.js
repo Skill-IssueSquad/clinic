@@ -137,6 +137,7 @@ function ResponsiveAppBar() {
             }}
           >
             EL7A2NI
+            EL7A2NI
           </Typography>
           {/* </Link> */}
 

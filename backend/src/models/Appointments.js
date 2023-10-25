@@ -22,7 +22,7 @@ const appointmentSchema = new Schema({
   },
   patient_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Patient",
+    //ref: "Patient",
     required: true,
   },
   prescription_id: {

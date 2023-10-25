@@ -2,9 +2,14 @@ require("dotenv").config();
 
 const express = require("express");
 const app = express();
+const cors = require('cors');
 const mongoose = require("mongoose");
-const cors = require("cors");
 const doctorRouter = require("./src/routes/DoctorRouter");
+const adminRouter = require("./src/routes/AdminRouter");
+const PatientRegisteration = require("./src/routes/patientRegisteration");
+const DoctorRegisteration = require("./src/routes/doctorRegisteration");
+const patientRouter = require("./src/routes/PatientRouter");
+
 
 mongoose
   .connect(process.env.DATABASE_URL, { useNewUrlParser: true })
@@ -19,6 +24,10 @@ app.use(express.json());
 app.use("/DoctorStaticData", express.static("DoctorStaticData"));
 
 app.use("/doctor", doctorRouter);
+app.use("/admin", adminRouter);
+app.use("/AdminStaticData", express.static("AdminStaticData"));
+app.use("/register/patient", PatientRegisteration);
+app.use("/register/doctor", DoctorRegisteration);
+app.use("/patient", patientRouter);
 
-//const subscribersRouter = require('./routes/subscribers')
-//app.use('/subscribers', subscribersRouter
+

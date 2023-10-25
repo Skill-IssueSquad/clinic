@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
+
 const doctorSchema = new Schema({
   username: {
     type: String,
@@ -45,6 +46,7 @@ const doctorSchema = new Schema({
       },
     ],
     required: true,
+    default: [],
     default: [],
   },
   patientList: {
