@@ -390,6 +390,19 @@ const createAppointment = async (req, res) => {
   res.status(200).json(send);
 };
 
+const approveDoctor = async (req, res) => {
+  const { username } = req.params;
+  var doctor = await Doctor.findOne({ username });
+  const doctorId = doctor._id;
+  doctor = await Doctor.findByIdAndUpdate(
+    { _id: doctorId },
+    {
+      adminApproval: true,
+    },
+    { new: true }
+  );
+};
+
 module.exports = {
   getDoctor,
   createDoctor,
@@ -400,4 +413,5 @@ module.exports = {
   getPatients,
   saveFile,
   createAppointments,
+  approveDoctor,
 };

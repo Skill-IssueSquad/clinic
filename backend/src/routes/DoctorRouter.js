@@ -30,6 +30,7 @@ const {
   getPatients,
   saveFile,
   createAppointment,
+  approveDoctor,
 } = require("../controllers/DoctorController");
 router.get("/:username", getDoctor);
 router.post("/create", createDoctor);
@@ -40,4 +41,5 @@ router.post("/createAppointments", createAppointments);
 router.get("/getPatients/:username", getPatients);
 router.post("/createAppointment", createAppointment);
 router.post("/saveFile", upload.any(), saveFile);
+router.post("/approveDoctor/:username", approveDoctor);
 module.exports = router;
