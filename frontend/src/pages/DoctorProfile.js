@@ -22,6 +22,7 @@ const UserProfile = () => {
   const [oldDoctor, setOldDoctor] = useState(null);
   const [walletBalance, setWalletBalance] = useState(0);
   const [isApproved, setIsApproved] = useState(false);
+  const [isAccepted, setIsAccepted] = useState(false);
   useEffect(() => {
     const f = async () => {
       try {
