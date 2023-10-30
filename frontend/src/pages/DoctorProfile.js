@@ -14,6 +14,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import AppBar from "../components/appBar";
 import Loading from "../components/Loading";
+import Contract from "../components/employmentContract";
 const validator = require("validator");
 
 const UserProfile = () => {
@@ -23,6 +24,9 @@ const UserProfile = () => {
   const [walletBalance, setWalletBalance] = useState(0);
   const [isApproved, setIsApproved] = useState(false);
   const [isAccepted, setIsAccepted] = useState(false);
+  const [markup, setMarkup] = useState(0);
+  const [hourlyRate, setHourlyRate] = useState(0);
+  const [netRate, setNetRate] = useState(0);
   useEffect(() => {
     const f = async () => {
       try {
@@ -193,6 +197,9 @@ const UserProfile = () => {
           </div>
           <br />
           {error && <Typography variant="h6">{error}</Typography>}
+          {isAccepted && !isApproved && (
+            <Contract props={{ markup, hourlyRate, netRate, setIsAccepted }} />
+          )}
         </Container>
       ) : (
         <Box
