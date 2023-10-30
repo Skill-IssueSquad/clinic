@@ -391,16 +391,61 @@ const createAppointment = async (req, res) => {
 };
 
 const approveDoctor = async (req, res) => {
-  const { username } = req.params;
-  var doctor = await Doctor.findOne({ username });
-  const doctorId = doctor._id;
-  doctor = await Doctor.findByIdAndUpdate(
-    { _id: doctorId },
-    {
-      adminApproval: true,
-    },
-    { new: true }
-  );
+  try {
+    const { username } = req.params;
+    var doctor = await Doctor.findOne({ username });
+    const doctorId = doctor._id;
+    doctor = await Doctor.findByIdAndUpdate(
+      { _id: doctorId },
+      {
+        adminApproval: true,
+      },
+      { new: true }
+    );
+    const send = {
+      success: true,
+      data: doctor,
+      message: "Doctor approved successfully",
+    };
+    res.status(200).json(send);
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    res.status(500).json(send);
+  }
+};
+
+const addMoney = async (req, res) => {
+  try {
+    const { username } = req.params;
+    const { amount } = req.body;
+    var doctor = await Doctor.findOne({ username });
+    const doctorId = doctor._id;
+    const newWalletBalance = doctor.walletBalance + amount;
+    doctor = await Doctor.findByIdAndUpdate(
+      { _id: doctorId },
+      {
+        walletBalance: newWalletBalance,
+      },
+      { new: true }
+    );
+    const send = {
+      success: true,
+      data: doctor,
+      message: "Money added successfully",
+    };
+    res.status(200).json(send);
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    res.status(500).json(send);
+  }
 };
 
 module.exports = {
@@ -414,4 +459,5 @@ module.exports = {
   saveFile,
   createAppointments,
   approveDoctor,
+  addMoney,
 };
