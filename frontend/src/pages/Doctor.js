@@ -3,7 +3,7 @@ import Appointments from "../components/Appointments";
 const Doctor = () => {
   return (
     <div>
-      <AppBar />
+      {/* <AppBar /> */}
       <Appointments />
     </div>
   );

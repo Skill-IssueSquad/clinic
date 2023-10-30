@@ -102,7 +102,7 @@ const UserProfile = () => {
 
   return (
     <div>
-      <AppBar />
+      {/* <AppBar /> */}
       {user ? (
         <Container maxWidth="md">
           <div style={{ textAlign: "center", marginTop: "20px" }}>
