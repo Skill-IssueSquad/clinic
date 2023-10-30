@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import AppBar from "../components/appBar";
 import Loading from "../components/Loading";
 const validator = require("validator");
@@ -19,6 +20,7 @@ const UserProfile = () => {
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
   const [oldDoctor, setOldDoctor] = useState(null);
+  const [walletBalance, setWalletBalance] = useState(0);
   useEffect(() => {
     const f = async () => {
       try {
@@ -28,6 +30,8 @@ const UserProfile = () => {
         const Doctor = {
           ...data,
         };
+        setWalletBalance(Doctor.walletBalance);
+        //console.log("Doctor: ", Doctor);
         setUser(Doctor);
         setOldDoctor(Doctor);
       } catch (error) {
@@ -105,13 +109,25 @@ const UserProfile = () => {
       {/* <AppBar /> */}
       {user ? (
         <Container maxWidth="md">
-          <div style={{ textAlign: "center", marginTop: "20px" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: "20px",
+            }}
+          >
             <Avatar
               alt={user.name}
               src={"/static/images/doc2.png"}
-              sx={{ width: 150, height: 150 }}
+              sx={{ width: 150, height: 150, marginRight: "10px" }}
             />
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <AccountBalanceWalletIcon style={{ fontSize: 30 }} />
+              <span style={{ marginLeft: "10px" }}>{walletBalance}</span>
+            </div>
           </div>
+          <br />
           <Typography variant="h4" align="center" gutterBottom>
             Name: {user.name}
           </Typography>
