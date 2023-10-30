@@ -21,18 +21,30 @@ function App() {
   return (
     <div classname="app">
       <BrowserRouter>
-      <AppBar hh="" gklh="" />
+        <AppBar />
         <div classname="pages">
           <Routes>
             <Route path="/" element={<Home />} />
-        <Route exact path="/Doctor_Home" element={<Doctor />} />
-        <Route exact path="/Doctor_Profile" element={<DoctorProfile />} />
-        <Route exact path="/Admin" element={<Admin />} />
-        <Route exact path="/Admin/ViewAdmins" element={<ViewAdmins />} />
-        <Route exact path="/Admin/ViewDoctors" element={<ViewDoctors />} />
-        <Route exact path="/Admin/ViewPatients" element={<ViewPatients />} />
-        <Route exact path="/Admin/ViewRequests" element={<ViewRequests />} />
-        <Route exact path="/Admin/ViewPackages" element={<ViewPackages />} />
+            <Route exact path="/Doctor_Home" element={<Doctor />} />
+            <Route exact path="/Doctor_Profile" element={<DoctorProfile />} />
+            <Route exact path="/Admin" element={<Admin />} />
+            <Route exact path="/Admin/ViewAdmins" element={<ViewAdmins />} />
+            <Route exact path="/Admin/ViewDoctors" element={<ViewDoctors />} />
+            <Route
+              exact
+              path="/Admin/ViewPatients"
+              element={<ViewPatients />}
+            />
+            <Route
+              exact
+              path="/Admin/ViewRequests"
+              element={<ViewRequests />}
+            />
+            <Route
+              exact
+              path="/Admin/ViewPackages"
+              element={<ViewPackages />}
+            />
 
             <Route
               exact
@@ -46,13 +58,17 @@ function App() {
               element={<DoctorRegisteration />}
             />
             <Route exact path="/patient/" element={<Patient />} />
-        <Route exact path="/patient/doctors/" element={<PatientDoctors />} />
-        <Route
-          exact
-          path="/patient/appointments/"
-          element={<PatientAppointments />}
-        />
-      </Routes>
+            <Route
+              exact
+              path="/patient/doctors/"
+              element={<PatientDoctors />}
+            />
+            <Route
+              exact
+              path="/patient/appointments/"
+              element={<PatientAppointments />}
+            />
+          </Routes>
         </div>
       </BrowserRouter>
     </div>
