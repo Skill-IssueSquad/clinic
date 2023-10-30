@@ -22,8 +22,8 @@ const UserProfile = () => {
   const [error, setError] = useState(null);
   const [oldDoctor, setOldDoctor] = useState(null);
   const [walletBalance, setWalletBalance] = useState(0);
-  const [isApproved, setIsApproved] = useState(false);
-  const [isAccepted, setIsAccepted] = useState(false);
+  const [adminApproved, setAdminApproved] = useState(false);
+  const [contractAccepted, setContractAccepted] = useState(false);
   const [markup, setMarkup] = useState(0);
   const [hourlyRate, setHourlyRate] = useState(0);
   const [netRate, setNetRate] = useState(0);
@@ -37,7 +37,7 @@ const UserProfile = () => {
           ...data,
         };
         setWalletBalance(Doctor.walletBalance);
-        setIsApproved(Doctor.adminApproval);
+        setAdminApproved(Doctor.adminApproval);
         //console.log("Doctor: ", Doctor);
         setUser(Doctor);
         setOldDoctor(Doctor);
@@ -197,8 +197,10 @@ const UserProfile = () => {
           </div>
           <br />
           {error && <Typography variant="h6">{error}</Typography>}
-          {isAccepted && !isApproved && (
-            <Contract props={{ markup, hourlyRate, netRate, setIsAccepted }} />
+          {adminApproved && !contractAccepted && (
+            <Contract
+              props={{ markup, hourlyRate, netRate, setContractAccepted }}
+            />
           )}
         </Container>
       ) : (
