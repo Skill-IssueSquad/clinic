@@ -79,6 +79,10 @@ const doctorSchema = new Schema({
     type: Number,
     default: 0,
   },
+  adminApproval: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const Doctor = mongoose.model("Doctor", doctorSchema);
