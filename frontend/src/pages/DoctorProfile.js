@@ -135,7 +135,7 @@ const UserProfile = () => {
           </div>
           <br />
           <Typography variant="h4" align="center" gutterBottom>
-            Name: {user.name}
+            {user.name}
           </Typography>
           <Typography variant="body1" align="center" gutterBottom>
             {isEditing ? (
