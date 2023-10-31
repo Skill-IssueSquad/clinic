@@ -1,5 +1,5 @@
-const Contract = ({ props }) => {
-  const { markup, hourlyRate, netRate, setContractAccepted } = props;
+const Contract = ({ hourlyRate, setContractAccepted }) => {
+  const markup = 0.2;
   const handleClick = () => {
     setContractAccepted(true);
   };
@@ -9,7 +9,6 @@ const Contract = ({ props }) => {
       <h1>Contract</h1>
       <p>Markup: {markup}</p>
       <p>Hourly Rate: {hourlyRate}</p>
-      <p>Net Rate: {netRate}</p>
       <button onClick={handleClick}>Accept</button>
     </div>
   );

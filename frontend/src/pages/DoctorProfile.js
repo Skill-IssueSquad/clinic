@@ -24,9 +24,7 @@ const UserProfile = () => {
   const [walletBalance, setWalletBalance] = useState(0);
   const [adminApproved, setAdminApproved] = useState(false);
   const [contractAccepted, setContractAccepted] = useState(false);
-  const [markup, setMarkup] = useState(0);
-  const [hourlyRate, setHourlyRate] = useState(0);
-  const [netRate, setNetRate] = useState(0);
+
   useEffect(() => {
     const f = async () => {
       try {
@@ -197,9 +195,10 @@ const UserProfile = () => {
           </div>
           <br />
           {error && <Typography variant="h6">{error}</Typography>}
-          {adminApproved && !contractAccepted && (
+          {adminApproved && !contractAccepted && !isEditing && (
             <Contract
-              props={{ markup, hourlyRate, netRate, setContractAccepted }}
+              hourlyRate={user.hourlyRate}
+              setContractAccepted={setContractAccepted}
             />
           )}
         </Container>
