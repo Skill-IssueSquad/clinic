@@ -15,6 +15,7 @@ import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import AppBar from "../components/appBar";
 import Loading from "../components/Loading";
 import Contract from "../components/employmentContract";
+import Slots from "../components/mySlots";
 const validator = require("validator");
 
 const UserProfile = () => {
@@ -201,6 +202,7 @@ const UserProfile = () => {
               setContractAccepted={setContractAccepted}
             />
           )}
+          {contractAccepted && adminApproved && <Slots />}
         </Container>
       ) : (
         <Box
