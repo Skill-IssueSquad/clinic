@@ -19,25 +19,26 @@
     "@testing-library/user-event": "^13.5.0",
     "ag-grid-react": "^30.2.0",
     "axios": "^1.5.1",
-    "axios": "^1.5.1",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "react": "^18.2.0",
     "react-bootstrap": "^2.9.0",
     "react-chartjs-2": "^5.2.0",
     "react-datepicker": "^4.20.0",
+    "react-datetime": "^3.2.0",
     "react-dom": "^18.2.0",
     "react-gauge-chart": "^0.4.1",
     "react-jvectormap": "^0.0.16",
     "react-pdf": "^7.5.0",
     "react-pdf-js": "^5.1.0",
     "react-router-dom": "^6.16.0",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^5.0.1",
+    "reactjs-popup": "^2.0.6",
     "validator": "^13.11.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "react-scripts --openssl-legacy-provider start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -46,7 +47,11 @@
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "rules": {
+      "react/react-in-jsx-scope": "off",
+      "react/jsx-uses-react": "off"
+    }
   },
   "browserslist": {
     "production": [
