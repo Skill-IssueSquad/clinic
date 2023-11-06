@@ -25,11 +25,10 @@ const UserProfile = () => {
   const [walletBalance, setWalletBalance] = useState(0);
   const [adminApproved, setAdminApproved] = useState(false);
   const [contractAccepted, setContractAccepted] = useState(false);
-
+  const username = "opa%20nseet%20esmy";
   useEffect(() => {
     const f = async () => {
       try {
-        const username = "opa%20nseet%20esmy";
         const response = await axios.get(`/doctor/${username}`);
         const data = response.data.data[0];
         const Doctor = {
@@ -37,6 +36,7 @@ const UserProfile = () => {
         };
         setWalletBalance(Doctor.walletBalance);
         setAdminApproved(Doctor.adminApproval);
+        setContractAccepted(Doctor.contractAccepted);
         //console.log("Doctor: ", Doctor);
         setUser(Doctor);
         setOldDoctor(Doctor);
@@ -75,8 +75,6 @@ const UserProfile = () => {
       setIsEditing(false);
       return;
     }
-
-    const username = "opa%20nseet%20esmy";
 
     const res = await fetch(`/doctor/update/${username}`, {
       method: "PUT",
@@ -196,13 +194,15 @@ const UserProfile = () => {
           </div>
           <br />
           {error && <Typography variant="h6">{error}</Typography>}
-          {adminApproved && !contractAccepted && !isEditing && (
+          {contractAccepted && adminApproved && <Slots />}
+          {adminApproved && (
             <Contract
               hourlyRate={user.hourlyRate}
               setContractAccepted={setContractAccepted}
+              username={username}
+              contractAccepted={contractAccepted}
             />
           )}
-          {contractAccepted && adminApproved && <Slots />}
         </Container>
       ) : (
         <Box

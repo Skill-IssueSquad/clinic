@@ -448,6 +448,36 @@ const addMoney = async (req, res) => {
   }
 };
 
+const acceptContract = async (req, res) => {
+  try {
+    //console.log("I am here");
+    const { username } = req.params;
+    var doctor = await Doctor.findOne({ username });
+    const doctorId = doctor._id;
+    // console.log(doctorId);
+    doctor = await Doctor.findByIdAndUpdate(
+      { _id: doctorId },
+      {
+        contractAccepted: true,
+      },
+      { new: true }
+    );
+    const send = {
+      success: true,
+      data: doctor,
+      message: "Doctor accepted successfully",
+    };
+    res.status(200).json(send);
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    res.status(500).json(send);
+  }
+};
+
 module.exports = {
   getDoctor,
   createDoctor,
@@ -460,4 +490,5 @@ module.exports = {
   createAppointments,
   approveDoctor,
   addMoney,
+  acceptContract,
 };

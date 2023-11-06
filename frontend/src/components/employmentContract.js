@@ -1,7 +1,17 @@
-const Contract = ({ hourlyRate, setContractAccepted }) => {
-  const markup = 0.2;
-  const handleClick = () => {
-    setContractAccepted(true);
+const Contract = ({
+  hourlyRate,
+  setContractAccepted,
+  username,
+  contractAccepted,
+}) => {
+  const handleClick = async () => {
+    const doctor = await fetch(`/doctor/acceptContract/${username}`, {
+      method: "POST",
+    });
+    const data = await doctor.json();
+    if (data.success) {
+      setContractAccepted(true);
+    }
   };
 
   return (
@@ -10,7 +20,8 @@ const Contract = ({ hourlyRate, setContractAccepted }) => {
       <p>Markup: 10%</p>
       <p>Hourly Rate: {hourlyRate}</p>
       <p>Total price: {hourlyRate + hourlyRate * 0.1}</p>
-      <button onClick={handleClick}>Accept</button>
+      {!contractAccepted && <button onClick={handleClick}>Accept</button>}
+      {contractAccepted && <p style={{ color: "green" }}>Contract Accepted</p>}
     </div>
   );
 };

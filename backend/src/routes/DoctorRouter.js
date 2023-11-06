@@ -32,6 +32,7 @@ const {
   createAppointment,
   approveDoctor,
   addMoney,
+  acceptContract,
 } = require("../controllers/DoctorController");
 router.get("/:username", getDoctor);
 router.post("/create", createDoctor);
@@ -44,4 +45,5 @@ router.post("/createAppointment", createAppointment);
 router.post("/saveFile", upload.any(), saveFile);
 router.post("/approveDoctor/:username", approveDoctor);
 router.post("/addMoney/:username", addMoney);
+router.post("/acceptContract/:username", acceptContract);
 module.exports = router;
