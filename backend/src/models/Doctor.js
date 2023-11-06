@@ -83,6 +83,10 @@ const doctorSchema = new Schema({
     type: Boolean,
     default: false,
   },
+  contractAccepted: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const Doctor = mongoose.model("Doctor", doctorSchema);

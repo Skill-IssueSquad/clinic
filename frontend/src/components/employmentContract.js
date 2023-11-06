@@ -7,8 +7,9 @@ const Contract = ({ hourlyRate, setContractAccepted }) => {
   return (
     <div>
       <h1>Contract</h1>
-      <p>Markup: {markup}</p>
+      <p>Markup: 10%</p>
       <p>Hourly Rate: {hourlyRate}</p>
+      <p>Total price: {hourlyRate + hourlyRate * 0.1}</p>
       <button onClick={handleClick}>Accept</button>
     </div>
   );
