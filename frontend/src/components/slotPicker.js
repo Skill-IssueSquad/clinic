@@ -63,6 +63,14 @@ const DayTimeSlotSelector = () => {
       setMessage("Please select a day and a time slot");
       return;
     }
+    const currentDate = new Date();
+    const chosenSlot = new Date(`${selectedDay} ${selectedTimeSlot}`);
+    //console.log(chosenSlot);
+    if (chosenSlot < currentDate) {
+      setMessage("Selected slot is in the past");
+      return;
+    }
+
     const response = await fetch(`/doctor/addSlot/${username}`, {
       method: "POST",
       headers: {
