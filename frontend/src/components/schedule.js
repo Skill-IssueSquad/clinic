@@ -100,14 +100,16 @@ const DayTimeSlotSelector = ({ username }) => {
           </Button>
         </Grid>
       </Grid>
-      <div style={{ maxWidth: 250 }}>
+      <br />
+      <div style={{ maxWidth: 350 }}>
         {slots && (
           <TableContainer component={Paper}>
-            <Table sx={{ maxWidth: 250 }} aria-label="simple table">
+            <Table sx={{ maxWidth: 350 }} aria-label="simple table">
               <TableHead>
                 <TableRow>
                   <TableCell>Time Slot</TableCell>
                   <TableCell>Patient Name</TableCell>
+                  <TableCell>Type</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -118,6 +120,7 @@ const DayTimeSlotSelector = ({ username }) => {
                   >
                     <TableCell>{slot.timeSlot}</TableCell>
                     <TableCell>{slot.patientName}</TableCell>
+                    <TableCell>{slot.appointmentType}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

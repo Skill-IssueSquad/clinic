@@ -5,9 +5,9 @@ const Slots = ({ username }) => {
   return (
     <div>
       <h1>Slots</h1>
-      <p>My schedule</p>
+      <h3>My schedule</h3>
       <Schedule username={username} />
-      <p>Add a slot</p>
+      <h3>Add a slot</h3>
       <SlotPicker username={username} />
     </div>
   );
