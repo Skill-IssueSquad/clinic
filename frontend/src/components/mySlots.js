@@ -1,11 +1,14 @@
 import React, { Component } from "react";
-import DateSelector from "./dayPicker";
+import SlotPicker from "./slotPicker";
+import Schedule from "./schedule";
 const Slots = () => {
   return (
     <div>
       <h1>Slots</h1>
+      <p>My schedule</p>
+      <Schedule />
       <p>Add a slot</p>
-      <DateSelector />
+      <SlotPicker />
     </div>
   );
 };

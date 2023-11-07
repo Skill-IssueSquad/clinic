@@ -45,8 +45,10 @@ const timeSlots = [
 ];
 
 const DayTimeSlotSelector = () => {
+  const username = "opa%20nseet%20esmy";
   const [selectedDay, setSelectedDay] = useState("");
   const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
+  const [message, setMessage] = useState("");
 
   const handleDayChange = (event) => {
     setSelectedDay(event.target.value);
@@ -54,6 +56,26 @@ const DayTimeSlotSelector = () => {
 
   const handleTimeSlotChange = (event) => {
     setSelectedTimeSlot(event.target.value);
+  };
+
+  const handleAddClick = async () => {
+    if (selectedDay === "" || selectedTimeSlot === "") {
+      setMessage("Please select a day and a time slot");
+      return;
+    }
+    const response = await fetch(`/doctor/addSlot/${username}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ day: selectedDay, timeSlot: selectedTimeSlot }),
+    });
+    const data = await response.json();
+    if (data.success) {
+      setMessage("Slot added successfully");
+    } else {
+      setMessage("Error adding slot");
+    }
   };
 
   return (
@@ -88,17 +110,12 @@ const DayTimeSlotSelector = () => {
           </TextField>
         </Grid>
         <Grid item xs={12}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() =>
-              console.log(`Day: ${selectedDay}, Time Slot: ${selectedTimeSlot}`)
-            }
-          >
-            Save
+          <Button variant="contained" color="primary" onClick={handleAddClick}>
+            Add
           </Button>
         </Grid>
       </Grid>
+      <p>{message}</p>
     </div>
   );
 };

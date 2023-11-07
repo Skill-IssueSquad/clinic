@@ -199,7 +199,6 @@ const UserProfile = () => {
             <Contract
               hourlyRate={user.hourlyRate}
               setContractAccepted={setContractAccepted}
-              username={username}
               contractAccepted={contractAccepted}
             />
           )}

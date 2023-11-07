@@ -62,12 +62,12 @@ const doctorSchema = new Schema({
   availableSlots: {
     type: [
       {
-        starttime: {
-          type: Date,
+        day: {
+          type: String,
           required: true,
         },
-        endtime: {
-          type: Date,
+        timeSlot: {
+          type: String,
           required: true,
         },
       },

@@ -478,6 +478,39 @@ const acceptContract = async (req, res) => {
   }
 };
 
+const addSlot = async (req, res) => {
+  try {
+    const { username } = req.params;
+    const { day, timeSlot } = req.body;
+    var doctor = await Doctor.findOne({ username });
+    const doctorId = doctor._id;
+    const newSlot = {
+      day,
+      timeSlot,
+    };
+    doctor = await Doctor.findByIdAndUpdate(
+      { _id: doctorId },
+      {
+        $push: { availableSlots: newSlot },
+      },
+      { new: true }
+    );
+    const send = {
+      success: true,
+      data: doctor,
+      message: "Slot added successfully",
+    };
+    res.status(200).json(send);
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    res.status(500).json(send);
+  }
+};
+
 module.exports = {
   getDoctor,
   createDoctor,
@@ -491,4 +524,5 @@ module.exports = {
   approveDoctor,
   addMoney,
   acceptContract,
+  addSlot,
 };

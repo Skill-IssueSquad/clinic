@@ -1,9 +1,5 @@
-const Contract = ({
-  hourlyRate,
-  setContractAccepted,
-  username,
-  contractAccepted,
-}) => {
+const Contract = ({ hourlyRate, setContractAccepted, contractAccepted }) => {
+  const username = "opa%20nseet%20esmy";
   const handleClick = async () => {
     const doctor = await fetch(`/doctor/acceptContract/${username}`, {
       method: "POST",
