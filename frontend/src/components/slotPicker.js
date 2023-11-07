@@ -74,7 +74,7 @@ const DayTimeSlotSelector = () => {
     if (data.success) {
       setMessage("Slot added successfully");
     } else {
-      setMessage("Error adding slot");
+      setMessage(data.message);
     }
   };
 

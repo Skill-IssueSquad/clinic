@@ -488,6 +488,17 @@ const addSlot = async (req, res) => {
       day,
       timeSlot,
     };
+    doctor = await Doctor.findById({ _id: doctorId });
+    const slots = doctor.availableSlots;
+    var flag = false;
+    slots.forEach((slot) => {
+      if (slot.day === day && slot.timeSlot === timeSlot) {
+        flag = true;
+      }
+    });
+    if (flag) {
+      throw new Error("Slot already exists");
+    }
     doctor = await Doctor.findByIdAndUpdate(
       { _id: doctorId },
       {
