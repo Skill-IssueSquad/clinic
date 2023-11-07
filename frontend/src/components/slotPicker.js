@@ -81,6 +81,7 @@ const DayTimeSlotSelector = () => {
     const data = await response.json();
     if (data.success) {
       setMessage("Slot added successfully");
+      setSelectedTimeSlot("");
     } else {
       setMessage(data.message);
     }
