@@ -1,14 +1,14 @@
 import React, { Component } from "react";
 import SlotPicker from "./slotPicker";
 import Schedule from "./schedule";
-const Slots = () => {
+const Slots = ({ username }) => {
   return (
     <div>
       <h1>Slots</h1>
       <p>My schedule</p>
-      <Schedule />
+      <Schedule username={username} />
       <p>Add a slot</p>
-      <SlotPicker />
+      <SlotPicker username={username} />
     </div>
   );
 };

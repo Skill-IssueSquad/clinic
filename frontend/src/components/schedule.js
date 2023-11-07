@@ -7,6 +7,13 @@ import {
   TextField,
   Grid,
   Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
 } from "@mui/material";
 
 const timeSlots = [
@@ -44,11 +51,35 @@ const timeSlots = [
   "23:30",
 ];
 
-const DayTimeSlotSelector = () => {
+const DayTimeSlotSelector = ({ username }) => {
   const [selectedDay, setSelectedDay] = useState("");
-
+  const [message, setMessage] = useState("");
+  const [slots, setSlots] = useState([]);
   const handleDayChange = (event) => {
     setSelectedDay(event.target.value);
+  };
+
+  const search = async (event) => {
+    if (selectedDay === "") {
+      setMessage("Please select a day");
+      return;
+    }
+    const response = await fetch(`/doctor/schedule/${username}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ day: selectedDay }),
+    });
+    const data = await response.json();
+    console.log(data.data);
+    if (!data.success) {
+      setSlots([]);
+      setMessage(data.message);
+    } else {
+      setSlots(data.data);
+      setMessage("");
+    }
   };
 
   return (
@@ -64,16 +95,37 @@ const DayTimeSlotSelector = () => {
         </Grid>
 
         <Grid item xs={12}>
-          <Button
-            variant="contained"
-            color="primary"
-            // onClick={
-            // }
-          >
+          <Button variant="contained" color="primary" onClick={search}>
             Show schedule
           </Button>
         </Grid>
       </Grid>
+      <div style={{ maxWidth: 250 }}>
+        {slots && (
+          <TableContainer component={Paper}>
+            <Table sx={{ maxWidth: 250 }} aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Time Slot</TableCell>
+                  <TableCell>Patient Name</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {slots.map((slot) => (
+                  <TableRow
+                    key={slot._id}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell>{slot.timeSlot}</TableCell>
+                    <TableCell>{slot.patientName}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
+      </div>
+      <p>{message}</p>
     </div>
   );
 };

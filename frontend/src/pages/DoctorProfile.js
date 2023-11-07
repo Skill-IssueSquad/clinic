@@ -194,12 +194,13 @@ const UserProfile = () => {
           </div>
           <br />
           {error && <Typography variant="h6">{error}</Typography>}
-          {contractAccepted && adminApproved && <Slots />}
+          {contractAccepted && adminApproved && <Slots username={username} />}
           {adminApproved && (
             <Contract
               hourlyRate={user.hourlyRate}
               setContractAccepted={setContractAccepted}
               contractAccepted={contractAccepted}
+              username={username}
             />
           )}
         </Container>

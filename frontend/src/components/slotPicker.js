@@ -44,8 +44,7 @@ const timeSlots = [
   "23:30",
 ];
 
-const DayTimeSlotSelector = () => {
-  const username = "opa%20nseet%20esmy";
+const DayTimeSlotSelector = ({ username }) => {
   const [selectedDay, setSelectedDay] = useState("");
   const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
   const [message, setMessage] = useState("");

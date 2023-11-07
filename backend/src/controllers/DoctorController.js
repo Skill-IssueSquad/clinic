@@ -545,6 +545,38 @@ const addSlot = async (req, res) => {
   }
 };
 
+const getSchedule = async (req, res) => {
+  try {
+    const { username } = req.params;
+    const { day } = req.body;
+    //console.log(day);
+    const doctor = await Doctor.findOne({ username });
+    const slots = doctor.availableSlots;
+    const result = [];
+    slots.forEach((slot) => {
+      if (slot.day === day) {
+        result.push(slot);
+      }
+    });
+    result.sort((a, b) => {
+      return a.startTime - b.startTime;
+    });
+    const send = {
+      success: true,
+      data: result,
+      message: "Schedule found successfully",
+    };
+    res.status(200).json(send);
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    res.status(500).json(send);
+  }
+};
+
 module.exports = {
   getDoctor,
   createDoctor,
@@ -559,4 +591,5 @@ module.exports = {
   addMoney,
   acceptContract,
   addSlot,
+  getSchedule,
 };
