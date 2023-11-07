@@ -4,6 +4,7 @@ const Appointments = require("../models/Appointments");
 const fs = require("fs");
 const numberToWords = require("number-to-words");
 const Prescription = require("../models/Prescription");
+const { start } = require("repl");
 
 const getDoctor = async (req, res) => {
   // console.log("I am here");
@@ -484,9 +485,31 @@ const addSlot = async (req, res) => {
     const { day, timeSlot } = req.body;
     var doctor = await Doctor.findOne({ username });
     const doctorId = doctor._id;
+    startTime = new Date(`${day} ${timeSlot}`);
+    // Parse the day and timeSlot into a Date object
+    let endTime = new Date(`${day} ${timeSlot}`);
+
+    // Get the minutes from the Date object
+    let minutes = endTime.getMinutes();
+
+    // Add 30 to the minutes
+    minutes += 30;
+
+    // Set the new minutes to the Date object
+    endTime.setMinutes(minutes);
+    startTime.setHours(startTime.getHours() + 2);
+    endTime.setHours(endTime.getHours() + 2);
+    const isBooked = false;
+    const patientName = "";
+    const appointmentType = "";
     const newSlot = {
       day,
       timeSlot,
+      startTime,
+      endTime,
+      isBooked,
+      patientName,
+      appointmentType,
     };
     doctor = await Doctor.findById({ _id: doctorId });
     const slots = doctor.availableSlots;

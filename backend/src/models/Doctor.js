@@ -70,6 +70,25 @@ const doctorSchema = new Schema({
           type: String,
           required: true,
         },
+        startTime: {
+          type: Date,
+          required: true,
+        },
+        endTime: {
+          type: Date,
+          required: true,
+        },
+        isBooked: {
+          type: Boolean,
+          required: true,
+          default: false,
+        },
+        patientName: {
+          type: String,
+        },
+        appointmentType: {
+          type: String,
+        },
       },
     ],
     required: true,
