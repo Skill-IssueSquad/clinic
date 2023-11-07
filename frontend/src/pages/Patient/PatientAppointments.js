@@ -1,5 +1,5 @@
-import MultiLevelFilterTable from "../components/MultiLevelFilterTable";
-import NavBar from "../components/navBar";
+import MultiLevelFilterTable from "../../components/MultiLevelFilterTable";
+import NavBar from "../../components/navBar";
 
 function PatientAppointments() {
   return (

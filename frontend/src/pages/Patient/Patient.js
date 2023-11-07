@@ -2,16 +2,15 @@
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 
-
-import NavBar from "../components/navBar";
-import PrescriptionsMultiLevelFilterTable from "../components/PrescriptionsMultiLevelFilterTable";
-import AddFamilyMember from "../components/addFamilyMember";
-import PatientDetails from "../components/PatientDetails";
+import NavBar from "../../components/navBar";
+import PrescriptionsMultiLevelFilterTable from "../../components/PrescriptionsMultiLevelFilterTable";
+import AddFamilyMember from "../../components/Patient/addFamilyMember";
+import PatientDetails from "../../components/Patient/PatientDetails";
 
 const Patient = () => {
   const [patient, setPatient] = useState(null);
 
-  const submitFamMember =async (formData) => {
+  const submitFamMember = async (formData) => {
     try {
       const res = await axios.patch(
         "http://localhost:8000/patient/bahyone/addFamMember",

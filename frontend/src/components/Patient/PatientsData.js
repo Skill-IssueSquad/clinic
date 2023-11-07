@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import Loading from "./Loading";
+import Loading from "../Loading";
 import { Container } from "@mui/material";
 
 const columns = [

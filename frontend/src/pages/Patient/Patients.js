@@ -1,5 +1,5 @@
-import AppBar from "../components/appBar";
-import PatientsData from "../components/PatientsData";
+import AppBar from "../../components/appBar";
+import PatientsData from "../../components/Patient/PatientsData";
 const Patients = () => {
   return (
     <div>

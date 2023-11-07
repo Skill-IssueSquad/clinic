@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import PatientRegisterationForm from "../components/patientRegisterationForm";
+import PatientRegisterationForm from "../../components/Patient/patientRegisterationForm";
 import { json } from "react-router-dom";
 
 const PatientRegisteration = () => {

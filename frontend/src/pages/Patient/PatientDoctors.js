@@ -1,8 +1,8 @@
 import React, { useState } from "react"; // Import React and useState
 
-import PatientDoctorAvailibityDatePicker from "../components/PatientDoctorAvailibityDatePicker";
-import PatientMultiLevel from "../components/PatientDoctorsMultiLevelGrid";
-import NavBar from "../components/navBar";
+import PatientDoctorAvailibityDatePicker from "../../components/Patient/PatientDoctorAvailibityDatePicker";
+import PatientMultiLevel from "../../components/Patient/PatientDoctorsMultiLevelGrid";
+import NavBar from "../../components/navBar";
 
 function PatientDoctors() {
   const [apiUrl, setApiUrl] = useState(
