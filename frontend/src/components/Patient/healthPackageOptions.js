@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   Dialog,
@@ -11,26 +11,67 @@ import {
   ListItemSecondaryAction,
   Checkbox,
 } from "@mui/material";
+import axios from "axios";
 
-const HealthPackageOptions = () => {
+const packageItemStyle = {
+  backgroundColor: "white",
+  marginBottom: "16px",
+  border: "1px solid #eee",
+  borderRadius: "4px",
+};
+
+const packageTitleStyle = {
+  fontSize: "1.2rem",
+  fontWeight: "bold",
+};
+
+const packageDescriptionStyle = {
+  fontSize: "0.9rem",
+};
+
+const purchaseButtonStyle = {
+  marginTop: "16px",
+};
+
+const HealthPackages = () => {
   const [selectedPackages, setSelectedPackages] = useState([]);
+  const [selectedFamilyMembers, setSelectedFamilyMembers] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
+  const [familyMembers, setFamilyMembers] = useState([]);
+
+  // Fetch family members from the backend when the component mounts
+  useEffect(() => {
+    const fetchFamilyMembers = async () => {
+      try {
+        // Replace with your backend endpoint for fetching family members
+        const response = await axios.get(
+          "http://localhost:8000/patient/bahyone/getFamMember"
+        );
+        const data = response.data.data;
+        setFamilyMembers(data);
+      } catch (error) {
+        console.error("Error fetching family members:", error);
+      }
+    };
+
+    fetchFamilyMembers();
+  }, []);
 
   const availablePackages = [
     {
       name: "Silver Package",
       description:
-        "Patient pays 3600 LE per year and gets 40% off any doctor's session price and 20% off any medicine ordered from the pharmacy platform and 10% discount on the subscription of any of his family members in any package",
+        "You pay 3600 LE per year and gets 40% off any doctor's session price and 20% off any medicine ordered from the pharmacy platform and 10% discount on the subscription of any of his family members in any package",
     },
     {
       name: "Gold Package",
       description:
-        "Patient pays 6000 LE per year and gets 60% off any doctor's session price and 30% off any medicine ordered from the pharmacy platform and 15% discount on the subscription of any of his family members in any package",
+        "You pay 6000 LE per year and gets 60% off any doctor's session price and 30% off any medicine ordered from the pharmacy platform and 15% discount on the subscription of any of his family members in any package",
     },
     {
       name: "Platinum Package",
       description:
-        "Patient pays 9000 LE per year and gets 80% off any doctor's session price and 40% off any medicine ordered from the pharmacy platform and 20% discount on the subscription of any of his family members in any package",
+        "You pay 9000 LE per year and gets 80% off any doctor's session price and 40% off any medicine ordered from the pharmacy platform and 20% discount on the subscription of any of his family members in any package",
     },
   ];
 
@@ -44,6 +85,19 @@ const HealthPackageOptions = () => {
     setSelectedPackages(newSelectedPackages);
   };
 
+  const handleSelectFamilyMember = (familyMember) => {
+    const newSelectedFamilyMembers = [...selectedFamilyMembers];
+    if (newSelectedFamilyMembers.includes(familyMember)) {
+      newSelectedFamilyMembers.splice(
+        newSelectedFamilyMembers.indexOf(familyMember),
+        1
+      );
+    } else {
+      newSelectedFamilyMembers.push(familyMember);
+    }
+    setSelectedFamilyMembers(newSelectedFamilyMembers);
+  };
+
   const handleOpenDialog = () => {
     setOpenDialog(true);
   };
@@ -53,20 +107,33 @@ const HealthPackageOptions = () => {
   };
 
   const handlePurchase = () => {
-    // Implement the logic to redirect to the payments page with selected packages and family members' details.
+    // Implement the logic to proceed to the payment page with selected packages and family members' details.
     // You can use react-router or another routing solution for this.
     // Redirect code here...
   };
 
   return (
-    <div>
+    <div
+      style={{
+        backgroundColor: "#f5f5f5",
+        padding: "16px",
+        border: "1px solid #ddd",
+        borderRadius: "8px",
+      }}
+    >
       <h2>Health Packages</h2>
-      <List>
-        {availablePackages.map((healthPackage, index) => (
-          <ListItem key={index}>
+      {availablePackages.map((healthPackage, index) => (
+        <div key={index} style={packageItemStyle}>
+          <ListItem button onClick={() => handleSelectPackage(index)}>
             <ListItemText
-              primary={healthPackage.name}
-              secondary={healthPackage.description}
+              primary={
+                <span style={packageTitleStyle}>{healthPackage.name}</span>
+              }
+              secondary={
+                <span style={packageDescriptionStyle}>
+                  {healthPackage.description}
+                </span>
+              }
             />
             <ListItemSecondaryAction>
               <Checkbox
@@ -76,9 +143,14 @@ const HealthPackageOptions = () => {
               />
             </ListItemSecondaryAction>
           </ListItem>
-        ))}
-      </List>
-      <Button variant="contained" onClick={handleOpenDialog}>
+        </div>
+      ))}
+      <Button
+        style={purchaseButtonStyle}
+        variant="contained"
+        onClick={handleOpenDialog}
+        disabled={selectedPackages.length === 0}
+      >
         Purchase
       </Button>
       <Dialog open={openDialog} onClose={handleCloseDialog}>
@@ -88,6 +160,24 @@ const HealthPackageOptions = () => {
             {selectedPackages.map((index) => (
               <ListItem key={index}>
                 <ListItemText primary={availablePackages[index].name} />
+              </ListItem>
+            ))}
+          </List>
+          <DialogTitle>Family Members</DialogTitle>
+          <List>
+            {familyMembers.map((familyMember) => (
+              <ListItem key={familyMember.name}>
+                <ListItemText
+                  primary={`Name: ${familyMember.name}`}
+                  secondary={`Relation: ${familyMember.relation}, Age: ${familyMember.age}, Gender: ${familyMember.gender}`}
+                />
+                <ListItemSecondaryAction>
+                  <Checkbox
+                    edge="end"
+                    checked={selectedFamilyMembers.includes(familyMember)}
+                    onChange={() => handleSelectFamilyMember(familyMember)}
+                  />
+                </ListItemSecondaryAction>
               </ListItem>
             ))}
           </List>
@@ -109,4 +199,4 @@ const HealthPackageOptions = () => {
   );
 };
 
-export default HealthPackageOptions;
+export default HealthPackages;
