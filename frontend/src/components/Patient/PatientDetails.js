@@ -19,6 +19,9 @@ const PatientDetails = ({ patient }) => {
     perscreption_ids,
   } = patient;
 
+  const isHealthPackageUnsubscribed =
+    healthPackageType.status === "unsubscribed";
+
   return (
     <Paper elevation={3} style={{ padding: "20px" }}>
       <Typography variant="h4" align="center" gutterBottom>
@@ -56,20 +59,29 @@ const PatientDetails = ({ patient }) => {
           <Typography variant="body1" gutterBottom>
             Wallet Balance: {walletBalance}
           </Typography>
-          <Typography variant="body1" gutterBottom>
-            Health Package Type: {healthPackageType.type}
-          </Typography>
-          <Typography variant="body1" gutterBottom>
-            Health Package Status: {healthPackageType.status}
-          </Typography>
-          <Typography variant="body1" gutterBottom>
-            Health Package Renewal:{" "}
-            {new Date(healthPackageType.renewal).toLocaleDateString()}
-          </Typography>
-          <Typography variant="body1" gutterBottom>
-            Health Package End Date:{" "}
-            {new Date(healthPackageType.endDate).toLocaleDateString()}
-          </Typography>
+          {healthPackageType.status === "unsubscribed" ||
+          healthPackageType.status === "cancelled" ? (
+            <Typography variant="body1" gutterBottom>
+              Health Package Status: {healthPackageType.status}
+            </Typography>
+          ) : (
+            <>
+              <Typography variant="body1" gutterBottom>
+                Health Package Type: {healthPackageType.type}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                Health Package Status: {healthPackageType.status}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                Health Package Renewal:{" "}
+                {new Date(healthPackageType.renewal).toLocaleDateString()}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                Health Package End Date:{" "}
+                {new Date(healthPackageType.endDate).toLocaleDateString()}
+              </Typography>
+            </>
+          )}
           <Typography variant="body1" gutterBottom>
             Credit Cards:{" "}
             {creditCards.map((card) => (
@@ -108,24 +120,33 @@ const PatientDetails = ({ patient }) => {
                   <Typography variant="body1" gutterBottom>
                     Gender: {member.gender}
                   </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    Health Package Type: {member.healthPackageType.type}
-                  </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    Health Package Status: {member.healthPackageType.status}
-                  </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    Health Package Renewal:{" "}
-                    {new Date(
-                      member.healthPackageType.renewal
-                    ).toLocaleDateString()}
-                  </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    Health Package End Date:{" "}
-                    {new Date(
-                      member.healthPackageType.endDate
-                    ).toLocaleDateString()}
-                  </Typography>
+                  {member.healthPackageType.status === "unsubscribed" ||
+                  member.healthPackageType.status === "cancelled" ? (
+                    <Typography variant="body1" gutterBottom>
+                      Health Package Status: {member.healthPackageType.status}
+                    </Typography>
+                  ) : (
+                    <>
+                      <Typography variant="body1" gutterBottom>
+                        Health Package Type: {member.healthPackageType.type}
+                      </Typography>
+                      <Typography variant="body1" gutterBottom>
+                        Health Package Status: {member.healthPackageType.status}
+                      </Typography>
+                      <Typography variant="body1" gutterBottom>
+                        Health Package Renewal:{" "}
+                        {new Date(
+                          member.healthPackageType.renewal
+                        ).toLocaleDateString()}
+                      </Typography>
+                      <Typography variant="body1" gutterBottom>
+                        Health Package End Date:{" "}
+                        {new Date(
+                          member.healthPackageType.endDate
+                        ).toLocaleDateString()}
+                      </Typography>
+                    </>
+                  )}
                 </Paper>
               </Grid>
             ))}
