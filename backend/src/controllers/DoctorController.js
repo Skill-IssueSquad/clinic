@@ -154,6 +154,7 @@ const getAppointments = async (req, res) => {
       );
       const appointmentInfo = {
         _id: patient._id,
+        appID: appointment._id,
         id: i,
         date: appointmentDate,
         status: appointment.status,
@@ -578,6 +579,25 @@ const getSchedule = async (req, res) => {
   }
 };
 
+const addAppointment = async (req, res) => {
+  try {
+    const { username } = req.params;
+    const { day, timeSlot, type, patientId, appID } = req.body;
+    const patient = await Patient.findById({ _id: patientId });
+    var doctor = await Doctor.findOne({ username });
+    const doctorId = doctor._id;
+    const patientName = patient.name;
+    const appointment = await Appointments.findById({ _id: appID });
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    res.status(500).json(send);
+  }
+};
+
 module.exports = {
   getDoctor,
   createDoctor,
@@ -593,4 +613,5 @@ module.exports = {
   acceptContract,
   addSlot,
   getSchedule,
+  addAppointment,
 };

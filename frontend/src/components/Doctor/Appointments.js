@@ -423,13 +423,20 @@ const MultiLevelFilterTable = ({ username }) => {
               <DialogContent>
                 <button
                   onClick={() =>
-                    navigate(`/Doctor_FollowUp/?patientId=${selectedRow._id}`)
+                    navigate(
+                      `/Doctor_FollowUp/?patientId=${selectedRow._id}&appID=${selectedRow.appID}`
+                    )
                   }
                 >
                   Schedule a follow up
                 </button>
                 {Object.entries(selectedRow).map(([key, value]) => {
-                  if (key !== "id" && key != "healthRecords" && key !== "_id") {
+                  if (
+                    key !== "id" &&
+                    key != "healthRecords" &&
+                    key !== "_id" &&
+                    key !== "appID"
+                  ) {
                     return (
                       <div key={key}>
                         <span>{key}: </span>

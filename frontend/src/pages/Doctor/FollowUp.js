@@ -3,6 +3,7 @@ const Follow = () => {
   const username = "opa%20nseet%20esmy";
   const params = new URLSearchParams(window.location.search);
   const patientId = params.get("patientId");
+  const appID = params.get("appID");
   return (
     <div
       style={{
@@ -14,7 +15,7 @@ const Follow = () => {
       }}
     >
       <h1>Follow up</h1>
-      <Book username={username} />
+      <Book username={username} patientId={patientId} appID={appID} />
     </div>
   );
 };

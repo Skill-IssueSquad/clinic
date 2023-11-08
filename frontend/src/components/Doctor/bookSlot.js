@@ -51,10 +51,11 @@ const timeSlots = [
   "23:30",
 ];
 
-const DayTimeSlotSelector = ({ username }) => {
+const DayTimeSlotSelector = ({ username, patientId, appID }) => {
   const [selectedDay, setSelectedDay] = useState("");
   const [message, setMessage] = useState("");
   const [slots, setSlots] = useState([]);
+
   const handleDayChange = (event) => {
     setSelectedDay(event.target.value);
   };
@@ -79,6 +80,29 @@ const DayTimeSlotSelector = ({ username }) => {
     } else {
       setSlots(data.data);
       setMessage("");
+    }
+  };
+
+  const handleRowClick = async (slot) => {
+    const response = await fetch(`/doctor/addAppointment/${username}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        day: slot.day,
+        timeSlot: slot.timeSlot,
+        type: "followUp",
+        patientId,
+        appID,
+      }),
+    });
+    const data = await response.json();
+    console.log(data);
+    if (data.success) {
+      setMessage("Follow up scheduled successfully");
+    } else {
+      setMessage(data.message);
     }
   };
 
@@ -116,7 +140,11 @@ const DayTimeSlotSelector = ({ username }) => {
                 {slots.map((slot) => (
                   <TableRow
                     key={slot._id}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                    sx={{
+                      "&:last-child td, &:last-child th": { border: 0 },
+                      cursor: !slot.isBooked ? "pointer" : "default",
+                    }}
+                    onClick={() => !slot.isBooked && handleRowClick(slot)}
                   >
                     <TableCell>{slot.timeSlot}</TableCell>
                     <TableCell>{slot.patientName}</TableCell>
