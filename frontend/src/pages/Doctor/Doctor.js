@@ -1,5 +1,5 @@
-import AppBar from "../components/appBar";
-import Appointments from "../components/Appointments";
+import AppBar from "../../components/appBar";
+import Appointments from "../../components/Doctor/Appointments";
 const Doctor = () => {
   return (
     <div>

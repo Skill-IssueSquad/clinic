@@ -11,12 +11,12 @@ import Button from "@mui/material/Button";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import SortIcon from "@mui/icons-material/Sort";
-import Loading from "./Loading";
+import Loading from "../Loading";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { Container } from "@mui/material";
-import PDFViewer from "./pdf";
+import PDFViewer from "../pdf";
 
 const statusOptions = ["upcoming", "completed", "cancelled", "rescheduled"];
 const dateOperators = [">", "<", ">=", "<=", "="];
@@ -244,7 +244,7 @@ const MultiLevelFilterTable = () => {
 
   return (
     <div>
-    <h2 style={{ textAlign: "center" }}>My Patients</h2>
+      <h2 style={{ textAlign: "center" }}>My Patients</h2>
       {rows ? (
         <div>
           <TextField

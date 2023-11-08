@@ -12,10 +12,10 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
-import AppBar from "../components/appBar";
-import Loading from "../components/Loading";
-import Contract from "../components/employmentContract";
-import Slots from "../components/mySlots";
+import AppBar from "../../components/appBar";
+import Loading from "../../components/Loading";
+import Contract from "../../components/Doctor/employmentContract";
+import Slots from "../../components/Doctor/mySlots";
 const validator = require("validator");
 
 const UserProfile = () => {

@@ -2,8 +2,8 @@ import Home from "./pages/Home";
 import AppBar from "./components/appBar";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 //pages
-import Doctor from "./pages/Doctor";
-import DoctorProfile from "./pages/DoctorProfile";
+import Doctor from "./pages/Doctor/Doctor";
+import DoctorProfile from "./pages/Doctor/DoctorProfile";
 import Admin from "./pages/Admin/Admin";
 import ViewAdmins from "./pages/Admin/ViewAdmins";
 import ViewDoctors from "./pages/Admin/ViewDoctors";
