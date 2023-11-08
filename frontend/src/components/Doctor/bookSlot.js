@@ -84,6 +84,13 @@ const DayTimeSlotSelector = ({ username, patientId, appID }) => {
   };
 
   const handleRowClick = async (slot) => {
+    const currentDate = new Date();
+    const chosenSlot = new Date(`${slot.day} ${slot.timeSlot}`);
+    //console.log(chosenSlot);
+    if (chosenSlot < currentDate) {
+      setMessage("Selected slot is in the past");
+      return;
+    }
     const response = await fetch(`/doctor/addAppointment/${username}`, {
       method: "POST",
       headers: {
