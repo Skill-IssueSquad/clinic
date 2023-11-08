@@ -633,6 +633,140 @@ const createDoc = async (req, res) => {
   });
 };
 
+const linkFamMember = async (req, res) => {
+  //find the fam member account from the unique email or phone number (find out which one was provided)
+  //if not found return error
+  //if found add link to the patient account (in both accounts)
+
+  const { emailOrPhone, relation } = req.body;
+  const { username } = req.params;
+
+  //find the account of the family member
+  const famMember = await Patient.findOne({
+    $or: [{ email: emailOrPhone }, { phone: emailOrPhone }],
+  }).catch((err) => {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: err.message || "Some error occurred while retrieving patient.",
+    });
+  });
+
+  if (!famMember) {
+    return res.status(404).json({
+      success: false,
+      data: null,
+      message: "Family member account not found",
+    });
+  }
+
+  const famMember_id = famMember._id;
+
+  const patient = await getPatient(username);
+
+  let found = false;
+  if (!patient.extfamilyMembers) {
+    patient.extfamilyMembers = [];
+  }
+
+  if (!patient.linkedAccounts) {
+    patient.linkedAccounts = [];
+  }
+
+  if (!famMember.linkedAccounts) {
+    famMember.linkedAccounts = [];
+  }
+
+  if (!famMember.extfamilyMembers) {
+    famMember.extfamilyMembers = [];
+  }
+
+  //check if family member found is not already in extFamilyMembers array, if not in array then add
+  for (const famMember of patient.extfamilyMembers) {
+    if (famMember._id == famMember_id) {
+      found = true;
+      break;
+    }
+  }
+
+  if (!found) {
+    //add new family member info to extfamilyMembers array
+    patient.extfamilyMembers.push({
+      name: famMember.name,
+      relation: relation, //wife, husband, son, daughter
+      age: famMember.age,
+      gender: famMember.gender, //M, F, Bahy
+      healthPackageType: famMember.healthPackageType,
+    });
+  }
+
+  let newRel = "";
+
+  if (relation === "wife") {
+    newRel = "husband";
+  } else if (relation === "husband") {
+    newRel = "wife";
+  } else if (relation === "son" || relation === "daughter") {
+    if (patient.gender === "M") {
+      newRel = "father";
+    } else {
+      newRel = "mother";
+    }
+  }
+
+  famMember.extfamilyMembers.push({
+    name: patient.name,
+    relation: newRel, //wife, husband, father, mother
+    age: patient.age,
+    gender: patient.gender, //M, F, Bahy
+    healthPackageType: patient.healthPackageType,
+  });
+
+  //add to linked accounts array in both accounts
+  patients.linkedAccounts.push({ patiend_id: famMember_id });
+  famMember.linkedAccounts.push({ patient_id: patient._id });
+
+  //update the existing patient
+  await Patient.findByIdAndUpdate(patient._id, {
+    extfamilyMembers: patient.extfamilyMembers,
+    linkedAccounts: patient.linkedAccounts,
+  }).catch((err) => {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: err.message || "Some error occurred while updating patient.",
+    });
+  });
+
+  //update the existing family member
+  await Patient.findByIdAndUpdate(famMember_id, {
+    linkedAccounts: famMember.linkedAccounts,
+    extfamilyMembers: famMember.extfamilyMembers,
+  }).catch((err) => {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message:
+        err.message ||
+        "Some error occurred while updating family member account.",
+    });
+  });
+
+  const newPatient = await Patient.findById(patient._id).catch((err) => {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: err.message || "Some error occurred while retrieving patient.",
+    });
+  });
+
+  return res.status(200).json({
+    success: true,
+    data: newPatient,
+    message: "Family member account linked successfully",
+  });
+};
+
 module.exports = {
   addFamMember,
   getFamMembers,
@@ -644,4 +778,5 @@ module.exports = {
   viewAllDoctorsAvailable,
   createDoc,
   getPatientAPI,
+  linkFamMember,
 };

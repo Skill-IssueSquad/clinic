@@ -19,6 +19,10 @@ const PatientDetails = ({ patient }) => {
     perscreption_ids,
   } = patient;
 
+  const isMainAccountUnsubscribed = healthPackageType.status === "unsubscribed";
+  const isMainAccountCancelled = healthPackageType.status === "cancelled";
+  const isMainAccountSubscribed = healthPackageType.status === "subscribed";
+
   return (
     <Paper elevation={3} style={{ padding: "20px" }}>
       <Typography variant="h4" align="center" gutterBottom>
@@ -56,20 +60,39 @@ const PatientDetails = ({ patient }) => {
           <Typography variant="body1" gutterBottom>
             Wallet Balance: {walletBalance}
           </Typography>
-          <Typography variant="body1" gutterBottom>
-            Health Package Type: {healthPackageType.type}
-          </Typography>
-          <Typography variant="body1" gutterBottom>
-            Health Package Status: {healthPackageType.status}
-          </Typography>
-          <Typography variant="body1" gutterBottom>
-            Health Package Renewal:{" "}
-            {new Date(healthPackageType.renewal).toLocaleDateString()}
-          </Typography>
-          <Typography variant="body1" gutterBottom>
-            Health Package End Date:{" "}
-            {new Date(healthPackageType.endDate).toLocaleDateString()}
-          </Typography>
+          {isMainAccountUnsubscribed && (
+            <Typography variant="body1" gutterBottom>
+              Health Package Status: {healthPackageType.status}
+            </Typography>
+          )}
+          {isMainAccountCancelled && (
+            <>
+              <Typography variant="body1" gutterBottom>
+                Health Package End Date:{" "}
+                {new Date(healthPackageType.endDate).toLocaleDateString()}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                Health Package Status: {healthPackageType.status}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                Health Package Type: {healthPackageType.type}
+              </Typography>
+            </>
+          )}
+          {isMainAccountSubscribed && (
+            <>
+              <Typography variant="body1" gutterBottom>
+                Health Package Status: {healthPackageType.status}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                Health Package Type: {healthPackageType.type}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                Health Package Renewal:{" "}
+                {new Date(healthPackageType.renewal).toLocaleDateString()}
+              </Typography>
+            </>
+          )}
           <Typography variant="body1" gutterBottom>
             Credit Cards:{" "}
             {creditCards.map((card) => (
@@ -90,45 +113,75 @@ const PatientDetails = ({ patient }) => {
             Family Members
           </Typography>
           <Grid container spacing={3}>
-            {extfamilyMembers.map((member) => (
-              <Grid item xs={12} sm={6} md={4} key={member.national_id}>
-                <Paper elevation={3} style={{ padding: "10px" }}>
-                  <Typography variant="h6" gutterBottom>
-                    {member.name}
-                  </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    Relation: {member.relation}
-                  </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    Age: {member.age}
-                  </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    National ID: {member.national_id}
-                  </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    Gender: {member.gender}
-                  </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    Health Package Type: {member.healthPackageType.type}
-                  </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    Health Package Status: {member.healthPackageType.status}
-                  </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    Health Package Renewal:{" "}
-                    {new Date(
-                      member.healthPackageType.renewal
-                    ).toLocaleDateString()}
-                  </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    Health Package End Date:{" "}
-                    {new Date(
-                      member.healthPackageType.endDate
-                    ).toLocaleDateString()}
-                  </Typography>
-                </Paper>
-              </Grid>
-            ))}
+            {extfamilyMembers.map((member) => {
+              const isMemberUnsubscribed =
+                member.healthPackageType.status === "unsubscribed";
+              const isMemberCancelled =
+                member.healthPackageType.status === "cancelled";
+              const isMemberSubscribed =
+                member.healthPackageType.status === "subscribed";
+
+              return (
+                <Grid item xs={12} sm={6} md={4} key={member.national_id}>
+                  <Paper elevation={3} style={{ padding: "10px" }}>
+                    <Typography variant="h6" gutterBottom>
+                      {member.name}
+                    </Typography>
+                    <Typography variant="body1" gutterBottom>
+                      Relation: {member.relation}
+                    </Typography>
+                    <Typography variant="body1" gutterBottom>
+                      Age: {member.age}
+                    </Typography>
+                    <Typography variant="body1" gutterBottom>
+                      National ID: {member.national_id}
+                    </Typography>
+                    <Typography variant="body1" gutterBottom>
+                      Gender: {member.gender}
+                    </Typography>
+                    {isMemberUnsubscribed && (
+                      <Typography variant="body1" gutterBottom>
+                        Health Package Status: {member.healthPackageType.status}
+                      </Typography>
+                    )}
+                    {isMemberCancelled && (
+                      <>
+                        <Typography variant="body1" gutterBottom>
+                          Health Package End Date:{" "}
+                          {new Date(
+                            member.healthPackageType.endDate
+                          ).toLocaleDateString()}
+                        </Typography>
+                        <Typography variant="body1" gutterBottom>
+                          Health Package Status:{" "}
+                          {member.healthPackageType.status}
+                        </Typography>
+                        <Typography variant="body1" gutterBottom>
+                          Health Package Type: {member.healthPackageType.type}
+                        </Typography>
+                      </>
+                    )}
+                    {isMemberSubscribed && (
+                      <>
+                        <Typography variant="body1" gutterBottom>
+                          Health Package Status:{" "}
+                          {member.healthPackageType.status}
+                        </Typography>
+                        <Typography variant="body1" gutterBottom>
+                          Health Package Type: {member.healthPackageType.type}
+                        </Typography>
+                        <Typography variant="body1" gutterBottom>
+                          Health Package Renewal:{" "}
+                          {new Date(
+                            member.healthPackageType.renewal
+                          ).toLocaleDateString()}
+                        </Typography>
+                      </>
+                    )}
+                  </Paper>
+                </Grid>
+              );
+            })}
           </Grid>
         </Grid>
       </Grid>

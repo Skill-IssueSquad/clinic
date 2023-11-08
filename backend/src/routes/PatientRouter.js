@@ -13,6 +13,7 @@ const {
   viewAllDoctorsAvailable,
   createDoc,
   getPatientAPI,
+  linkFamMember,
 } = require("../controllers/PatientController");
 const { create } = require("../models/Patient");
 
@@ -27,10 +28,13 @@ router.post("/createDoc", createDoc); // TESTING PURPOSES ONLY
 //add family member route
 router.patch("/:username/addFamMember", addFamMember);
 
+//link family member route
+router.patch("/:username/linkFamMember", linkFamMember);
+
 //get family members route
 router.get("/:username/getFamMember", getFamMembers);
 
 //get prescriptions route
-router.get("/:username/getPrescriptions", getPrescriptions);
+router.get("/:username/prescriptions", getPrescriptions);
 
 module.exports = router;

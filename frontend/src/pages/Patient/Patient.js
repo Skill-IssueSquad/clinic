@@ -1,11 +1,12 @@
 //import { useParams } from "react-router-dom";
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
-
+import { Typography } from "@mui/material";
 import NavBar from "../../components/navBar";
 import PrescriptionsMultiLevelFilterTable from "../../components/PrescriptionsMultiLevelFilterTable";
 import AddFamilyMember from "../../components/Patient/addFamilyMember";
 import PatientDetails from "../../components/Patient/PatientDetails";
+import LinkFamilyMemberForm from "../../components/Patient/linkFamilyMemberform";
 
 const Patient = () => {
   const [patient, setPatient] = useState(null);
@@ -23,6 +24,8 @@ const Patient = () => {
       return { message: error.message };
     }
   }; // Empty dependency array since this function doesn't depend on any changing variables
+
+  const linkFamMember = async (formData) => {};
 
   useEffect(() => {
     const fetchPatient = async () => {
@@ -43,11 +46,29 @@ const Patient = () => {
       <NavBar name={"Patient Dashboard"} />
       <PatientDetails patient={patient} />
       <p></p>
+      <Typography
+        variant="h6"
+        gutterBottom
+        borderLeft={15}
+        borderColor={"white"}
+      >
+        Add Family Member
+      </Typography>
       <AddFamilyMember onSubmit={submitFamMember} />
+      <p></p>
+      <Typography
+        variant="h6"
+        gutterBottom
+        borderLeft={15}
+        borderColor={"white"}
+      >
+        Link Family Member account
+      </Typography>
+      <LinkFamilyMemberForm onSubmit={linkFamMember} />
       <p></p>
       <PrescriptionsMultiLevelFilterTable
         columns={["doctor_name", "date", "isFilled", "View Prescriptions"]}
-        API_GET_URL={"http://localhost:8000/patient/bahyone/getPrescriptions"}
+        API_GET_URL={"http://localhost:8000/patient/bahyone/prescriptions"}
       />
     </div>
   );
