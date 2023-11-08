@@ -4,11 +4,13 @@ import PatientDoctorAvailibityDatePicker from "../../components/Patient/PatientD
 import PatientMultiLevel from "../../components/Patient/PatientDoctorsMultiLevelGrid";
 import NavBar from "../../components/navBar";
 
+
 function PatientDoctors() {
   const [apiUrl, setApiUrl] = useState(
     "http://localhost:8000/patient/bahyone/doctors"
   );
   const [jsonBody, setJsonBody] = useState({});
+  const [openDialog, setOpenDialog] = useState(false);
 
   const handleApiUrlChange = (newUrl) => {
     setApiUrl(newUrl);
@@ -17,6 +19,14 @@ function PatientDoctors() {
   const handleBodyChange = (newBody) => {
     setJsonBody(newBody);
   };
+
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
 
   // Create a wrapper function that calls both handleApiUrlChange and handleBodyChange
   const handleApiAndBodyChange = (newUrl, newBody) => {

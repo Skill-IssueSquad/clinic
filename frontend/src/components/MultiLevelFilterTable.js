@@ -49,14 +49,14 @@ function isMongoDbIsoDate(str) {
 function displayDate(date) {
   const d = new Date(date);
   const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0'); // Month is zero-based, so add 1 and format to two digits.
-  const day = String(d.getDate()).padStart(2, '0');
-  const hour = String(d.getHours()).padStart(2, '0');
-  const minute = String(d.getMinutes()).padStart(2, '0');
-  const ampm = d.getHours() < 12 ? 'AM' : 'PM';
-
+  const month = String(d.getMonth() + 1).padStart(2, "0"); // Month is zero-based, so add 1 and format to two digits.
+  const day = String(d.getDate()).padStart(2, "0");
+  const hour = String(d.getHours() > 12 ? d.getHours() - 12: d.getHours()).padStart(2, "0");
+  const minute = String(d.getMinutes()).padStart(2, "0");
+  const ampm = d.getHours() < 12 ? "AM" : "PM";
   return `${year}/${month}/${day} ${hour}:${minute} ${ampm}`;
 }
+
 
 const MultiLevelFilterTable = ({ columns, API_GET_URL }) => {
   const initFilter = {};

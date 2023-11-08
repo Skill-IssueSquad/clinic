@@ -275,9 +275,30 @@ const getAllAppointments = async (req, res) => {
         }
       });
 
+      let fullAppointments = [];
+
+      for (const appointment of appointments) {
+        const fullAppointment = {
+          ...appointment._doc,
+          doctor_name: "",
+        };
+
+        await Doctor.findById(appointment.doctor_id)
+          .then((doctor) => {
+            fullAppointment.doctor_name = doctor.name;
+          })
+          .catch((err) => {
+            console.log(
+              err + "doctor with id: " + appointment.doctor_id + " not found"
+            );
+          });
+
+        fullAppointments.push(fullAppointment);
+      };
+
       return res.status(200).json({
         success: true,
-        data: appointments,
+        data: fullAppointments,
         message: "Successfully retrieved all appointments",
       });
     } else {
@@ -503,8 +524,8 @@ const viewAllDoctorsAvailable = async (req, res) => {
     let doctors = await Doctor.find({
       availableSlots: {
         $elemMatch: {
-          starttime: { $lte: req.body.datetime },
-          endtime: { $gt: req.body.datetime },
+          startTime: { $lte: req.body.datetime },
+          endTime: { $gt: req.body.datetime },
         },
       },
     }).catch((err) => {
