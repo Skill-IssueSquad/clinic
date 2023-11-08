@@ -1,7 +1,7 @@
 //import { useParams } from "react-router-dom";
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
-
+import { Typography } from "@mui/material";
 import NavBar from "../../components/navBar";
 import PrescriptionsMultiLevelFilterTable from "../../components/PrescriptionsMultiLevelFilterTable";
 import AddFamilyMember from "../../components/Patient/addFamilyMember";
@@ -46,8 +46,24 @@ const Patient = () => {
       <NavBar name={"Patient Dashboard"} />
       <PatientDetails patient={patient} />
       <p></p>
+      <Typography
+        variant="h6"
+        gutterBottom
+        borderLeft={15}
+        borderColor={"white"}
+      >
+        Add Family Member
+      </Typography>
       <AddFamilyMember onSubmit={submitFamMember} />
       <p></p>
+      <Typography
+        variant="h6"
+        gutterBottom
+        borderLeft={15}
+        borderColor={"white"}
+      >
+        Link Family Member account
+      </Typography>
       <LinkFamilyMemberForm onSubmit={linkFamMember} />
       <p></p>
       <PrescriptionsMultiLevelFilterTable
