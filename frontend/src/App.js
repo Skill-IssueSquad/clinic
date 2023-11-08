@@ -16,7 +16,7 @@ import DoctorRegisteration from "./pages/DoctorRegisteration";
 import Patient from "./pages/Patient/Patient";
 import PatientDoctors from "./pages/Patient/PatientDoctors";
 import PatientAppointments from "./pages/Patient/PatientAppointments";
-import HealthPackageOptions from "./pages/Patient/HealthPackageShop";
+import HealthPackageShop from "./pages/Patient/HealthPackageShop";
 
 function App() {
   return (
