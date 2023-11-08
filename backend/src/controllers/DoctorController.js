@@ -153,6 +153,7 @@ const getAppointments = async (req, res) => {
         }
       );
       const appointmentInfo = {
+        _id: patient._id,
         id: i,
         date: appointmentDate,
         status: appointment.status,

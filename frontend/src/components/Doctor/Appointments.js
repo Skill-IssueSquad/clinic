@@ -17,11 +17,13 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { Container } from "@mui/material";
 import PDFViewer from "../pdf";
+import { useNavigate } from "react-router-dom";
 
 const statusOptions = ["upcoming", "completed", "cancelled", "rescheduled"];
 const dateOperators = [">", "<", ">=", "<=", "="];
 
-const MultiLevelFilterTable = () => {
+const MultiLevelFilterTable = ({ username }) => {
+  const navigate = useNavigate();
   const [filter, setFilter] = useState({ name: "", status: "", date: "" });
   const [dateOperator, setDateOperator] = useState("");
   const [dateOperand, setDateOperand] = useState("");
@@ -34,7 +36,6 @@ const MultiLevelFilterTable = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const username = "opa%20nseet%20esmy";
       const res = await fetch(`/doctor/appointments/${username}`);
       const response = await res.json();
       if (res.ok) {
@@ -420,8 +421,15 @@ const MultiLevelFilterTable = () => {
             <Dialog open={openDialog} onClose={handleCloseDialog}>
               <DialogTitle>{selectedRow.name}</DialogTitle>
               <DialogContent>
+                <button
+                  onClick={() =>
+                    navigate(`/Doctor_FollowUp/?patientId=${selectedRow._id}`)
+                  }
+                >
+                  Schedule a follow up
+                </button>
                 {Object.entries(selectedRow).map(([key, value]) => {
-                  if (key !== "id" && key != "healthRecords") {
+                  if (key !== "id" && key != "healthRecords" && key !== "_id") {
                     return (
                       <div key={key}>
                         <span>{key}: </span>

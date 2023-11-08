@@ -16,6 +16,7 @@ import DoctorRegisteration from "./pages/DoctorRegisteration";
 import Patient from "./pages/Patient";
 import PatientDoctors from "./pages/PatientDoctors";
 import PatientAppointments from "./pages/PatientAppointments";
+import Follow from "./pages/Doctor/FollowUp";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route exact path="/Doctor_Home" element={<Doctor />} />
             <Route exact path="/Doctor_Profile" element={<DoctorProfile />} />
+            <Route exact path="/Doctor_FollowUp" element={<Follow />} />
             <Route exact path="/Admin" element={<Admin />} />
             <Route exact path="/Admin/ViewAdmins" element={<ViewAdmins />} />
             <Route exact path="/Admin/ViewDoctors" element={<ViewDoctors />} />
