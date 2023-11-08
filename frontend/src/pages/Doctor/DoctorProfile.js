@@ -23,7 +23,6 @@ const UserProfile = () => {
   const [error, setError] = useState(null);
   const [oldDoctor, setOldDoctor] = useState(null);
   const [walletBalance, setWalletBalance] = useState(0);
-  const [adminApproved, setAdminApproved] = useState(false);
   const [contractAccepted, setContractAccepted] = useState(false);
   const username = "opa%20nseet%20esmy";
   useEffect(() => {
@@ -35,7 +34,7 @@ const UserProfile = () => {
           ...data,
         };
         setWalletBalance(Doctor.walletBalance);
-        setAdminApproved(Doctor.adminApproval);
+
         setContractAccepted(Doctor.contractAccepted);
         //console.log("Doctor: ", Doctor);
         setUser(Doctor);
@@ -194,15 +193,14 @@ const UserProfile = () => {
           </div>
           <br />
           {error && <Typography variant="h6">{error}</Typography>}
-          {contractAccepted && adminApproved && <Slots username={username} />}
-          {adminApproved && (
-            <Contract
-              hourlyRate={user.hourlyRate}
-              setContractAccepted={setContractAccepted}
-              contractAccepted={contractAccepted}
-              username={username}
-            />
-          )}
+          {contractAccepted && <Slots username={username} />}
+
+          <Contract
+            hourlyRate={user.hourlyRate}
+            setContractAccepted={setContractAccepted}
+            contractAccepted={contractAccepted}
+            username={username}
+          />
         </Container>
       ) : (
         <Box
