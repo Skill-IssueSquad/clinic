@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-
 const doctorSchema = new Schema({
   username: {
     type: String,
@@ -47,7 +46,6 @@ const doctorSchema = new Schema({
     ],
     required: true,
     default: [],
-    default: [],
   },
   patientList: {
     type: [
@@ -64,18 +62,49 @@ const doctorSchema = new Schema({
   availableSlots: {
     type: [
       {
-        starttime: {
+        day: {
+          type: String,
+          required: true,
+        },
+        timeSlot: {
+          type: String,
+          required: true,
+        },
+        startTime: {
           type: Date,
           required: true,
         },
-        endtime: {
+        endTime: {
           type: Date,
           required: true,
+        },
+        isBooked: {
+          type: Boolean,
+          required: true,
+          default: false,
+        },
+        patientName: {
+          type: String,
+        },
+        appointmentType: {
+          type: String,
         },
       },
     ],
     required: true,
     default: [],
+  },
+  walletBalance: {
+    type: Number,
+    default: 0,
+  },
+  adminApproval: {
+    type: Boolean,
+    default: false,
+  },
+  contractAccepted: {
+    type: Boolean,
+    default: false,
   },
 });
 
