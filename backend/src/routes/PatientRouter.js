@@ -35,6 +35,6 @@ router.patch("/:username/linkFamMember", linkFamMember);
 router.get("/:username/getFamMember", getFamMembers);
 
 //get prescriptions route
-router.get("/:username/getPrescriptions", getPrescriptions);
+router.get("/:username/prescriptions", getPrescriptions);
 
 module.exports = router;
