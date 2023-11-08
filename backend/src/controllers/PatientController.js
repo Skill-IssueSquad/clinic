@@ -656,6 +656,10 @@ const linkFamMember = async (req, res) => {
     famMember.linkedAccounts = [];
   }
 
+  if (!famMember.extfamilyMembers) {
+    famMember.extfamilyMembers = [];
+  }
+
   //check if family member found is not already in extFamilyMembers array, if not in array then add
   for (const famMember of patient.extfamilyMembers) {
     if (famMember._id == famMember_id) {
@@ -674,6 +678,28 @@ const linkFamMember = async (req, res) => {
       healthPackageType: famMember.healthPackageType,
     });
   }
+
+  let newRel = "";
+
+  if (relation === "wife") {
+    newRel = "husband";
+  } else if (relation === "husband") {
+    newRel = "wife";
+  } else if (relation === "son" || relation === "daughter") {
+    if (patient.gender === "M") {
+      newRel = "father";
+    } else {
+      newRel = "mother";
+    }
+  }
+
+  famMember.extfamilyMembers.push({
+    name: patient.name,
+    relation: newRel, //wife, husband, father, mother
+    age: patient.age,
+    gender: patient.gender, //M, F, Bahy
+    healthPackageType: patient.healthPackageType,
+  });
 
   //add to linked accounts array in both accounts
   patients.linkedAccounts.push({ patiend_id: famMember_id });
@@ -694,6 +720,7 @@ const linkFamMember = async (req, res) => {
   //update the existing family member
   await Patient.findByIdAndUpdate(famMember_id, {
     linkedAccounts: famMember.linkedAccounts,
+    extfamilyMembers: famMember.extfamilyMembers,
   }).catch((err) => {
     return res.status(500).json({
       success: false,
