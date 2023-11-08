@@ -10,7 +10,7 @@ const getDoctor = async (req, res) => {
   // console.log("I am here");
   const { username } = req.params;
   // console.log(username);
-  const doctor = await Doctor.find({ username }).catch((err) => {
+  const doctor = await Doctor.findOne({ username }).catch((err) => {
     const send = {
       success: false,
       data: null,
@@ -19,7 +19,7 @@ const getDoctor = async (req, res) => {
     res.status(500).json(send);
     return;
   });
-  if (doctor.length === 0) {
+  if (!doctor) {
     const send = {
       success: false,
       data: null,

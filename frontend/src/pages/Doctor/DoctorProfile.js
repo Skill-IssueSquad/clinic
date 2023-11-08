@@ -30,7 +30,7 @@ const UserProfile = () => {
     const f = async () => {
       try {
         const response = await axios.get(`/doctor/${username}`);
-        const data = response.data.data[0];
+        const data = response.data.data;
         const Doctor = {
           ...data,
         };
