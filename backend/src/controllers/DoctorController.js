@@ -590,7 +590,7 @@ const addAppointment = async (req, res) => {
     var doctor = await Doctor.findOne({ username });
     const doctorId = doctor._id;
     const patientName = patient.name;
-    console.log("My name is :", patientName);
+    // console.log("My name is :", patientName);
     var appointment = await Appointments.findById({ _id: appID });
     const prescriptionId = appointment.prescription_id;
     const followUp = await Appointments.create({
@@ -621,7 +621,7 @@ const addAppointment = async (req, res) => {
         slot.isBooked = true;
         slot.patientName = patientName;
         slot.appointmentType = type;
-        console.log("I am here");
+        // console.log("I am here");
       }
     });
     doctor = await Doctor.findByIdAndUpdate(
