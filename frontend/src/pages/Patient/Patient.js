@@ -6,6 +6,7 @@ import NavBar from "../../components/navBar";
 import PrescriptionsMultiLevelFilterTable from "../../components/PrescriptionsMultiLevelFilterTable";
 import AddFamilyMember from "../../components/Patient/addFamilyMember";
 import PatientDetails from "../../components/Patient/PatientDetails";
+import LinkFamilyMemberForm from "../../components/Patient/linkFamilyMemberform";
 
 const Patient = () => {
   const [patient, setPatient] = useState(null);
@@ -23,6 +24,8 @@ const Patient = () => {
       return { message: error.message };
     }
   }; // Empty dependency array since this function doesn't depend on any changing variables
+
+  const linkFamMember = async (formData) => {};
 
   useEffect(() => {
     const fetchPatient = async () => {
@@ -44,6 +47,8 @@ const Patient = () => {
       <PatientDetails patient={patient} />
       <p></p>
       <AddFamilyMember onSubmit={submitFamMember} />
+      <p></p>
+      <LinkFamilyMemberForm onSubmit={linkFamMember} />
       <p></p>
       <PrescriptionsMultiLevelFilterTable
         columns={["doctor_name", "date", "isFilled", "View Prescriptions"]}
