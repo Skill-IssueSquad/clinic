@@ -157,6 +157,7 @@ const getAppointments = async (req, res) => {
         appID: appointment._id,
         id: i,
         date: appointmentDate,
+        time: appointment.slot,
         status: appointment.status,
         name: patientName,
         gender: patient.gender,
@@ -603,33 +604,19 @@ const addAppointment = async (req, res) => {
       prescription_id: prescriptionId,
       status: "upcoming",
     });
-    // doctor = await Doctor.findByIdAndUpdate(
-    //   { _id: doctorId },
-    //   {
-    //     $set: { "availableSlots.$[elem].isBooked": true },
-    //     $set: { "availableSlots.$[elem].patientName": patientName },
-    //     $set: { "availableSlots.$[elem].appointmentType": type },
-    //   },
-    //   {
-    //     arrayFilters: [{ "elem.day": day, "elem.timeSlot": timeSlot }],
-    //     new: true,
-    //   }
-    // );
-    const slots = doctor.availableSlots;
-    slots.forEach((slot) => {
-      if (slot.day === day && slot.timeSlot === timeSlot) {
-        slot.isBooked = true;
-        slot.patientName = patientName;
-        slot.appointmentType = type;
-        // console.log("I am here");
-      }
-    });
     doctor = await Doctor.findByIdAndUpdate(
       { _id: doctorId },
       {
-        availableSlots: slots,
+        $set: {
+          "availableSlots.$[elem].isBooked": true,
+          "availableSlots.$[elem].patientName": patientName,
+          "availableSlots.$[elem].appointmentType": type,
+        },
       },
-      { new: true }
+      {
+        arrayFilters: [{ "elem.day": day, "elem.timeSlot": timeSlot }],
+        new: true,
+      }
     );
     const data = {
       name: patientName,
