@@ -6,3 +6,5 @@ const HealthPackageShop = () => {
 
   return <HealthPackageOptions />;
 };
+
+export default HealthPackageShop;
