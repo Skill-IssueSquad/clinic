@@ -93,6 +93,7 @@ const DayTimeSlotSelector = ({ username, patientId, appID }) => {
         day: slot.day,
         timeSlot: slot.timeSlot,
         type: "followUp",
+        startTime: slot.startTime,
         patientId,
         appID,
       }),
@@ -100,10 +101,15 @@ const DayTimeSlotSelector = ({ username, patientId, appID }) => {
     const data = await response.json();
     console.log(data);
     if (data.success) {
-      setMessage("Follow up scheduled successfully");
-    } else {
-      setMessage(data.message);
+      slots.forEach((s) => {
+        if (s._id === slot._id) {
+          s.isBooked = true;
+          s.patientName = data.data.name;
+          s.appointmentType = "followUp";
+        }
+      });
     }
+    setMessage(data.message);
   };
 
   return (

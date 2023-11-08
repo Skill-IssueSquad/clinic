@@ -486,6 +486,7 @@ const addSlot = async (req, res) => {
     const { username } = req.params;
     const { day, timeSlot } = req.body;
     var doctor = await Doctor.findOne({ username });
+    // console.log(timeSlot);
     const doctorId = doctor._id;
     startTime = new Date(`${day} ${timeSlot}`);
     // Parse the day and timeSlot into a Date object
@@ -499,8 +500,10 @@ const addSlot = async (req, res) => {
 
     // Set the new minutes to the Date object
     endTime.setMinutes(minutes);
-    startTime.setHours(startTime.getHours() + 2);
-    endTime.setHours(endTime.getHours() + 2);
+    startTime.setHours(startTime.getHours() + 3);
+    endTime.setHours(endTime.getHours() + 3);
+    // console.log(startTime);
+    // console.log(endTime);
     const isBooked = false;
     const patientName = "";
     const appointmentType = "";
@@ -582,12 +585,62 @@ const getSchedule = async (req, res) => {
 const addAppointment = async (req, res) => {
   try {
     const { username } = req.params;
-    const { day, timeSlot, type, patientId, appID } = req.body;
-    const patient = await Patient.findById({ _id: patientId });
+    const { day, timeSlot, startTime, type, patientId, appID } = req.body;
+    var patient = await Patient.findById({ _id: patientId });
     var doctor = await Doctor.findOne({ username });
     const doctorId = doctor._id;
     const patientName = patient.name;
-    const appointment = await Appointments.findById({ _id: appID });
+    console.log("My name is :", patientName);
+    var appointment = await Appointments.findById({ _id: appID });
+    const prescriptionId = appointment.prescription_id;
+    const followUp = await Appointments.create({
+      doctor_id: doctorId,
+      type,
+      date: startTime,
+      day,
+      slot: timeSlot,
+      patient_id: patientId,
+      prescription_id: prescriptionId,
+      status: "upcoming",
+    });
+    // doctor = await Doctor.findByIdAndUpdate(
+    //   { _id: doctorId },
+    //   {
+    //     $set: { "availableSlots.$[elem].isBooked": true },
+    //     $set: { "availableSlots.$[elem].patientName": patientName },
+    //     $set: { "availableSlots.$[elem].appointmentType": type },
+    //   },
+    //   {
+    //     arrayFilters: [{ "elem.day": day, "elem.timeSlot": timeSlot }],
+    //     new: true,
+    //   }
+    // );
+    const slots = doctor.availableSlots;
+    slots.forEach((slot) => {
+      if (slot.day === day && slot.timeSlot === timeSlot) {
+        slot.isBooked = true;
+        slot.patientName = patientName;
+        slot.appointmentType = type;
+        console.log("I am here");
+      }
+    });
+    doctor = await Doctor.findByIdAndUpdate(
+      { _id: doctorId },
+      {
+        availableSlots: slots,
+      },
+      { new: true }
+    );
+    const data = {
+      name: patientName,
+      followUp,
+    };
+    const send = {
+      success: true,
+      data,
+      message: `${type} scheduled successfully for ${patientName}`,
+    };
+    res.status(200).json(send);
   } catch (error) {
     const send = {
       success: false,

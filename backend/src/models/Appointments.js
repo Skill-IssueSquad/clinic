@@ -16,8 +16,12 @@ const appointmentSchema = new Schema({
     type: Date,
     required: true,
   },
-  time: {
-    type: Number,
+  day: {
+    type: String,
+    required: true,
+  },
+  slot: {
+    type: String,
     required: true,
   },
   patient_id: {
