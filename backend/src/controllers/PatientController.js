@@ -518,7 +518,7 @@ const viewAllDoctorsAvailable = async (req, res) => {
       }
     });
 
-    console.log("DOCS MATCHING: ",doctors);
+    console.log("DOCS MATCHING: ", doctors);
 
     doctors = doctors.map((doctor) => {
       // get each doctors markup from contract
@@ -612,6 +612,8 @@ const createDoc = async (req, res) => {
   });
 };
 
+const linkFamMember = async (req, res) => {};
+
 module.exports = {
   addFamMember,
   getFamMembers,
@@ -623,4 +625,5 @@ module.exports = {
   viewAllDoctorsAvailable,
   createDoc,
   getPatientAPI,
+  linkFamMember,
 };
