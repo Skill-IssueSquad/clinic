@@ -28,7 +28,13 @@ const Patient = () => {
 
   const linkFamMember = async (formData) => {};
   const handleCancelSubscription = async () => {
-    console.log("Cancel subscription");
+    try {
+      await axios.patch(
+        "http://localhost:8000/patient/bahyone/subscriptions/cancel"
+      );
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {

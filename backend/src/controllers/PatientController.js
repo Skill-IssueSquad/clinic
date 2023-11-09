@@ -440,7 +440,7 @@ const viewAllDoctors = async (req, res) => {
       });
     }
 
-    let doctors = await Doctor.find({contractAccepted: true}).catch((err) => {
+    let doctors = await Doctor.find({ contractAccepted: true }).catch((err) => {
       if (err) {
         return res.status(500).json({
           success: false,
@@ -776,6 +776,61 @@ const linkFamMember = async (req, res) => {
   });
 };
 
+const cancelHealthPackage = async (req, res) => {
+  //find the fam member account from the unique email or phone number (find out which one was provided)
+  //if not found return error
+  //if found add link to the patient account (in both accounts)
+
+  const { username } = req.params;
+
+  const patient = await getPatient(username);
+
+  if (!patient) {
+    return res.status(404).json({
+      success: false,
+      data: null,
+      message: "Patient account not found",
+    });
+  }
+
+  //change package status to cancelled and set the end date to be the renewal date
+  //do same for all family members
+  patient.healthPackageType.status = "cancelled";
+  patient.healthPackageType.endDate = patient.healthPackageType.renewal;
+
+  for (const famMember of patient.extfamilyMembers) {
+    famMember.healthPackageType.type = patient.healthPackageType.type;
+    famMember.healthPackageType.status = "cancelled";
+    famMember.healthPackageType.endDate = famMember.healthPackageType.renewal;
+  }
+
+  //update the existing patient
+  await Patient.findByIdAndUpdate(patient._id, {
+    healthPackageType: patient.healthPackageType,
+    extfamilyMembers: patient.extfamilyMembers,
+  }).catch((err) => {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: err.message || "Some error occurred while updating patient.",
+    });
+  });
+
+  const newPatient = await Patient.findById(patient._id).catch((err) => {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: err.message || "Some error occurred while retrieving patient.",
+    });
+  });
+
+  return res.status(200).json({
+    success: true,
+    data: newPatient,
+    message: "Health package cancelled successfully",
+  });
+};
+
 module.exports = {
   addFamMember,
   getFamMembers,
@@ -788,4 +843,5 @@ module.exports = {
   createDoc,
   getPatientAPI,
   linkFamMember,
+  cancelHealthPackage,
 };

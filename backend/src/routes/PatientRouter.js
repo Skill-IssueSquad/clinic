@@ -14,6 +14,7 @@ const {
   createDoc,
   getPatientAPI,
   linkFamMember,
+  cancelHealthPackage,
 } = require("../controllers/PatientController");
 const { create } = require("../models/Patient");
 
@@ -36,5 +37,11 @@ router.get("/:username/getFamMember", getFamMembers);
 
 //get prescriptions route
 router.get("/:username/prescriptions", getPrescriptions);
+
+//subscribe health package route
+router.patch("/:username/subscriptions/subscribe", () => {});
+
+//cancel health package subscription route
+router.patch("/:username/subscriptions/cancel", cancelHealthPackage);
 
 module.exports = router;
