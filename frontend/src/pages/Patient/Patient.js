@@ -10,6 +10,7 @@ import LinkFamilyMemberForm from "../../components/Patient/linkFamilyMemberform"
 
 const Patient = () => {
   const [patient, setPatient] = useState(null);
+  //const [prescriptions, setPrescriptions] = useState(null);
 
   const submitFamMember = async (formData) => {
     try {
@@ -25,7 +26,28 @@ const Patient = () => {
     }
   }; // Empty dependency array since this function doesn't depend on any changing variables
 
-  const linkFamMember = async (formData) => {};
+  const linkFamMember = async (formData) => {
+    try {
+      const res = await axios.patch(
+        "http://localhost:8000/patient/bahyone/linkFamMember",
+        formData
+      );
+      console.log(res.data);
+      return { message: res.data.message };
+    } catch (error) {
+      console.log(error);
+      return { message: error.message };
+    }
+  };
+  const handleCancelSubscription = async () => {
+    try {
+      await axios.patch(
+        "http://localhost:8000/patient/bahyone/subscriptions/cancel"
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     const fetchPatient = async () => {
@@ -35,7 +57,7 @@ const Patient = () => {
     };
 
     fetchPatient();
-  }, [submitFamMember]); // Empty dependency array to run once on component mount
+  }, [submitFamMember, linkFamMember]); // Empty dependency array to run once on component mount
 
   if (!patient) return null;
 
@@ -44,7 +66,10 @@ const Patient = () => {
   return (
     <div className="patient">
       <NavBar name={"Patient Dashboard"} />
-      <PatientDetails patient={patient} />
+      <PatientDetails
+        patient={patient}
+        handleCancelSubscription={handleCancelSubscription}
+      />
       <p></p>
       <Typography
         variant="h6"

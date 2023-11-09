@@ -13,13 +13,17 @@ const {
   viewAllDoctorsAvailable,
   createDoc,
   getPatientAPI,
+  getPatientAPIByID,
   linkFamMember,
+  cancelHealthPackage,
+  tempSub,
   getAllFreeDocAppointments
 } = require("../controllers/PatientController");
 const { create } = require("../models/Patient");
 
 router.get("/freeAppointments", getAllFreeDocAppointments);
 router.get("/:username", getPatientAPI);
+router.get("/getByID/:id", getPatientAPIByID);
 router.get("/:username/appointments", getAllAppointments);
 router.get("/:username/appointments/date", getAppointmentsByDate);
 router.get("/:username/appointments/status", getAppointmentsByStatus);
@@ -38,5 +42,11 @@ router.get("/:username/getFamMember", getFamMembers);
 
 //get prescriptions route
 router.get("/:username/prescriptions", getPrescriptions);
+
+//subscribe health package route (temp and will be removed )
+router.patch("/:username/subscriptions/subscribe", tempSub);
+
+//cancel health package subscription route
+router.patch("/:username/subscriptions/cancel", cancelHealthPackage);
 
 module.exports = router;

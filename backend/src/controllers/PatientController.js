@@ -33,6 +33,36 @@ const getPatientAPI = async (req, res) => {
   }
 };
 
+const getPatientAPIByID = async (req, res) => {
+  const { id } = req.params;
+  console.log("The new acc");
+  console.log(id);
+
+  try {
+    const patient = await Patient.findById(id);
+    if (patient) {
+      return res.status(200).json({
+        success: true,
+        data: patient,
+        message: "Patient retrieved successfully",
+      });
+    } else {
+      return res.status(404).json({
+        success: false,
+        data: null,
+        message: "Patient not found",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message:
+        error.message || "Some error occurred while retrieving patients.",
+    });
+  }
+};
+
 //assuming the patient already exists (otherwise they would
 //be filling the registration form and we would be creating a new patient)
 const addFamMember = async (req, res) => {
@@ -442,6 +472,7 @@ const viewAllDoctors = async (req, res) => {
     }
 
     let doctors = await Doctor.find({ contractAccepted: true }).catch((err) => {
+    let doctors = await Doctor.find({ contractAccepted: true }).catch((err) => {
       if (err) {
         return res.status(500).json({
           success: false,
@@ -721,12 +752,13 @@ const linkFamMember = async (req, res) => {
 
   const famMember_id = famMember._id;
 
+  //get the original patient
   const patient = await getPatient(username);
 
-  let found = false;
-  if (!patient.extfamilyMembers) {
-    patient.extfamilyMembers = [];
-  }
+  // let found = false;
+  // if (!patient.extfamilyMembers) {
+  //   patient.extfamilyMembers = [];
+  // }
 
   if (!patient.linkedAccounts) {
     patient.linkedAccounts = [];
@@ -736,28 +768,28 @@ const linkFamMember = async (req, res) => {
     famMember.linkedAccounts = [];
   }
 
-  if (!famMember.extfamilyMembers) {
-    famMember.extfamilyMembers = [];
-  }
+  // if (!famMember.extfamilyMembers) {
+  //   famMember.extfamilyMembers = [];
+  // }
 
   //check if family member found is not already in extFamilyMembers array, if not in array then add
-  for (const famMember of patient.extfamilyMembers) {
-    if (famMember._id == famMember_id) {
-      found = true;
-      break;
-    }
-  }
+  // for (const familyMember of patient.extfamilyMembers) {
+  //   if (famMember.name === familyMember.name) {
+  //     found = true;
+  //     break;
+  //   }
+  // }
 
-  if (!found) {
-    //add new family member info to extfamilyMembers array
-    patient.extfamilyMembers.push({
-      name: famMember.name,
-      relation: relation, //wife, husband, son, daughter
-      age: famMember.age,
-      gender: famMember.gender, //M, F, Bahy
-      healthPackageType: famMember.healthPackageType,
-    });
-  }
+  // if (!found) {
+  //   //add new family member info to patient's extfamilyMembers array
+  //   patient.extfamilyMembers.push({
+  //     name: famMember.name,
+  //     relation: relation, //wife, husband, son, daughter
+  //     age: famMember.age,
+  //     gender: famMember.gender, //M, F, Bahy
+  //     healthPackageType: patient.healthPackageType,
+  //   });
+  // }
 
   let newRel = "";
 
@@ -773,21 +805,24 @@ const linkFamMember = async (req, res) => {
     }
   }
 
-  famMember.extfamilyMembers.push({
-    name: patient.name,
-    relation: newRel, //wife, husband, father, mother
-    age: patient.age,
-    gender: patient.gender, //M, F, Bahy
-    healthPackageType: patient.healthPackageType,
-  });
+  // famMember.extfamilyMembers.push({
+  //   name: patient.name,
+  //   relation: newRel, //wife, husband, father, mother
+  //   age: patient.age,
+  //   gender: patient.gender, //M, F, Bahy
+  //   healthPackageType: patient.healthPackageType,
+  // });
 
   //add to linked accounts array in both accounts
-  patients.linkedAccounts.push({ patiend_id: famMember_id });
-  famMember.linkedAccounts.push({ patient_id: patient._id });
+  patient.linkedAccounts.push({
+    patient_id: famMember_id,
+    relation: relation,
+  });
+  famMember.linkedAccounts.push({ patient_id: patient._id, relation: newRel });
 
   //update the existing patient
   await Patient.findByIdAndUpdate(patient._id, {
-    extfamilyMembers: patient.extfamilyMembers,
+    //extfamilyMembers: patient.extfamilyMembers,
     linkedAccounts: patient.linkedAccounts,
   }).catch((err) => {
     return res.status(500).json({
@@ -800,7 +835,8 @@ const linkFamMember = async (req, res) => {
   //update the existing family member
   await Patient.findByIdAndUpdate(famMember_id, {
     linkedAccounts: famMember.linkedAccounts,
-    extfamilyMembers: famMember.extfamilyMembers,
+    //extfamilyMembers: famMember.extfamilyMembers,
+    healthPackageType: patient.healthPackageType,
   }).catch((err) => {
     return res.status(500).json({
       success: false,
@@ -826,6 +862,158 @@ const linkFamMember = async (req, res) => {
   });
 };
 
+const cancelHealthPackage = async (req, res) => {
+  //find the fam member account from the unique email or phone number (find out which one was provided)
+  //if not found return error
+  //if found add link to the patient account (in both accounts)
+
+  const { username } = req.params;
+
+  const patient = await getPatient(username);
+
+  if (!patient) {
+    return res.status(404).json({
+      success: false,
+      data: null,
+      message: "Patient account not found",
+    });
+  }
+
+  if (!patient.extfamilyMembers) {
+    patient.extfamilyMembers = [];
+  }
+
+  //change package status to cancelled and set the end date to be the renewal date
+  //do same for all family members
+  patient.healthPackageType.status = "cancelled";
+  patient.healthPackageType.endDate = patient.healthPackageType.renewal;
+
+  for (const famMember of patient.extfamilyMembers) {
+    famMember.healthPackageType.type = patient.healthPackageType.type;
+    famMember.healthPackageType.status = "cancelled";
+    famMember.healthPackageType.endDate = patient.healthPackageType.renewal;
+  }
+
+  if (!patient.linkedAccounts) {
+    patient.linkedAccounts = [];
+  }
+
+  //TODO: also check linked accounts and cancel their health packages
+  for (const linkedAccount of patient.linkedAccounts) {
+    const linkedPatient = await Patient.findById(linkedAccount.patient_id);
+    linkedPatient.healthPackageType.status = "cancelled";
+    linkedPatient.healthPackageType.endDate = patient.healthPackageType.renewal;
+    linkedAccount.healthPackageType.type = patient.healthPackageType.type;
+
+    await Patient.findByIdAndUpdate(linkedPatient._id, {
+      healthPackageType: linkedPatient.healthPackageType,
+    }).catch((err) => {
+      return res.status(500).json({
+        success: false,
+        data: null,
+        message:
+          err.message ||
+          "Some error occurred while updating linked patient account.",
+      });
+    });
+  }
+
+  //update the existing patient
+  await Patient.findByIdAndUpdate(patient._id, {
+    healthPackageType: patient.healthPackageType,
+    extfamilyMembers: patient.extfamilyMembers,
+  }).catch((err) => {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: err.message || "Some error occurred while updating patient.",
+    });
+  });
+
+  const newPatient = await Patient.findById(patient._id).catch((err) => {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: err.message || "Some error occurred while retrieving patient.",
+    });
+  });
+
+  return res.status(200).json({
+    success: true,
+    data: newPatient,
+    message: "Health package cancelled successfully",
+  });
+};
+
+const tempSub = async (req, res) => {
+  const data = req.body;
+  const { username } = req.params;
+
+  const patient = await getPatient(username);
+  patient.healthPackageType.status = "subscribed";
+  patient.healthPackageType.type = data.healthPackage;
+  patient.healthPackageType.renewal = data.renewal;
+
+  if (!patient.extfamilyMembers) {
+    patient.extfamilyMembers = [];
+  }
+
+  if (!patient.linkedAccounts) {
+    patient.linkedAccounts = [];
+  }
+
+  for (const famMember of patient.extfamilyMembers) {
+    famMember.healthPackageType.status = "subscribed";
+    famMember.healthPackageType.type = data.healthPackage;
+    famMember.healthPackageType.renewal = data.renewal;
+  }
+
+  for (const linkedAccount of patient.linkedAccounts) {
+    const linkedPatient = await Patient.findById(linkedAccount.patient_id);
+    linkedPatient.healthPackageType.status = "subscribed";
+    linkedPatient.healthPackageType.type = data.healthPackage;
+    linkedPatient.healthPackageType.renewal = data.renewal;
+
+    await Patient.findByIdAndUpdate(linkedPatient._id, {
+      healthPackageType: linkedPatient.healthPackageType,
+    }).catch((err) => {
+      return res.status(500).json({
+        success: false,
+        data: null,
+        message:
+          err.message ||
+          "Some error occurred while updating linked patient account.",
+      });
+    });
+  }
+
+  //update the existing patient
+  await Patient.findByIdAndUpdate(patient._id, {
+    healthPackageType: patient.healthPackageType,
+    extfamilyMembers: patient.extfamilyMembers,
+  }).catch((err) => {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: err.message || "Some error occurred while updating patient.",
+    });
+  });
+
+  const newPatient = await Patient.findById(patient._id).catch((err) => {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: err.message || "Some error occurred while retrieving patient.",
+    });
+  });
+
+  return res.status(200).json({
+    success: true,
+    data: newPatient,
+    message: "Health package cancelled successfully",
+  });
+};
+
 module.exports = {
   addFamMember,
   getFamMembers,
@@ -837,6 +1025,9 @@ module.exports = {
   viewAllDoctorsAvailable,
   createDoc,
   getPatientAPI,
+  getPatientAPIByID,
   linkFamMember,
   getAllFreeDocAppointments,
+  cancelHealthPackage,
+  tempSub,
 };
