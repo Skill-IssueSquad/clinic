@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FormControl,
   InputLabel,
@@ -51,35 +51,44 @@ const timeSlots = [
   "23:30",
 ];
 
-const DayTimeSlotSelector = ({ username, slots, setSlots }) => {
-  const [selectedDay, setSelectedDay] = useState("");
+const DayTimeSlotSelector = ({
+  username,
+  slots,
+  setSlots,
+  setSelectedDay1: setSelectedDay,
+  selectedDay1: selectedDay,
+}) => {
+  // const [selectedDay, setSelectedDay] = useState("");
   const [message, setMessage] = useState("");
   const handleDayChange = (event) => {
     setSelectedDay(event.target.value);
   };
-
-  const search = async (event) => {
-    if (selectedDay === "") {
-      setMessage("Please select a day");
-      return;
-    }
-    const response = await fetch(`/doctor/schedule/${username}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ day: selectedDay }),
-    });
-    const data = await response.json();
-    console.log(data.data);
-    if (!data.success) {
-      setSlots([]);
-      setMessage(data.message);
-    } else {
-      setSlots(data.data);
-      setMessage("");
-    }
-  };
+  useEffect(() => {
+    const f = async (event) => {
+      if (selectedDay === "") {
+        setMessage("Please select a day");
+        setSlots([]);
+        return;
+      }
+      const response = await fetch(`/doctor/schedule/${username}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ day: selectedDay }),
+      });
+      const data = await response.json();
+      console.log(data.data);
+      if (!data.success) {
+        setSlots([]);
+        setMessage(data.message);
+      } else {
+        setSlots(data.data);
+        setMessage("");
+      }
+    };
+    f();
+  }, [selectedDay]);
 
   return (
     <div>
@@ -94,9 +103,9 @@ const DayTimeSlotSelector = ({ username, slots, setSlots }) => {
         </Grid>
 
         <Grid item xs={12}>
-          <Button variant="contained" color="primary" onClick={search}>
+          {/* <Button variant="contained" color="primary" onClick={search}>
             Show schedule
-          </Button>
+          </Button> */}
         </Grid>
       </Grid>
       <br />

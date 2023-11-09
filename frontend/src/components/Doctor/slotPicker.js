@@ -44,8 +44,15 @@ const timeSlots = [
   "23:30",
 ];
 
-const DayTimeSlotSelector = ({ username, slots, setSlots }) => {
-  const [selectedDay, setSelectedDay] = useState("");
+const DayTimeSlotSelector = ({
+  username,
+  slots,
+  setSlots,
+  selectedDay2: selectedDay,
+  setSelectedDay2: setSelectedDay,
+  selectedDay1: scheduleDay,
+}) => {
+  // const [selectedDay, setSelectedDay] = useState("");
   const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
   const [message, setMessage] = useState("");
 
@@ -81,13 +88,15 @@ const DayTimeSlotSelector = ({ username, slots, setSlots }) => {
     if (data.success) {
       setMessage("Slot added successfully");
       setSelectedTimeSlot("");
-      const slot = {
-        day: selectedDay,
-        timeSlot: selectedTimeSlot,
-        appointmentType: "",
-        patientName: "",
-      };
-      setSlots([...slots, slot]);
+      if (selectedDay === scheduleDay) {
+        const slot = {
+          day: selectedDay,
+          timeSlot: selectedTimeSlot,
+          appointmentType: "",
+          patientName: "",
+        };
+        setSlots([...slots, slot]);
+      }
     } else {
       setMessage(data.message);
     }
