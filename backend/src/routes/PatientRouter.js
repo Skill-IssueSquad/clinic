@@ -13,6 +13,7 @@ const {
   viewAllDoctorsAvailable,
   createDoc,
   getPatientAPI,
+  getPatientAPIByID,
   linkFamMember,
   cancelHealthPackage,
   tempSub,
@@ -20,6 +21,7 @@ const {
 const { create } = require("../models/Patient");
 
 router.get("/:username", getPatientAPI);
+router.get("/getByID/:id", getPatientAPIByID);
 router.get("/:username/appointments", getAllAppointments);
 router.get("/:username/appointments/date", getAppointmentsByDate);
 router.get("/:username/appointments/status", getAppointmentsByStatus);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Typography,
   Grid,
@@ -9,9 +9,11 @@ import {
   DialogContent,
   DialogActions,
 } from "@mui/material";
+import axios from "axios";
 
 const PatientDetails = ({ patient, handleCancelSubscription }) => {
   const [isDialogOpen, setDialogOpen] = useState(false);
+  const [linkedAccs, setLinkedAccs] = useState([]); // New state for linked accounts
   const {
     username,
     name,
@@ -37,6 +39,23 @@ const PatientDetails = ({ patient, handleCancelSubscription }) => {
     setDialogOpen(true);
   };
 
+  const getLinkedAccounts = async () => {
+    if (!linkedAccounts) return;
+    let linkedAccountsToPatient = [];
+
+    for (const linkedAcc of linkedAccounts) {
+      console.log(linkedAcc.patient_id);
+      const response = await axios.get(
+        `http://localhost:8000/patient/getByID/${linkedAcc.patient_id}`
+      );
+      const data = response.data.data;
+      console.log(data);
+      linkedAccountsToPatient.push(data);
+    }
+
+    setLinkedAccs(linkedAccountsToPatient);
+  };
+
   const handleDialogClose = () => {
     setDialogOpen(false);
   };
@@ -46,6 +65,10 @@ const PatientDetails = ({ patient, handleCancelSubscription }) => {
     handleCancelSubscription();
     handleDialogClose();
   };
+
+  useEffect(() => {
+    getLinkedAccounts();
+  }, []);
 
   return (
     <Paper elevation={3} style={{ padding: "20px" }}>
@@ -226,6 +249,79 @@ const PatientDetails = ({ patient, handleCancelSubscription }) => {
                           Health Package Renewal:{" "}
                           {new Date(
                             member.healthPackageType.renewal
+                          ).toLocaleDateString()}
+                        </Typography>
+                      </>
+                    )}
+                  </Paper>
+                </Grid>
+              );
+            })}
+          </Grid>
+          <p></p>
+          <Typography variant="h6" gutterBottom>
+            Linked Accounts
+          </Typography>
+          <Grid container spacing={3}>
+            {linkedAccs.map((acc) => {
+              const isAccUnsubscribed =
+                acc.healthPackageType.status === "unsubscribed";
+              const isAccCancelled =
+                acc.healthPackageType.status === "cancelled";
+              const isAccSubscribed =
+                acc.healthPackageType.status === "subscribed";
+
+              return (
+                <Grid item xs={12} sm={6} md={4} key={acc.username}>
+                  <Paper elevation={3} style={{ padding: "10px" }}>
+                    <Typography variant="h6" gutterBottom>
+                      {acc.name}
+                    </Typography>
+                    <Typography variant="body1" gutterBottom>
+                      username: {acc.username}
+                    </Typography>
+                    {/* <Typography variant="body1" gutterBottom>
+                      Relation: {acc.relation}
+                    </Typography> */}
+                    <Typography variant="body1" gutterBottom>
+                      Age: {acc.age}
+                    </Typography>
+                    <Typography variant="body1" gutterBottom>
+                      Gender: {acc.gender}
+                    </Typography>
+                    {isAccUnsubscribed && (
+                      <Typography variant="body1" gutterBottom>
+                        Health Package Status: {acc.healthPackageType.status}
+                      </Typography>
+                    )}
+                    {isAccCancelled && (
+                      <>
+                        <Typography variant="body1" gutterBottom>
+                          Health Package End Date:{" "}
+                          {new Date(
+                            acc.healthPackageType.endDate
+                          ).toLocaleDateString()}
+                        </Typography>
+                        <Typography variant="body1" gutterBottom>
+                          Health Package Status: {acc.healthPackageType.status}
+                        </Typography>
+                        <Typography variant="body1" gutterBottom>
+                          Health Package Type: {acc.healthPackageType.type}
+                        </Typography>
+                      </>
+                    )}
+                    {isAccSubscribed && (
+                      <>
+                        <Typography variant="body1" gutterBottom>
+                          Health Package Status: {acc.healthPackageType.status}
+                        </Typography>
+                        <Typography variant="body1" gutterBottom>
+                          Health Package Type: {acc.healthPackageType.type}
+                        </Typography>
+                        <Typography variant="body1" gutterBottom>
+                          Health Package Renewal:{" "}
+                          {new Date(
+                            acc.healthPackageType.renewal
                           ).toLocaleDateString()}
                         </Typography>
                       </>

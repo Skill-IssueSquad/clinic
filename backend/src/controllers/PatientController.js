@@ -32,6 +32,36 @@ const getPatientAPI = async (req, res) => {
   }
 };
 
+const getPatientAPIByID = async (req, res) => {
+  const { id } = req.params;
+  console.log("The new acc");
+  console.log(id);
+
+  try {
+    const patient = await Patient.findById(id);
+    if (patient) {
+      return res.status(200).json({
+        success: true,
+        data: patient,
+        message: "Patient retrieved successfully",
+      });
+    } else {
+      return res.status(404).json({
+        success: false,
+        data: null,
+        message: "Patient not found",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message:
+        error.message || "Some error occurred while retrieving patients.",
+    });
+  }
+};
+
 //assuming the patient already exists (otherwise they would
 //be filling the registration form and we would be creating a new patient)
 const addFamMember = async (req, res) => {
@@ -674,10 +704,10 @@ const linkFamMember = async (req, res) => {
   //get the original patient
   const patient = await getPatient(username);
 
-  let found = false;
-  if (!patient.extfamilyMembers) {
-    patient.extfamilyMembers = [];
-  }
+  // let found = false;
+  // if (!patient.extfamilyMembers) {
+  //   patient.extfamilyMembers = [];
+  // }
 
   if (!patient.linkedAccounts) {
     patient.linkedAccounts = [];
@@ -687,28 +717,28 @@ const linkFamMember = async (req, res) => {
     famMember.linkedAccounts = [];
   }
 
-  if (!famMember.extfamilyMembers) {
-    famMember.extfamilyMembers = [];
-  }
+  // if (!famMember.extfamilyMembers) {
+  //   famMember.extfamilyMembers = [];
+  // }
 
   //check if family member found is not already in extFamilyMembers array, if not in array then add
-  for (const familyMember of patient.extfamilyMembers) {
-    if (famMember.name === familyMember.name) {
-      found = true;
-      break;
-    }
-  }
+  // for (const familyMember of patient.extfamilyMembers) {
+  //   if (famMember.name === familyMember.name) {
+  //     found = true;
+  //     break;
+  //   }
+  // }
 
-  if (!found) {
-    //add new family member info to patient's extfamilyMembers array
-    patient.extfamilyMembers.push({
-      name: famMember.name,
-      relation: relation, //wife, husband, son, daughter
-      age: famMember.age,
-      gender: famMember.gender, //M, F, Bahy
-      healthPackageType: patient.healthPackageType,
-    });
-  }
+  // if (!found) {
+  //   //add new family member info to patient's extfamilyMembers array
+  //   patient.extfamilyMembers.push({
+  //     name: famMember.name,
+  //     relation: relation, //wife, husband, son, daughter
+  //     age: famMember.age,
+  //     gender: famMember.gender, //M, F, Bahy
+  //     healthPackageType: patient.healthPackageType,
+  //   });
+  // }
 
   let newRel = "";
 
@@ -724,24 +754,24 @@ const linkFamMember = async (req, res) => {
     }
   }
 
-  famMember.extfamilyMembers.push({
-    name: patient.name,
-    relation: newRel, //wife, husband, father, mother
-    age: patient.age,
-    gender: patient.gender, //M, F, Bahy
-    healthPackageType: patient.healthPackageType,
-  });
+  // famMember.extfamilyMembers.push({
+  //   name: patient.name,
+  //   relation: newRel, //wife, husband, father, mother
+  //   age: patient.age,
+  //   gender: patient.gender, //M, F, Bahy
+  //   healthPackageType: patient.healthPackageType,
+  // });
 
   //add to linked accounts array in both accounts
   patient.linkedAccounts.push({
-    patiend_id: famMember_id,
+    patient_id: famMember_id,
     relation: relation,
   });
   famMember.linkedAccounts.push({ patient_id: patient._id, relation: newRel });
 
   //update the existing patient
   await Patient.findByIdAndUpdate(patient._id, {
-    extfamilyMembers: patient.extfamilyMembers,
+    //extfamilyMembers: patient.extfamilyMembers,
     linkedAccounts: patient.linkedAccounts,
   }).catch((err) => {
     return res.status(500).json({
@@ -754,7 +784,7 @@ const linkFamMember = async (req, res) => {
   //update the existing family member
   await Patient.findByIdAndUpdate(famMember_id, {
     linkedAccounts: famMember.linkedAccounts,
-    extfamilyMembers: famMember.extfamilyMembers,
+    //extfamilyMembers: famMember.extfamilyMembers,
     healthPackageType: patient.healthPackageType,
   }).catch((err) => {
     return res.status(500).json({
@@ -944,6 +974,7 @@ module.exports = {
   viewAllDoctorsAvailable,
   createDoc,
   getPatientAPI,
+  getPatientAPIByID,
   linkFamMember,
   cancelHealthPackage,
   tempSub,
