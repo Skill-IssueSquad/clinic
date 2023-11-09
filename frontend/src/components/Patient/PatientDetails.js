@@ -119,6 +119,7 @@ const PatientDetails = ({ patient, handleCancelSubscription }) => {
                 variant="contained"
                 color="secondary"
                 onClick={handleDialogOpen}
+                style={{ backgroundColor: "red" }}
               >
                 Cancel Subscription
               </Button>
@@ -136,7 +137,8 @@ const PatientDetails = ({ patient, handleCancelSubscription }) => {
                   </Button>
                   <Button
                     onClick={handleCancelSubscriptionClick}
-                    color="secondary"
+                    color="primary"
+                    style={{ backgroundColor: "red" }}
                   >
                     Yes
                   </Button>

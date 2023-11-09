@@ -31,10 +31,11 @@ const packageDescriptionStyle = {
 
 const purchaseButtonStyle = {
   marginTop: "16px",
+  backgroundColor: "green",
 };
 
 const HealthPackages = () => {
-  const [selectedPackages, setSelectedPackages] = useState([]);
+  const [selectedPackage, setSelectedPackage] = useState(null);
   const [selectedFamilyMembers, setSelectedFamilyMembers] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [familyMembers, setFamilyMembers] = useState([]);
@@ -76,27 +77,28 @@ const HealthPackages = () => {
   ];
 
   const handleSelectPackage = (packageIndex) => {
-    const newSelectedPackages = [...selectedPackages];
-    if (newSelectedPackages.includes(packageIndex)) {
-      newSelectedPackages.splice(newSelectedPackages.indexOf(packageIndex), 1);
-    } else {
-      newSelectedPackages.push(packageIndex);
-    }
-    setSelectedPackages(newSelectedPackages);
+    setSelectedPackage(packageIndex);
+    // const newSelectedPackages = [...selectedPackages];
+    // if (newSelectedPackages.includes(packageIndex)) {
+    //   newSelectedPackages.splice(newSelectedPackages.indexOf(packageIndex), 1);
+    // } else {
+    //   newSelectedPackages.push(packageIndex);
+    // }
+    // setSelectedPackages(newSelectedPackages);
   };
 
-  const handleSelectFamilyMember = (familyMember) => {
-    const newSelectedFamilyMembers = [...selectedFamilyMembers];
-    if (newSelectedFamilyMembers.includes(familyMember)) {
-      newSelectedFamilyMembers.splice(
-        newSelectedFamilyMembers.indexOf(familyMember),
-        1
-      );
-    } else {
-      newSelectedFamilyMembers.push(familyMember);
-    }
-    setSelectedFamilyMembers(newSelectedFamilyMembers);
-  };
+  // const handleSelectFamilyMember = (familyMember) => {
+  //   const newSelectedFamilyMembers = [...selectedFamilyMembers];
+  //   if (newSelectedFamilyMembers.includes(familyMember)) {
+  //     newSelectedFamilyMembers.splice(
+  //       newSelectedFamilyMembers.indexOf(familyMember),
+  //       1
+  //     );
+  //   } else {
+  //     newSelectedFamilyMembers.push(familyMember);
+  //   }
+  //   setSelectedFamilyMembers(newSelectedFamilyMembers);
+  // };
 
   const handleOpenDialog = () => {
     setOpenDialog(true);
@@ -138,7 +140,7 @@ const HealthPackages = () => {
             <ListItemSecondaryAction>
               <Checkbox
                 edge="end"
-                checked={selectedPackages.includes(index)}
+                checked={selectedPackage === index}
                 onChange={() => handleSelectPackage(index)}
               />
             </ListItemSecondaryAction>
@@ -149,7 +151,7 @@ const HealthPackages = () => {
         style={purchaseButtonStyle}
         variant="contained"
         onClick={handleOpenDialog}
-        disabled={selectedPackages.length === 0}
+        disabled={selectedPackage === null}
       >
         Purchase
       </Button>
@@ -157,11 +159,13 @@ const HealthPackages = () => {
         <DialogTitle>Selected Packages</DialogTitle>
         <DialogContent>
           <List>
-            {selectedPackages.map((index) => (
-              <ListItem key={index}>
-                <ListItemText primary={availablePackages[index].name} />
+            {selectedPackage !== null && (
+              <ListItem>
+                <ListItemText
+                  primary={availablePackages[selectedPackage].name}
+                />
               </ListItem>
-            ))}
+            )}
           </List>
           {/* <DialogTitle>Family Members</DialogTitle>
           <List>
@@ -190,6 +194,7 @@ const HealthPackages = () => {
             onClick={handleCloseDialog}
             variant="contained"
             color="secondary"
+            style={{ backgroundColor: "red" }}
           >
             Cancel
           </Button>
