@@ -875,10 +875,33 @@ const tempSub = async (req, res) => {
     patient.extfamilyMembers = [];
   }
 
+  if (!patient.linkedAccounts) {
+    patient.linkedAccounts = [];
+  }
+
   for (const famMember of patient.extfamilyMembers) {
     famMember.healthPackageType.status = "subscribed";
     famMember.healthPackageType.type = data.healthPackage;
     famMember.healthPackageType.renewal = data.renewal;
+  }
+
+  for (const linkedAccount of patient.linkedAccounts) {
+    const linkedPatient = await Patient.findById(linkedAccount.patient_id);
+    linkedPatient.healthPackageType.status = "subscribed";
+    linkedPatient.healthPackageType.type = data.healthPackage;
+    linkedPatient.healthPackageType.renewal = data.renewal;
+
+    await Patient.findByIdAndUpdate(linkedPatient._id, {
+      healthPackageType: linkedPatient.healthPackageType,
+    }).catch((err) => {
+      return res.status(500).json({
+        success: false,
+        data: null,
+        message:
+          err.message ||
+          "Some error occurred while updating linked patient account.",
+      });
+    });
   }
 
   //update the existing patient
