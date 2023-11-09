@@ -10,6 +10,7 @@ import LinkFamilyMemberForm from "../../components/Patient/linkFamilyMemberform"
 
 const Patient = () => {
   const [patient, setPatient] = useState(null);
+  //const [prescriptions, setPrescriptions] = useState(null);
 
   const submitFamMember = async (formData) => {
     try {
@@ -26,6 +27,9 @@ const Patient = () => {
   }; // Empty dependency array since this function doesn't depend on any changing variables
 
   const linkFamMember = async (formData) => {};
+  const handleCancelSubscription = async () => {
+    console.log("Cancel subscription");
+  };
 
   useEffect(() => {
     const fetchPatient = async () => {
@@ -44,7 +48,10 @@ const Patient = () => {
   return (
     <div className="patient">
       <NavBar name={"Patient Dashboard"} />
-      <PatientDetails patient={patient} />
+      <PatientDetails
+        patient={patient}
+        handleCancelSubscription={handleCancelSubscription}
+      />
       <p></p>
       <Typography
         variant="h6"

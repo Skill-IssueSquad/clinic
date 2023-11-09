@@ -1,7 +1,17 @@
-import React from "react";
-import { Typography, Grid, Paper } from "@mui/material";
+import React, { useState } from "react";
+import {
+  Typography,
+  Grid,
+  Paper,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
 
-const PatientDetails = ({ patient }) => {
+const PatientDetails = ({ patient, handleCancelSubscription }) => {
+  const [isDialogOpen, setDialogOpen] = useState(false);
   const {
     username,
     name,
@@ -22,6 +32,20 @@ const PatientDetails = ({ patient }) => {
   const isMainAccountUnsubscribed = healthPackageType.status === "unsubscribed";
   const isMainAccountCancelled = healthPackageType.status === "cancelled";
   const isMainAccountSubscribed = healthPackageType.status === "subscribed";
+
+  const handleDialogOpen = () => {
+    setDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+  };
+
+  const handleCancelSubscriptionClick = () => {
+    // Call your function to handle subscription cancellation here
+    handleCancelSubscription();
+    handleDialogClose();
+  };
 
   return (
     <Paper elevation={3} style={{ padding: "20px" }}>
@@ -91,6 +115,33 @@ const PatientDetails = ({ patient }) => {
                 Health Package Renewal:{" "}
                 {new Date(healthPackageType.renewal).toLocaleDateString()}
               </Typography>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={handleDialogOpen}
+              >
+                Cancel Subscription
+              </Button>
+              <Dialog open={isDialogOpen} onClose={handleDialogClose}>
+                <DialogTitle>Cancel Subscription</DialogTitle>
+                <DialogContent>
+                  <Typography variant="body1" gutterBottom>
+                    Are you sure you want to cancel your health package
+                    subscription?
+                  </Typography>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleDialogClose} color="primary">
+                    No
+                  </Button>
+                  <Button
+                    onClick={handleCancelSubscriptionClick}
+                    color="secondary"
+                  >
+                    Yes
+                  </Button>
+                </DialogActions>
+              </Dialog>
             </>
           )}
           <Typography variant="body1" gutterBottom>

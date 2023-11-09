@@ -163,7 +163,7 @@ const HealthPackages = () => {
               </ListItem>
             ))}
           </List>
-          <DialogTitle>Family Members</DialogTitle>
+          {/* <DialogTitle>Family Members</DialogTitle>
           <List>
             {familyMembers.map((familyMember) => (
               <ListItem key={familyMember.name}>
@@ -180,7 +180,7 @@ const HealthPackages = () => {
                 </ListItemSecondaryAction>
               </ListItem>
             ))}
-          </List>
+          </List> */}
         </DialogContent>
         <DialogActions>
           <Button onClick={handlePurchase} variant="contained" color="primary">
