@@ -472,7 +472,6 @@ const viewAllDoctors = async (req, res) => {
     }
 
     let doctors = await Doctor.find({ contractAccepted: true }).catch((err) => {
-    let doctors = await Doctor.find({ contractAccepted: true }).catch((err) => {
       if (err) {
         return res.status(500).json({
           success: false,
