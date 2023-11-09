@@ -691,8 +691,8 @@ const linkFamMember = async (req, res) => {
   }
 
   //check if family member found is not already in extFamilyMembers array, if not in array then add
-  for (const famMember of patient.extfamilyMembers) {
-    if (famMember._id == famMember_id) {
+  for (const familyMember of patient.extfamilyMembers) {
+    if (famMember.name === familyMember.name) {
       found = true;
       break;
     }
@@ -732,8 +732,11 @@ const linkFamMember = async (req, res) => {
   });
 
   //add to linked accounts array in both accounts
-  patients.linkedAccounts.push({ patiend_id: famMember_id });
-  famMember.linkedAccounts.push({ patient_id: patient._id });
+  patients.linkedAccounts.push({
+    patiend_id: famMember_id,
+    relation: relation,
+  });
+  famMember.linkedAccounts.push({ patient_id: patient._id, relation: newRel });
 
   //update the existing patient
   await Patient.findByIdAndUpdate(patient._id, {
@@ -793,6 +796,10 @@ const cancelHealthPackage = async (req, res) => {
     });
   }
 
+  if (!patient.extfamilyMembers) {
+    patient.extfamilyMembers = [];
+  }
+
   //change package status to cancelled and set the end date to be the renewal date
   //do same for all family members
   patient.healthPackageType.status = "cancelled";
@@ -801,7 +808,31 @@ const cancelHealthPackage = async (req, res) => {
   for (const famMember of patient.extfamilyMembers) {
     famMember.healthPackageType.type = patient.healthPackageType.type;
     famMember.healthPackageType.status = "cancelled";
-    famMember.healthPackageType.endDate = famMember.healthPackageType.renewal;
+    famMember.healthPackageType.endDate = patient.healthPackageType.renewal;
+  }
+
+  if (!patient.linkedAccounts) {
+    patient.linkedAccounts = [];
+  }
+
+  //TODO: also check linked accounts and cancel their health packages
+  for (const linkedAccount of patient.linkedAccounts) {
+    const linkedPatient = await Patient.findById(linkedAccount.patient_id);
+    linkedPatient.healthPackageType.status = "cancelled";
+    linkedPatient.healthPackageType.endDate = patient.healthPackageType.renewal;
+    linkedAccount.healthPackageType.type = patient.healthPackageType.type;
+
+    await Patient.findByIdAndUpdate(linkedPatient._id, {
+      healthPackageType: linkedPatient.healthPackageType,
+    }).catch((err) => {
+      return res.status(500).json({
+        success: false,
+        data: null,
+        message:
+          err.message ||
+          "Some error occurred while updating linked patient account.",
+      });
+    });
   }
 
   //update the existing patient
@@ -837,7 +868,7 @@ const tempSub = async (req, res) => {
 
   const patient = await getPatient(username);
   patient.healthPackageType.status = "subscribed";
-  patient.healthPackageType.type = data.type;
+  patient.healthPackageType.type = data.healthPackage;
   patient.healthPackageType.renewal = data.renewal;
 
   if (!patient.extfamilyMembers) {
@@ -846,7 +877,7 @@ const tempSub = async (req, res) => {
 
   for (const famMember of patient.extfamilyMembers) {
     famMember.healthPackageType.status = "subscribed";
-    famMember.healthPackageType.type = data.type;
+    famMember.healthPackageType.type = data.healthPackage;
     famMember.healthPackageType.renewal = data.renewal;
   }
 

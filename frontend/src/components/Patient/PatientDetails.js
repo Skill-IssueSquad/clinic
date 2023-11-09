@@ -138,7 +138,6 @@ const PatientDetails = ({ patient, handleCancelSubscription }) => {
                   <Button
                     onClick={handleCancelSubscriptionClick}
                     color="primary"
-                    style={{ backgroundColor: "red" }}
                   >
                     Yes
                   </Button>

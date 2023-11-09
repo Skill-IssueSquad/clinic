@@ -112,9 +112,28 @@ const HealthPackages = () => {
     // Implement the logic to proceed to the payment page with selected packages and family members' details.
     // You can use react-router or another routing solution for this.
     // Redirect code here...
+
+    var oneYearFromNow = new Date();
+    let packageName = "";
+
+    switch (selectedPackage) {
+      case 0:
+        packageName = "silver";
+        break;
+      case 1:
+        packageName = "gold";
+        break;
+      case 2:
+        packageName = "platinum";
+        break;
+      default:
+        break;
+    }
+
+    oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
     const formData = {
-      healthPackage: availablePackages[selectedPackage].name,
-      renewal: Date.now().setFullYear(Date.now().getFullYear() + 1),
+      healthPackage: packageName,
+      renewal: oneYearFromNow,
     };
 
     try {
