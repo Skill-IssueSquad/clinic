@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FormControl,
   InputLabel,
@@ -59,29 +59,32 @@ const DayTimeSlotSelector = ({ username, patientId, appID }) => {
   const handleDayChange = (event) => {
     setSelectedDay(event.target.value);
   };
-
-  const search = async (event) => {
-    if (selectedDay === "") {
-      setMessage("Please select a day");
-      return;
-    }
-    const response = await fetch(`/doctor/schedule/${username}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ day: selectedDay }),
-    });
-    const data = await response.json();
-    console.log(data.data);
-    if (!data.success) {
-      setSlots([]);
-      setMessage(data.message);
-    } else {
-      setSlots(data.data);
-      setMessage("");
-    }
-  };
+  useEffect(() => {
+    const f = async (event) => {
+      if (selectedDay === "") {
+        setMessage("Please select a day");
+        setSlots([]);
+        return;
+      }
+      const response = await fetch(`/doctor/schedule/${username}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ day: selectedDay }),
+      });
+      const data = await response.json();
+      console.log(data.data);
+      if (!data.success) {
+        setSlots([]);
+        setMessage(data.message);
+      } else {
+        setSlots(data.data);
+        setMessage("");
+      }
+    };
+    f();
+  }, [selectedDay]);
 
   const handleRowClick = async (slot) => {
     const currentDate = new Date();
@@ -131,11 +134,11 @@ const DayTimeSlotSelector = ({ username, patientId, appID }) => {
           />
         </Grid>
 
-        <Grid item xs={12}>
+        {/* <Grid item xs={12}>
           <Button variant="contained" color="primary" onClick={search}>
             Show schedule
           </Button>
-        </Grid>
+        </Grid> */}
       </Grid>
       <br />
       <div style={{ maxWidth: 350 }}>
