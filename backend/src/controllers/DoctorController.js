@@ -502,8 +502,8 @@ const addSlot = async (req, res) => {
 
     // Set the new minutes to the Date object
     endTime.setMinutes(minutes);
-    startTime.setHours(startTime.getHours() + 3);
-    endTime.setHours(endTime.getHours() + 3);
+    startTime.setHours(startTime.getHours() + 2);
+    endTime.setHours(endTime.getHours() + 2);
     // console.log(startTime);
     // console.log(endTime);
     const isBooked = false;
