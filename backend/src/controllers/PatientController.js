@@ -2,6 +2,7 @@ const Patient = require("../models/Patient");
 const Doctor = require("../models/Doctor");
 const Appointments = require("../models/Appointments");
 const Prescription = require("../models/Prescription");
+const Clinc = require("../models/Clinic");
 
 const getPatientAPI = async (req, res) => {
   const { username } = req.params;
@@ -294,7 +295,7 @@ const getAllAppointments = async (req, res) => {
           });
 
         fullAppointments.push(fullAppointment);
-      };
+      }
 
       return res.status(200).json({
         success: true,
@@ -450,37 +451,41 @@ const viewAllDoctors = async (req, res) => {
       }
     });
 
+    const markup = (await Clinc.findOne({})).markupPercentage;
+
     doctors = doctors.map((doctor) => {
       // get each doctors markup from contract
-      if (doctor.contracts.length > 0) {
-        const markup = doctor.contracts[0].markupOnSalary;
+      // if (doctor.contracts.length > 0) {
 
-        // check on health package type for discount
-        let discount = 0;
-        if (patient.healthPackageType) {
-          if (patient.healthPackageType.status === "subscribed") {
-            if (patient.healthPackageType.type === "silver") {
-              discount = 0.4;
-            } else if (patient.healthPackageType.type === "platinum") {
-              discount = 0.8;
-            } else if (patient.healthPackageType.type === "gold") {
-              discount = 0.6;
-            }
+      // check on health package type for discount
+      let discount = 0;
+      if (patient.healthPackageType) {
+        if (patient.healthPackageType.status === "subscribed") {
+          if (patient.healthPackageType.type === "silver") {
+            discount = 0.4;
+          } else if (patient.healthPackageType.type === "platinum") {
+            discount = 0.8;
+          } else if (patient.healthPackageType.type === "gold") {
+            discount = 0.6;
           }
         }
-
-        const sessionPrice =
-          (doctor.hourlyRate + 0.1 * markup) * (1 - discount);
-
-        // Return a new object with the modified properties
-        return { ...doctor._doc, sessionPrice };
-      } else {
-        // no contract for this doctor
-        const sessionPrice = -1;
-
-        // Return a new object with the modified properties
-        return { ...doctor._doc, sessionPrice };
       }
+
+      const sessionPrice = (
+        (doctor.hourlyRate / 2) *
+        (1 + markup / 100) *
+        (1 - discount)
+      ).toFixed(2);
+
+      // Return a new object with the modified properties
+      return { ...doctor._doc, sessionPrice };
+      //   } else {
+      //     // no contract for this doctor
+      //     const sessionPrice = -1;
+
+      //     // Return a new object with the modified properties
+      //     return { ...doctor._doc, sessionPrice };
+      //   }
     });
 
     return res.status(200).json({
@@ -541,38 +546,41 @@ const viewAllDoctorsAvailable = async (req, res) => {
 
     console.log("DOCS MATCHING: ", doctors);
 
+    const markup = (await Clinc.findOne({})).markupPercentage;
+
     doctors = doctors.map((doctor) => {
       // get each doctors markup from contract
-      if (doctor.contracts.length > 0) {
-        const markup = doctor.contracts[0].markupOnSalary;
+      // if (doctor.contracts.length > 0) {
 
-        // check on health package type for discount
-        let discount = 0;
-        if (patient.healthPackageType) {
-          if (patient.healthPackageType.status === "subscribed") {
-            // TODO: change to use of .discountOnSession
-            if (patient.healthPackageType.type === "silver") {
-              discount = 0.4;
-            } else if (patient.healthPackageType.type === "platinum") {
-              discount = 0.8;
-            } else if (patient.healthPackageType.type === "gold") {
-              discount = 0.6;
-            }
+      // check on health package type for discount
+      let discount = 0;
+      if (patient.healthPackageType) {
+        if (patient.healthPackageType.status === "subscribed") {
+          if (patient.healthPackageType.type === "silver") {
+            discount = 0.4;
+          } else if (patient.healthPackageType.type === "platinum") {
+            discount = 0.8;
+          } else if (patient.healthPackageType.type === "gold") {
+            discount = 0.6;
           }
         }
-
-        const sessionPrice =
-          (doctor.hourlyRate + 0.1 * markup) * (1 - discount);
-
-        // Return a new object with the modified properties
-        return { ...doctor._doc, sessionPrice };
-      } else {
-        // no contract for this doctor
-        const sessionPrice = -1;
-
-        // Return a new object with the modified properties
-        return { ...doctor._doc, sessionPrice };
       }
+
+      const sessionPrice = (
+        (doctor.hourlyRate / 2) *
+        (1 + markup / 100) *
+        (1 - discount)
+      ).toFixed(2);
+
+      // Return a new object with the modified properties
+      return { ...doctor._doc, sessionPrice };
+      //   } else {
+      //     // no contract for this doctor
+      //     const sessionPrice = -1;
+
+      //     // Return a new object with the modified properties
+      //     return { ...doctor._doc, sessionPrice };
+      //   }
     });
 
     return res.status(200).json({

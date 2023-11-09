@@ -25,13 +25,14 @@ function displayDate(date) {
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, "0"); // Month is zero-based, so add 1 and format to two digits.
   const day = String(d.getDate()).padStart(2, "0");
-  const hour = String(d.getHours() > 12 ? d.getHours() - 12: d.getHours()).padStart(2, "0");
+  const hour = String(
+    d.getHours() > 12 ? d.getHours() - 12 : d.getHours()
+  ).padStart(2, "0");
   const minute = String(d.getMinutes()).padStart(2, "0");
   const ampm = d.getHours() < 12 ? "AM" : "PM";
 
   return `${year}/${month}/${day} ${hour}:${minute} ${ampm}`;
 }
-
 
 const PatientMultiLevel = ({ columns, API_GET_URL, reqBody }) => {
   const initFilter = {};
@@ -213,7 +214,6 @@ const PatientMultiLevel = ({ columns, API_GET_URL, reqBody }) => {
           onChange={handleFilterChange}
         />
       ))}
-
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -264,9 +264,11 @@ const PatientMultiLevel = ({ columns, API_GET_URL, reqBody }) => {
           </TableBody>
         </Table>
       </TableContainer>
+      {(fullRows.length > 0) ? (
       <Dialog open={openDialog} onClose={handleCloseDialog}>
         {selectedRowIndex !== null && (
           <>
+            
             <DialogTitle>{fullRows[selectedRowIndex].name}</DialogTitle>
             <DialogContent>
               {console.log("Current Doc Data ", fullRows[selectedRowIndex])}
@@ -295,6 +297,7 @@ const PatientMultiLevel = ({ columns, API_GET_URL, reqBody }) => {
           </>
         )}
       </Dialog>
+      ) : (null)}
     </div>
   );
 };
