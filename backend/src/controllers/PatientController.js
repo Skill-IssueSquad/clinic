@@ -831,6 +831,52 @@ const cancelHealthPackage = async (req, res) => {
   });
 };
 
+const tempSub = async (req, res) => {
+  const data = req.body;
+  const { username } = req.params;
+
+  const patient = await getPatient(username);
+  patient.healthPackageType.status = "subscribed";
+  patient.healthPackageType.type = data.type;
+  patient.healthPackageType.renewal = data.renewal;
+
+  if (!patient.extfamilyMembers) {
+    patient.extfamilyMembers = [];
+  }
+
+  for (const famMember of patient.extfamilyMembers) {
+    famMember.healthPackageType.status = "subscribed";
+    famMember.healthPackageType.type = data.type;
+    famMember.healthPackageType.renewal = data.renewal;
+  }
+
+  //update the existing patient
+  await Patient.findByIdAndUpdate(patient._id, {
+    healthPackageType: patient.healthPackageType,
+    extfamilyMembers: patient.extfamilyMembers,
+  }).catch((err) => {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: err.message || "Some error occurred while updating patient.",
+    });
+  });
+
+  const newPatient = await Patient.findById(patient._id).catch((err) => {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: err.message || "Some error occurred while retrieving patient.",
+    });
+  });
+
+  return res.status(200).json({
+    success: true,
+    data: newPatient,
+    message: "Health package cancelled successfully",
+  });
+};
+
 module.exports = {
   addFamMember,
   getFamMembers,
@@ -844,4 +890,5 @@ module.exports = {
   getPatientAPI,
   linkFamMember,
   cancelHealthPackage,
+  tempSub,
 };

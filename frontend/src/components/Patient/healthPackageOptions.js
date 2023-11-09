@@ -11,7 +11,7 @@ import {
   ListItemSecondaryAction,
   Checkbox,
 } from "@mui/material";
-import axios from "axios";
+//import axios from "axios";
 
 const packageItemStyle = {
   backgroundColor: "white",
@@ -108,9 +108,33 @@ const HealthPackages = () => {
     setOpenDialog(false);
   };
 
-  const handlePurchase = () => {
+  const handlePurchase = async () => {
     // Implement the logic to proceed to the payment page with selected packages and family members' details.
     // You can use react-router or another routing solution for this.
+    // Redirect code here...
+    const formData = {
+      healthPackage: availablePackages[selectedPackage].name,
+      renewal: Date.now().setFullYear(Date.now().getFullYear() + 1),
+    };
+
+    try {
+      // Replace with your backend endpoint for purchasing health packages
+      const response = await axios.patch(
+        "http://localhost:8000/patient/bahyone/subscriptions/subscribe",
+        formData
+      );
+      const data = response.data.data;
+      console.log(data);
+    } catch (error) {
+      console.error("Error purchasing health package:", error);
+    }
+
+    // Clear the selected packages and family members
+    setSelectedPackage(null);
+    setSelectedFamilyMembers([]);
+    setOpenDialog(false);
+
+    // Redirect to payment page
     // Redirect code here...
   };
 
