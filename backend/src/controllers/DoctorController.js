@@ -4,12 +4,13 @@ const Appointments = require("../models/Appointments");
 const fs = require("fs");
 const numberToWords = require("number-to-words");
 const Prescription = require("../models/Prescription");
-const { start } = require("repl");
+const Clinic = require("../models/Clinic");
+const Packages = require("../models/Packages");
 
 const getDoctor = async (req, res) => {
-  // console.log("I am here");
+  //console.log("I am here");
   const { username } = req.params;
-  // console.log(username);
+  // console.log("The Username", username);
   const doctor = await Doctor.findOne({ username }).catch((err) => {
     const send = {
       success: false,
@@ -23,7 +24,7 @@ const getDoctor = async (req, res) => {
     const send = {
       success: false,
       data: null,
-      message: "Doctor not found",
+      message: "Doctor not found1",
     };
     res.status(404).json(send);
     return;
@@ -618,6 +619,29 @@ const addAppointment = async (req, res) => {
         new: true,
       }
     );
+    const markup = (await Clinic.findOne({})).markupPercentage;
+    // console.log("The markup is :", markup);
+    var discount = 0;
+    if (patient.healthPackageType.status === "subscribed") {
+      discount = (
+        await Packages.findOne({ type: patient.healthPackageType.type })
+      ).discountOnSession;
+    }
+    // console.log("The discount is :", discount);
+    const sessionPrice = (
+      (doctor.hourlyRate / 2) *
+      (1 + markup / 100) *
+      (1 - discount)
+    ).toFixed(2);
+    // console.log("The session price is :", sessionPrice);
+    patient = await Patient.findByIdAndUpdate(
+      { _id: patientId },
+      {
+        $inc: { walletBalance: sessionPrice },
+      },
+      { new: true }
+    );
+
     const data = {
       name: patientName,
       followUp,
@@ -626,6 +650,27 @@ const addAppointment = async (req, res) => {
       success: true,
       data,
       message: `${type} scheduled successfully for ${patientName}`,
+    };
+    res.status(200).json(send);
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    res.status(500).json(send);
+  }
+};
+
+const getMarkup = async (req, res) => {
+  try {
+    // console.log("I am here");
+    const markup = (await Clinic.findOne({})).markupPercentage;
+    // console.log("The markup is :", markup);
+    const send = {
+      success: true,
+      data: markup,
+      message: "Markup found successfully",
     };
     res.status(200).json(send);
   } catch (error) {
@@ -654,4 +699,5 @@ module.exports = {
   addSlot,
   getSchedule,
   addAppointment,
+  getMarkup,
 };

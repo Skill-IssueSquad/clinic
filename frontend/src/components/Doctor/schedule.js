@@ -51,10 +51,9 @@ const timeSlots = [
   "23:30",
 ];
 
-const DayTimeSlotSelector = ({ username }) => {
+const DayTimeSlotSelector = ({ username, slots, setSlots }) => {
   const [selectedDay, setSelectedDay] = useState("");
   const [message, setMessage] = useState("");
-  const [slots, setSlots] = useState([]);
   const handleDayChange = (event) => {
     setSelectedDay(event.target.value);
   };
