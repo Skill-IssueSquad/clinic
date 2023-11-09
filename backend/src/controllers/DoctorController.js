@@ -490,20 +490,32 @@ const addSlot = async (req, res) => {
     var doctor = await Doctor.findOne({ username });
     // console.log(timeSlot);
     const doctorId = doctor._id;
-    startTime = new Date(`${day} ${timeSlot}`);
-    // Parse the day and timeSlot into a Date object
-    let endTime = new Date(`${day} ${timeSlot}`);
+    //console.log(timeSlot); // prints 13:00
+    let dayComponents = day.split("-");
+    let timeComponents = timeSlot.split(":");
+
+    let year = parseInt(dayComponents[0]);
+    let month = parseInt(dayComponents[1]) - 1; // JavaScript months are 0-indexed
+    let dayOfMonth = parseInt(dayComponents[2]);
+
+    let hours = parseInt(timeComponents[0]);
+    let minutes = parseInt(timeComponents[1]);
+
+    let startTime = new Date(Date.UTC(year, month, dayOfMonth, hours, minutes));
+    // console.log(startTime);
+
+    let endTime = new Date(Date.UTC(year, month, dayOfMonth, hours, minutes));
 
     // Get the minutes from the Date object
-    let minutes = endTime.getMinutes();
+    minutes = endTime.getMinutes();
 
     // Add 30 to the minutes
     minutes += 30;
 
     // Set the new minutes to the Date object
     endTime.setMinutes(minutes);
-    startTime.setHours(startTime.getHours() + 2);
-    endTime.setHours(endTime.getHours() + 2);
+    //  startTime.setHours(startTime.getHours() + 2);
+    // endTime.setHours(endTime.getHours() + 2);
     // console.log(startTime);
     // console.log(endTime);
     const isBooked = false;
