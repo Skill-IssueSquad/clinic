@@ -2,7 +2,7 @@ const Patient = require("../models/Patient");
 const Doctor = require("../models/Doctor");
 const Appointments = require("../models/Appointments");
 const Prescription = require("../models/Prescription");
-const Clinc = require("../models/Clinic");
+const Clinic = require("../models/Clinic");
 
 const getPatientAPI = async (req, res) => {
   const { username } = req.params;
@@ -440,7 +440,7 @@ const viewAllDoctors = async (req, res) => {
       });
     }
 
-    let doctors = await Doctor.find().catch((err) => {
+    let doctors = await Doctor.find({contractAccepted: true}).catch((err) => {
       if (err) {
         return res.status(500).json({
           success: false,
@@ -451,7 +451,7 @@ const viewAllDoctors = async (req, res) => {
       }
     });
 
-    const markup = (await Clinc.findOne({})).markupPercentage;
+    const markup = (await Clinic.findOne({})).markupPercentage;
 
     doctors = doctors.map((doctor) => {
       // get each doctors markup from contract
@@ -527,6 +527,7 @@ const viewAllDoctorsAvailable = async (req, res) => {
     }
 
     let doctors = await Doctor.find({
+      contractAccepted: true,
       availableSlots: {
         $elemMatch: {
           startTime: { $lte: req.body.datetime },
@@ -546,7 +547,7 @@ const viewAllDoctorsAvailable = async (req, res) => {
 
     console.log("DOCS MATCHING: ", doctors);
 
-    const markup = (await Clinc.findOne({})).markupPercentage;
+    const markup = (await Clinic.findOne({})).markupPercentage;
 
     doctors = doctors.map((doctor) => {
       // get each doctors markup from contract
