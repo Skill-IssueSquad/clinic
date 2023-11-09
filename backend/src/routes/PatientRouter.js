@@ -14,9 +14,11 @@ const {
   createDoc,
   getPatientAPI,
   linkFamMember,
+  getAllFreeDocAppointments
 } = require("../controllers/PatientController");
 const { create } = require("../models/Patient");
 
+router.get("/freeAppointments", getAllFreeDocAppointments);
 router.get("/:username", getPatientAPI);
 router.get("/:username/appointments", getAllAppointments);
 router.get("/:username/appointments/date", getAppointmentsByDate);
