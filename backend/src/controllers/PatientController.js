@@ -671,6 +671,7 @@ const linkFamMember = async (req, res) => {
 
   const famMember_id = famMember._id;
 
+  //get the original patient
   const patient = await getPatient(username);
 
   let found = false;
@@ -699,13 +700,13 @@ const linkFamMember = async (req, res) => {
   }
 
   if (!found) {
-    //add new family member info to extfamilyMembers array
+    //add new family member info to patient's extfamilyMembers array
     patient.extfamilyMembers.push({
       name: famMember.name,
       relation: relation, //wife, husband, son, daughter
       age: famMember.age,
       gender: famMember.gender, //M, F, Bahy
-      healthPackageType: famMember.healthPackageType,
+      healthPackageType: patient.healthPackageType,
     });
   }
 
@@ -732,7 +733,7 @@ const linkFamMember = async (req, res) => {
   });
 
   //add to linked accounts array in both accounts
-  patients.linkedAccounts.push({
+  patient.linkedAccounts.push({
     patiend_id: famMember_id,
     relation: relation,
   });
@@ -754,6 +755,7 @@ const linkFamMember = async (req, res) => {
   await Patient.findByIdAndUpdate(famMember_id, {
     linkedAccounts: famMember.linkedAccounts,
     extfamilyMembers: famMember.extfamilyMembers,
+    healthPackageType: patient.healthPackageType,
   }).catch((err) => {
     return res.status(500).json({
       success: false,

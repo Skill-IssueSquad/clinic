@@ -26,7 +26,19 @@ const Patient = () => {
     }
   }; // Empty dependency array since this function doesn't depend on any changing variables
 
-  const linkFamMember = async (formData) => {};
+  const linkFamMember = async (formData) => {
+    try {
+      const res = await axios.patch(
+        "http://localhost:8000/patient/bahyone/linkFamMember",
+        formData
+      );
+      console.log(res.data);
+      return { message: res.data.message };
+    } catch (error) {
+      console.log(error);
+      return { message: error.message };
+    }
+  };
   const handleCancelSubscription = async () => {
     try {
       await axios.patch(
