@@ -45,7 +45,6 @@ function convertDateFormat(originalDateString) {
   return formattedDateString;
 }
 
-
 const PrescriptionsMultiLevelFilterTable = ({ columns, API_GET_URL }) => {
   const initFilter = {};
   columns.forEach((key) => {
@@ -84,7 +83,7 @@ const PrescriptionsMultiLevelFilterTable = ({ columns, API_GET_URL }) => {
     };
 
     fetchData();
-  }, [API_GET_URL, columns]);
+  }, []);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -346,7 +345,6 @@ const PrescriptionsMultiLevelFilterTable = ({ columns, API_GET_URL }) => {
                           modal
                         >
                           <span>
-                            
                             {Object.keys(fullRows[i]).map((innerKey) =>
                               innerKey === "medicines" ? (
                                 <div>
