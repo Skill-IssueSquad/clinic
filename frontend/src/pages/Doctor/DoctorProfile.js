@@ -196,7 +196,6 @@ const UserProfile = () => {
           {contractAccepted && <Slots username={username} />}
 
           <Contract
-            hourlyRate={user.hourlyRate}
             setContractAccepted={setContractAccepted}
             contractAccepted={contractAccepted}
             username={username}

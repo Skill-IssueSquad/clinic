@@ -665,11 +665,20 @@ const addAppointment = async (req, res) => {
 const getMarkup = async (req, res) => {
   try {
     // console.log("I am here");
+    const { username } = req.params;
+    const doctor = await Doctor.findOne({ username });
     const markup = (await Clinic.findOne({})).markupPercentage;
+    const hourlyRate = doctor.hourlyRate;
+    const totalPrice = (hourlyRate * (1 + markup / 100)).toFixed(2);
     // console.log("The markup is :", markup);
+    const data = {
+      markup,
+      hourlyRate,
+      totalPrice,
+    };
     const send = {
       success: true,
-      data: markup,
+      data: data,
       message: "Markup found successfully",
     };
     res.status(200).json(send);

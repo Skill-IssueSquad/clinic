@@ -53,6 +53,6 @@ router.post("/acceptContract/:username", acceptContract);
 router.post("/addSlot/:username", addSlot);
 router.post("/schedule/:username", getSchedule);
 router.post("/addAppointment/:username", addAppointment);
-router.get("/contract/getMarkup", getMarkup);
+router.get("/contract/getMarkup/:username", getMarkup);
 
 module.exports = router;

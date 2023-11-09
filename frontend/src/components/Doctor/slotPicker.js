@@ -92,10 +92,15 @@ const DayTimeSlotSelector = ({
         const slot = {
           day: selectedDay,
           timeSlot: selectedTimeSlot,
+          startTime: new Date(`${selectedDay} ${selectedTimeSlot}`),
           appointmentType: "",
           patientName: "",
         };
-        setSlots([...slots, slot]);
+        const newSlots = [...slots, slot].sort((a, b) => {
+          return a.startTime - b.startTime;
+        });
+
+        setSlots(newSlots);
       }
     } else {
       setMessage(data.message);
