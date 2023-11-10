@@ -17,9 +17,11 @@ const {
   linkFamMember,
   cancelHealthPackage,
   tempSub,
+  getAllFreeDocAppointments
 } = require("../controllers/PatientController");
 const { create } = require("../models/Patient");
 
+router.get("/freeAppointments", getAllFreeDocAppointments);
 router.get("/:username", getPatientAPI);
 router.get("/getByID/:id", getPatientAPIByID);
 router.get("/:username/appointments", getAllAppointments);

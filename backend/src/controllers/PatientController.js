@@ -3,6 +3,7 @@ const Doctor = require("../models/Doctor");
 const Appointments = require("../models/Appointments");
 const Prescription = require("../models/Prescription");
 const Clinic = require("../models/Clinic");
+const mongoose = require("mongoose");
 
 const getPatientAPI = async (req, res) => {
   const { username } = req.params;
@@ -628,6 +629,55 @@ const viewAllDoctorsAvailable = async (req, res) => {
   }
 };
 
+const getAllFreeDocAppointments = async (req, res) => {
+  // ASSUMES JWT AUTHENTICATION
+  // EXPECTED INPUT: { doctor_id: "69fe353h55g3h34hg53h" }
+  try {
+    const appointments = await Doctor.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(req.body.doctor_id),
+        },
+      },
+      {
+        $unwind: "$availableSlots",
+      },
+      {
+        $match: {
+          "availableSlots.isBooked": false,
+        },
+      },
+      {
+        $project: {
+          _id: 0, // Exclude the doctor's _id from the result
+          availableSlot: "$availableSlots",
+        },
+      },
+    ]).catch((err) => {
+      if (err) {
+        return res.status(500).json({
+          success: false,
+          data: null,
+          message:
+            err.message || "Some error occurred while retrieving appointments.",
+        });
+      }
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: appointments,
+      message: "Successfully retrieved all appointments",
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      data: req.body.doctor_id,
+      message: err.message,
+    });
+  }
+};
+
 const createDoc = async (req, res) => {
   //TESTING PURPOSES
   const rest = await Doctor.create({
@@ -976,6 +1026,7 @@ module.exports = {
   getPatientAPI,
   getPatientAPIByID,
   linkFamMember,
+  getAllFreeDocAppointments,
   cancelHealthPackage,
   tempSub,
 };
