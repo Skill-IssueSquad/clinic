@@ -650,7 +650,7 @@ const AddHealthRecord = async (req, res) => {
     documentType,
     documentName,
     // other health record properties...
-  } = req.body;
+  } = " ";
 
   // Use Multer to handle the file upload
   upload(req, res, async (err) => {
