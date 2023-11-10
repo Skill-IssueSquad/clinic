@@ -645,54 +645,64 @@ const getPatientemUsername = async (req, res) => {
 
 
 const AddHealthRecord = async (req, res) => {
+  // Extract other health record properties from the request body
   const {
     documentType,
     documentName,
     // other health record properties...
   } = req.body;
 
-  let documentUrl = "http://localhost:8000/documents/" + req.nameFile;
-
-  try {
-    const newHealthRecord = await Patient.findOneAndUpdate(
-      { username: req.params.username },
-      {
-        $push: {
-          healthRecords: {
-            documentType,
-            documentName,
-            documentUrl,
-          },
-        },
-      },
-      { new: true }
-    );
-
-    if (newHealthRecord) {
-      res.status(201).json({
-        success: true,
-        message: "Health record created successfully",
-        data: newHealthRecord,
-      });
-    } else {
-      res.status(404).json({
+  // Use Multer to handle the file upload
+  upload(req, res, async (err) => {
+    if (err) {
+      return res.status(500).json({
         success: false,
-        message: "Patient not found",
+        error: err.message,
         data: null,
       });
     }
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      error: error.message,
-      data: null,
-    });
-  }
+
+    const documentUrl = 'http://localhost:8000/documents/' + req.file.filename;
+
+    try {
+      const newHealthRecord = await Patient.findOneAndUpdate(
+        { username: req.params.username }, // Assuming username is the unique identifier
+        {
+          $push: {
+            healthRecords: {
+              documentType,
+              documentName,
+              documentUrl,
+            },
+          },
+        },
+        { new: true }
+      );
+
+      if (newHealthRecord) {
+        res.status(201).json({
+          success: true,
+          message: 'Health record created successfully',
+          data: newHealthRecord,
+        });
+      } else {
+        res.status(404).json({
+          success: false,
+          message: 'Patient not found',
+          data: null,
+        });
+      }
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        error: error.message,
+        data: null,
+      });
+    }
+  });
 };
 
-module.exports = {
-  AddHealthRecord,
-};
+
 
 
 module.exports = {
@@ -707,5 +717,6 @@ module.exports = {
   createDoc,
   getPatientAPI,
   getPatientemUsername,
-  AddHealthRecord
+  AddHealthRecord,
+  
 };
