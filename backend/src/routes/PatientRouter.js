@@ -13,10 +13,17 @@ const {
   viewAllDoctorsAvailable,
   createDoc,
   getPatientAPI,
+  getPatientemUsername,
+  AddHealthRecord,
 } = require("../controllers/PatientController");
+
+
 const { create } = require("../models/Patient");
 
+router.post('/patients/:username/healthrecords', AddHealthRecord);
+
 router.get("/:username", getPatientAPI);
+router.get("/email/:username", getPatientemUsername);
 router.get("/:username/appointments", getAllAppointments);
 router.get("/:username/appointments/date", getAppointmentsByDate);
 router.get("/:username/appointments/status", getAppointmentsByStatus);

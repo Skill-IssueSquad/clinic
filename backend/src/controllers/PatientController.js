@@ -612,6 +612,89 @@ const createDoc = async (req, res) => {
   });
 };
 
+
+
+const getPatientemUsername = async (req, res) => {
+  const { username } = req.params;
+
+  try {
+    const patient = await Patient.findOne({ username });
+
+    if (patient) {
+      return res.status(200).json({
+        success: true,
+        data: { email: patient.email },
+        message: "Patient email retrieved successfully",
+      });
+    } else {
+      return res.status(404).json({
+        success: false,
+        data: null,
+        message: "Patient not found",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message:
+        error.message || "Some error occurred while retrieving patient email.",
+    });
+  }
+};
+
+
+const AddHealthRecord = async (req, res) => {
+  const {
+    documentType,
+    documentName,
+    // other health record properties...
+  } = req.body;
+
+  let documentUrl = "http://localhost:8000/documents/" + req.nameFile;
+
+  try {
+    const newHealthRecord = await Patient.findOneAndUpdate(
+      { username: req.params.username },
+      {
+        $push: {
+          healthRecords: {
+            documentType,
+            documentName,
+            documentUrl,
+          },
+        },
+      },
+      { new: true }
+    );
+
+    if (newHealthRecord) {
+      res.status(201).json({
+        success: true,
+        message: "Health record created successfully",
+        data: newHealthRecord,
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: "Patient not found",
+        data: null,
+      });
+    }
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message,
+      data: null,
+    });
+  }
+};
+
+module.exports = {
+  AddHealthRecord,
+};
+
+
 module.exports = {
   addFamMember,
   getFamMembers,
@@ -623,4 +706,6 @@ module.exports = {
   viewAllDoctorsAvailable,
   createDoc,
   getPatientAPI,
+  getPatientemUsername,
+  AddHealthRecord
 };

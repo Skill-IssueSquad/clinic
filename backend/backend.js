@@ -9,7 +9,32 @@ const adminRouter = require("./src/routes/AdminRouter");
 const PatientRegisteration = require("./src/routes/patientRegisteration");
 const DoctorRegisteration = require("./src/routes/doctorRegisteration");
 const patientRouter = require("./src/routes/PatientRouter");
+// Import necessary modules
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
+// ... (previous imports and functions)
+
+// Multer configuration
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    // Specify the directory where the files will be stored
+    const uploadDir = './uploads/';
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir);
+    }
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    // Generate a unique filename for the uploaded file
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const fileExtension = path.extname(file.originalname);
+    cb(null, file.fieldname + '-' + uniqueSuffix + fileExtension);
+  },
+});
+
+const upload = multer({ storage: storage });
 
 mongoose
   .connect(process.env.DATABASE_URL, { useNewUrlParser: true })
