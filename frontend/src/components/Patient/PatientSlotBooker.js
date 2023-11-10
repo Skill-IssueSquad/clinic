@@ -14,7 +14,6 @@ import {
 import axios from "axios";
 import CircularProgress from "@mui/joy/CircularProgress";
 
-
 let bookingOptions = [];
 
 const SlotBooker = ({ doctor_id }) => {
@@ -44,20 +43,27 @@ const SlotBooker = ({ doctor_id }) => {
   const applyFilters = () => {
     const filteredSlots = originalData.filter((slot) => {
       // Filter by day
-      const filterDay = !selectedDay || slot.availableSlot.day.startsWith(selectedDay);
+      const filterDay =
+        !selectedDay || slot.availableSlot.day.startsWith(selectedDay);
 
       // Filter by timeSlot
-      const filterTimeSlot = !selectedTimeSlot || (
-        Number(slot.availableSlot.timeSlot.split(":")[0]) === Number(selectedTimeSlot.split(":")[0]) &&
-        Number(slot.availableSlot.timeSlot.split(":")[1]) === Number(selectedTimeSlot.split(":")[1])
-      );
+      const filterTimeSlot =
+        !selectedTimeSlot ||
+        (Number(slot.availableSlot.timeSlot.split(":")[0]) ===
+          Number(selectedTimeSlot.split(":")[0]) &&
+          Number(slot.availableSlot.timeSlot.split(":")[1]) ===
+            Number(selectedTimeSlot.split(":")[1]));
 
       return filterDay && filterTimeSlot;
     });
 
     const sortedSlots = filteredSlots.sort((a, b) => {
-      const dateA = new Date(`${a.availableSlot.day} ${a.availableSlot.timeSlot}`);
-      const dateB = new Date(`${b.availableSlot.day} ${b.availableSlot.timeSlot}`);
+      const dateA = new Date(
+        `${a.availableSlot.day} ${a.availableSlot.timeSlot}`
+      );
+      const dateB = new Date(
+        `${b.availableSlot.day} ${b.availableSlot.timeSlot}`
+      );
 
       return dateA - dateB;
     });
@@ -77,15 +83,29 @@ const SlotBooker = ({ doctor_id }) => {
         }
       );
 
-      let bookOptions = await axios.get("http://localhost:8000/patient/bahyone/bookingOptions");
+      let bookOptions = await axios.get(
+        "http://localhost:8000/patient/bahyone/bookingOptions"
+      );
 
       bookingOptions = bookOptions.data.data;
 
-      const sortedData = fetchedSlots.data.data.sort((a, b) => {
-        const dateA = new Date(`${a.availableSlot.day} ${a.availableSlot.timeSlot}`);
-        const dateB = new Date(`${b.availableSlot.day} ${b.availableSlot.timeSlot}`);
+      let sortedData = fetchedSlots.data.data.sort((a, b) => {
+        const dateA = new Date(
+          `${a.availableSlot.day} ${a.availableSlot.timeSlot}`
+        );
+        const dateB = new Date(
+          `${b.availableSlot.day} ${b.availableSlot.timeSlot}`
+        );
 
         return dateA - dateB;
+      });
+
+      sortedData = sortedData.filter((slot) => {
+        const date = new Date(
+          `${slot.availableSlot.day} ${slot.availableSlot.timeSlot}`
+        );
+        const currentDate = new Date();
+        return date >= currentDate;
       });
 
       setOriginalData(sortedData);
@@ -107,7 +127,9 @@ const SlotBooker = ({ doctor_id }) => {
 
   const handleRowClick = async (slot) => {
     const currentDate = new Date();
-    const chosenSlot = new Date(`${slot.availableSlot.day} ${slot.availableSlot.timeSlot}`);
+    const chosenSlot = new Date(
+      `${slot.availableSlot.day} ${slot.availableSlot.timeSlot}`
+    );
     if (chosenSlot < currentDate) {
       setMessage("Selected slot is in the past");
       return;
@@ -119,7 +141,7 @@ const SlotBooker = ({ doctor_id }) => {
   return (
     <div>
       {loading && <CircularProgress variant="solid" />}
-      {(!loading && slots.length > 0) && (  
+      {!loading && slots.length > 0 && (
         <h2>Dr. {slots[0].doctor_name}'s Slots</h2>
       )}
       <Grid container spacing={2}>
@@ -142,18 +164,14 @@ const SlotBooker = ({ doctor_id }) => {
           />
         </Grid>
         <Grid item xs={12}>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={clearFilters}
-          >
+          <Button variant="contained" color="secondary" onClick={clearFilters}>
             Clear Filters
           </Button>
         </Grid>
       </Grid>
       <br />
       <div style={{ maxWidth: 400 }}>
-        {(!loading && slots.length > 0) && (
+        {!loading && slots.length > 0 && (
           <TableContainer component={Paper}>
             <Table sx={{ maxWidth: 400 }} aria-label="simple table">
               <TableHead>
