@@ -183,7 +183,7 @@ const SlotBooker = ({ doctor_id }) => {
               </TableHead>
               <TableBody>
                 {slots.map((slot) => (
-                  <TableRow key={slot._id}>
+                  <TableRow key={slot.availableSlot._id}>
                     <TableCell>{slot.availableSlot.day}</TableCell>
                     <TableCell>{slot.availableSlot.timeSlot}</TableCell>
                     <TableCell>
