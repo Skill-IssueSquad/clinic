@@ -852,7 +852,7 @@ const cancelHealthPackage = async (req, res) => {
     const linkedPatient = await Patient.findById(linkedAccount.patient_id);
     linkedPatient.healthPackageType.status = "cancelled";
     linkedPatient.healthPackageType.endDate = patient.healthPackageType.renewal;
-    linkedAccount.healthPackageType.type = patient.healthPackageType.type;
+    linkedPatient.healthPackageType.type = patient.healthPackageType.type;
 
     await Patient.findByIdAndUpdate(linkedPatient._id, {
       healthPackageType: linkedPatient.healthPackageType,
