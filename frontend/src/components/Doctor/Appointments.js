@@ -435,7 +435,8 @@ const MultiLevelFilterTable = ({ username }) => {
                     key !== "id" &&
                     key != "healthRecords" &&
                     key !== "_id" &&
-                    key !== "appID"
+                    key !== "appID" &&
+                    key !== "familyMember_nationalId"
                   ) {
                     return (
                       <div key={key}>
@@ -444,7 +445,7 @@ const MultiLevelFilterTable = ({ username }) => {
                       </div>
                     );
                   } else {
-                    if (key === "healthRecords") {
+                    if (key === "healthRecords" && value !== null) {
                       return (
                         <div key="healthRecords">
                           <span>healthRecords: </span>

@@ -142,7 +142,23 @@ const getAppointments = async (req, res) => {
     for (const appointment of appointments) {
       const patientId = appointment.patient_id;
       const patient = await Patient.findById({ _id: patientId });
-      const patientName = patient.name;
+      var healthRecords = null;
+      var patientName = "";
+      if (appointment.familyMember_nationalId === null) {
+        patientName = patient.name;
+        healthRecords = patient.healthRecords;
+      } else {
+        const family = patient.extfamilyMembers;
+        family.forEach((member) => {
+          if (
+            member.nationalId.toString() ===
+            appointment.familyMember_nationalId.toString()
+          ) {
+            patientName = member.name;
+          }
+        });
+      }
+
       i++;
       //const appointmentDate = new Date(appointment.date).toLocaleDateString();
       const appointmentDate = new Date(appointment.date).toLocaleDateString(
@@ -165,7 +181,7 @@ const getAppointments = async (req, res) => {
         age: patient.age,
         type: appointment.type,
         mobileNumber: patient.mobileNumber,
-        healthRecords: patient.healthRecords,
+        healthRecords: healthRecords,
       };
       result.push(appointmentInfo);
     }
@@ -603,9 +619,20 @@ const addAppointment = async (req, res) => {
     var patient = await Patient.findById({ _id: patientId });
     var doctor = await Doctor.findOne({ username });
     const doctorId = doctor._id;
-    const patientName = patient.name;
+    var patientName = null;
     // console.log("My name is :", patientName);
     var appointment = await Appointments.findById({ _id: appID });
+    const familyMember_nationalId = appointment.familyMember_nationalId;
+    if (familyMember_nationalId === null) {
+      patientName = patient.name;
+    } else {
+      const family = patient.extfamilyMembers;
+      family.forEach((member) => {
+        if (member.nationalId.toString() === familyMember_nationalId) {
+          patientName = member.name;
+        }
+      });
+    }
     const prescriptionId = appointment.prescription_id;
     const followUp = await Appointments.create({
       doctor_id: doctorId,

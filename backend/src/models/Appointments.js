@@ -40,6 +40,11 @@ const appointmentSchema = new Schema({
     enum: ["upcoming", "completed", "cancelled", "rescheduled"],
     required: true,
   },
+  familyMember_nationalId: {
+    type: String,
+    // required: true,
+    default: null,
+  },
 });
 
 const Appointments = mongoose.model("Appointments", appointmentSchema);
