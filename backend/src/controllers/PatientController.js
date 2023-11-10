@@ -662,11 +662,11 @@ const AddHealthRecord = async (req, res) => {
       });
     }
 
-    const documentUrl = 'http://localhost:8000/documents/' + req.file.filename;
+    let documentUrl = 'http://localhost:8000/documents/' + req.file.filename;
 
     try {
       const newHealthRecord = await Patient.findOneAndUpdate(
-        { username: req.params.username }, // Assuming username is the unique identifier
+        { username: req.params.username }, 
         {
           $push: {
             healthRecords: {
