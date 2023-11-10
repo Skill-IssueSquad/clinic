@@ -17,10 +17,13 @@ const {
   linkFamMember,
   cancelHealthPackage,
   tempSub,
-  getAllFreeDocAppointments
+  getAllFreeDocAppointments,
+  getPatientBookingOptions,
+  bookAppointment
 } = require("../controllers/PatientController");
 const { create } = require("../models/Patient");
 
+router.get("/:username/bookingOptions", getPatientBookingOptions);
 router.get("/freeAppointments", getAllFreeDocAppointments);
 router.get("/:username", getPatientAPI);
 router.get("/getByID/:id", getPatientAPIByID);
@@ -30,6 +33,7 @@ router.get("/:username/appointments/status", getAppointmentsByStatus);
 router.post("/:username/doctors", viewAllDoctors);
 router.post("/:username/doctors/available", viewAllDoctorsAvailable);
 router.post("/createDoc", createDoc); // TESTING PURPOSES ONLY
+router.post("/:username/bookAppointment", bookAppointment);
 
 //add family member route
 router.patch("/:username/addFamMember", addFamMember);

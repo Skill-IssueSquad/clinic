@@ -633,10 +633,11 @@ const getAllFreeDocAppointments = async (req, res) => {
   // ASSUMES JWT AUTHENTICATION
   // EXPECTED INPUT: { doctor_id: "69fe353h55g3h34hg53h" }
   try {
+    // get doctor_id from query params
     const appointments = await Doctor.aggregate([
       {
         $match: {
-          _id: new mongoose.Types.ObjectId(req.body.doctor_id),
+          _id: new mongoose.Types.ObjectId(req.query.doctor_id),
         },
       },
       {
@@ -649,7 +650,7 @@ const getAllFreeDocAppointments = async (req, res) => {
       },
       {
         $project: {
-          _id: 0, // Exclude the doctor's _id from the result
+          doctor_name: "$name",
           availableSlot: "$availableSlots",
         },
       },
@@ -672,7 +673,169 @@ const getAllFreeDocAppointments = async (req, res) => {
   } catch (err) {
     return res.status(500).json({
       success: false,
-      data: req.body.doctor_id,
+      data: req.params.doctor_id,
+      message: err.message,
+    });
+  }
+};
+
+const getPatientBookingOptions = async (req, res) => {
+  // ASSUMES JWT AUTHENTICATION
+  // EXPECTED INPUT: param: username
+
+  try {
+    const username = req.params.username;
+    const patient = await getPatient(username);
+
+    if (!patient) {
+      return res.status(404).json({
+        success: false,
+        data: username,
+        message: `Patient with username ${username} does not exist`,
+      });
+    }
+
+    const bookingOptions = [];
+
+    // pushing self
+    bookingOptions.push({
+      patient_id : patient._id,
+      patient_name : patient.name,
+      national_id : "",
+      type : "Yourself",
+      relation : "",
+    });
+
+    // pushing linked family members
+    for (const linked of patient.linkedAccounts) {
+      const patient_id = linked.patient_id;
+      const patient_name = await Patient.findById(patient_id)
+        .then((patient) => {
+          return patient.name;
+        })
+        .catch((err) => {
+          return res.status(500).json({
+            success: false,
+            data: patient_id,
+            message:
+              err.message || "Some error occurred while retrieving patient.",
+          });
+        });
+
+      bookingOptions.push({
+        patient_id : patient_id,
+        patient_name : patient_name,
+        national_id : "",
+        type : "linked Account",
+        relation : linked.relation,
+      });
+    }
+
+    // pushing external family members
+    for (const familyMember of patient.extfamilyMembers) {
+      bookingOptions.push({
+        patient_id : patient._id,
+        patient_name : familyMember.name,
+        national_id : familyMember.national_id,
+        type : "external family member",
+        relation : familyMember.relation,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: bookingOptions,
+      message: "Successfully retrieved all booking options",
+    });
+
+
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: err.message,
+    });
+  }
+};
+
+const bookAppointment = async (req, res) => {
+  // ASSUMES JWT AUTHENTICATION
+  // EXPECTED INPUT: param: self_username, { doctor_id: "69fe353h55g3h34hg53h",
+  //    datetime: "2022-05-01T00:00:00.000+00:00", day: "2023-4-5", timeSlot: "22:00",
+  //    patient_id, national_id(can be null), patient_name, slot_id}
+
+  try {
+    // edit availableSlots array in doctor
+    const doctor = await Doctor.findByIdAndUpdate(
+      { _id: req.body.doctor_id },
+      {
+        $set: {
+          "availableSlots.$[elem].isBooked": true,
+          "availableSlots.$[elem].patientName": req.body.patient_name,
+          "availableSlots.$[elem].appointmentType": "appointment",
+        },
+      },
+      {
+        arrayFilters: [{ "elem._id": req.body.slot_id }],
+        new: true,
+      }
+    ).catch((err) => {
+      if (err) {
+        return res.status(500).json({
+          success: false,
+          data: req.body,
+          message: err.message || "Some error occurred while updating doctor.",
+        });
+      }
+    });
+
+    if (!doctor) {
+      return res.status(500).json({
+        success: false,
+        data: req.body,
+        message: err.message || "Some error occurred while updating doctor.",
+      });
+    }
+
+    // create new appointment
+    const appointment = await Appointments.create({
+      doctor_id: req.body.doctor_id,
+      type: "appointment",
+      date: req.body.datetime,
+      day: req.body.day,
+      slot: req.body.timeSlot,
+      patient_id: req.body.patient_id,
+      prescription_id: null,
+      familyMember_nationalId: req.body.national_id,
+      status: "upcoming",
+    }).catch((err) => {
+      if (err) {
+        return res.status(500).json({
+          success: false,
+          data: req.body,
+          message:
+            err.message || "Some error occurred while creating appointment.",
+        });
+      }
+    });
+
+    if (!appointment) {
+      return res.status(500).json({
+        success: false,
+        data: req.body,
+        message: "Some error occurred while creating appointment.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: appointment,
+      message: "Appointment created successfully",
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      data: req.body,
       message: err.message,
     });
   }
@@ -1029,4 +1192,6 @@ module.exports = {
   getAllFreeDocAppointments,
   cancelHealthPackage,
   tempSub,
+  getPatientBookingOptions,
+  bookAppointment,
 };

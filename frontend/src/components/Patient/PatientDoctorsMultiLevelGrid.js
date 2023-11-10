@@ -17,6 +17,7 @@ import CircularProgress from "@mui/joy/CircularProgress";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
+import { useNavigate } from 'react-router-dom';
 
 let fullRows = [];
 
@@ -35,6 +36,7 @@ function displayDate(date) {
 }
 
 const PatientMultiLevel = ({ columns, API_GET_URL, reqBody }) => {
+  const navigate = useNavigate();
   const initFilter = {};
   columns.forEach((key) => {
     initFilter[key] = "";
@@ -61,6 +63,7 @@ const PatientMultiLevel = ({ columns, API_GET_URL, reqBody }) => {
             console.log(key);
             resJson[key] = row[key];
           });
+          resJson._id = row._id;
 
           return resJson;
         });
@@ -204,6 +207,14 @@ const PatientMultiLevel = ({ columns, API_GET_URL, reqBody }) => {
     return <CircularProgress variant="solid" />; // Render a loading message
   }
 
+  
+
+
+  const handleBookSlotsClick = (doctorId) => {
+    // Use the navigate function to navigate to the specified URL
+    navigate(`/patient/bookslots/${doctorId}`);
+  };
+
   return (
     <div>
       {columns.map((key) => (
@@ -238,6 +249,7 @@ const PatientMultiLevel = ({ columns, API_GET_URL, reqBody }) => {
                   ></Button>
                 </TableCell>
               ))}
+              <TableCell>Book Slots</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -254,50 +266,64 @@ const PatientMultiLevel = ({ columns, API_GET_URL, reqBody }) => {
                           {row[key]}
                         </button>
                       </TableCell>
-                    ) : (
+                    ) : (key === "_id") ? null : (
                       <TableCell>{row[key]}</TableCell>
                     )}
                   </React.Fragment>
                 ))}
+                <TableCell>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={
+                      () => handleBookSlotsClick(row["_id"])}
+                    
+                  >
+                    View Free Slots
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
-      {(fullRows.length > 0) ? (
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
-        {selectedRowIndex !== null && (
-          <>
-            
-            <DialogTitle>{fullRows[selectedRowIndex].name}</DialogTitle>
-            <DialogContent>
-              {console.log("Current Doc Data ", fullRows[selectedRowIndex])}
-              {Object.keys(fullRows[selectedRowIndex]).map((innerKey) =>
-                innerKey === "patientList" ? null : innerKey ===
-                  "password" ? null : innerKey === "__v" ? null : innerKey ===
-                  "_id" ? null : innerKey === "availableSlots" ? (
-                  <div key={innerKey}>
-                    <p>Available slots</p>
-                    {fullRows[selectedRowIndex][innerKey].map((slot, index) => (
-                      <div key={index}>
-                        <p>
-                          startTime: {displayDate(new Date(slot.startTime))}
-                        </p>
-                        <p>endTime: {displayDate(new Date(slot.endTime))}</p>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p key={innerKey}>
-                    {innerKey}: {fullRows[selectedRowIndex][innerKey]}
-                  </p>
-                )
-              )}
-            </DialogContent>
-          </>
-        )}
-      </Dialog>
-      ) : (null)}
+      {fullRows.length > 0 ? (
+        <Dialog open={openDialog} onClose={handleCloseDialog}>
+          {selectedRowIndex !== null && (
+            <>
+              <DialogTitle>{fullRows[selectedRowIndex].name}</DialogTitle>
+              <DialogContent>
+                {console.log("Current Doc Data ", fullRows[selectedRowIndex])}
+                {Object.keys(fullRows[selectedRowIndex]).map((innerKey) =>
+                  innerKey === "patientList" ? null : innerKey ===
+                    "password" ? null : innerKey === "__v" ? null : innerKey ===
+                    "_id" ? null : innerKey === "availableSlots" ? (
+                    <div key={innerKey}>
+                      <p>Available slots</p>
+                      {fullRows[selectedRowIndex][innerKey].map(
+                        (slot, index) => (
+                          <div key={index}>
+                            <p>
+                              startTime: {displayDate(new Date(slot.startTime))}
+                            </p>
+                            <p>
+                              endTime: {displayDate(new Date(slot.endTime))}
+                            </p>
+                          </div>
+                        )
+                      )}
+                    </div>
+                  ) : (
+                    <p key={innerKey}>
+                      {innerKey}: {fullRows[selectedRowIndex][innerKey]}
+                    </p>
+                  )
+                )}
+              </DialogContent>
+            </>
+          )}
+        </Dialog>
+      ) : null}
     </div>
   );
 };

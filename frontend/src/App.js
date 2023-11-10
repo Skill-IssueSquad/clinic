@@ -17,6 +17,7 @@ import Patient from "./pages/Patient/Patient";
 import PatientDoctors from "./pages/Patient/PatientDoctors";
 import PatientAppointments from "./pages/Patient/PatientAppointments";
 import HealthPackageShop from "./pages/Patient/HealthPackageShop";
+import PatientBookSlots from "./pages/Patient/PatientBookSlots";
 
 function App() {
   return (
@@ -73,6 +74,12 @@ function App() {
               exact
               path="/patient/healthPackages/"
               element={<HealthPackageShop />}
+            />
+
+            <Route
+              exact
+              path="/patient/bookSlots/:doctor_id"
+              element={<PatientBookSlots />}
             />
           </Routes>
         </div>
