@@ -699,11 +699,11 @@ const getPatientBookingOptions = async (req, res) => {
 
     // pushing self
     bookingOptions.push({
-      patient_id : patient._id,
-      patient_name : patient.name,
-      national_id : "",
-      type : "Yourself",
-      relation : "",
+      patient_id: patient._id,
+      patient_name: patient.name,
+      national_id: "",
+      type: "Yourself",
+      relation: "",
     });
 
     // pushing linked family members
@@ -723,22 +723,22 @@ const getPatientBookingOptions = async (req, res) => {
         });
 
       bookingOptions.push({
-        patient_id : patient_id,
-        patient_name : patient_name,
-        national_id : "",
-        type : "linked Account",
-        relation : linked.relation,
+        patient_id: patient_id,
+        patient_name: patient_name,
+        national_id: "",
+        type: "linked Account",
+        relation: linked.relation,
       });
     }
 
     // pushing external family members
     for (const familyMember of patient.extfamilyMembers) {
       bookingOptions.push({
-        patient_id : patient._id,
-        patient_name : familyMember.name,
-        national_id : familyMember.national_id,
-        type : "external family member",
-        relation : familyMember.relation,
+        patient_id: patient._id,
+        patient_name: familyMember.name,
+        national_id: familyMember.national_id,
+        type: "external family member",
+        relation: familyMember.relation,
       });
     }
 
@@ -747,8 +747,6 @@ const getPatientBookingOptions = async (req, res) => {
       data: bookingOptions,
       message: "Successfully retrieved all booking options",
     });
-
-
   } catch (err) {
     return res.status(500).json({
       success: false,
@@ -761,8 +759,16 @@ const getPatientBookingOptions = async (req, res) => {
 const bookAppointment = async (req, res) => {
   // ASSUMES JWT AUTHENTICATION
   // EXPECTED INPUT: param: self_username, { doctor_id: "69fe353h55g3h34hg53h",
-  //    datetime: "2022-05-01T00:00:00.000+00:00", day: "2023-4-5", timeSlot: "22:00",
+  //    startTime: "2022-05-01T00:00:00.000+00:00", day: "2023-4-5", timeSlot: "22:00",
   //    patient_id, national_id(can be null), patient_name, slot_id}
+  let responseSent = false; // Track whether a response has been sent
+
+  const sendResponse = (statusCode, success, data, message) => {
+    if (!responseSent) {
+      responseSent = true;
+      return res.status(statusCode).json({ success: success, data, message });
+    }
+  };
 
   try {
     // edit availableSlots array in doctor
@@ -776,32 +782,34 @@ const bookAppointment = async (req, res) => {
         },
       },
       {
-        arrayFilters: [{ "elem._id": req.body.slot_id }],
+        arrayFilters: [{ "elem._id": new mongoose.Types.ObjectId(req.body.slot_id) }],
         new: true,
       }
     ).catch((err) => {
       if (err) {
-        return res.status(500).json({
-          success: false,
-          data: req.body,
-          message: err.message || "Some error occurred while updating doctor.",
-        });
+        return sendResponse(
+          500,
+          false,
+          req.body,
+          err.message || "Some error occurred while updating doctor."
+        );
       }
     });
 
     if (!doctor) {
-      return res.status(500).json({
-        success: false,
-        data: req.body,
-        message: err.message || "Some error occurred while updating doctor.",
-      });
+      return sendResponse(
+        500,
+        false,
+        req.body,
+        err.message || "Some error occurred while updating doctor."
+      );
     }
 
     // create new appointment
     const appointment = await Appointments.create({
       doctor_id: req.body.doctor_id,
       type: "appointment",
-      date: req.body.datetime,
+      date: req.body.startTime,
       day: req.body.day,
       slot: req.body.timeSlot,
       patient_id: req.body.patient_id,
@@ -810,34 +818,37 @@ const bookAppointment = async (req, res) => {
       status: "upcoming",
     }).catch((err) => {
       if (err) {
-        return res.status(500).json({
-          success: false,
-          data: req.body,
-          message:
-            err.message || "Some error occurred while creating appointment.",
-        });
+        return sendResponse(
+          500,
+          false,
+          req.body,
+          err.message || "Some error occurred while creating appointment."
+        );
       }
     });
 
     if (!appointment) {
-      return res.status(500).json({
-        success: false,
-        data: req.body,
-        message: "Some error occurred while creating appointment.",
-      });
+      return sendResponse(
+        500,
+        false,
+        req.body,
+        err.message || "Some error occurred while creating appointment."
+      );
     }
 
-    return res.status(200).json({
-      success: true,
-      data: appointment,
-      message: "Appointment created successfully",
-    });
+    return sendResponse(
+      200,
+      true,
+      appointment,
+      "Appointment created successfully"
+    );
   } catch (err) {
-    return res.status(500).json({
-      success: false,
-      data: req.body,
-      message: err.message,
-    });
+    return sendResponse(
+      500,
+      false,
+      req.body,
+      err.message || "Some error occurred while creating appointment."
+    );
   }
 };
 

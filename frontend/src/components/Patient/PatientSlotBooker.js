@@ -10,6 +10,15 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemSecondaryAction,
+  Checkbox,
 } from "@mui/material";
 import axios from "axios";
 import CircularProgress from "@mui/joy/CircularProgress";
@@ -23,6 +32,11 @@ const SlotBooker = ({ doctor_id }) => {
   const [originalData, setOriginalData] = useState([]);
   const [slots, setSlots] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState({});
+  const [selectedPatient, setSelectedPatient] = useState({
+    patient_name: null,
+  });
 
   const handleDayChange = (event) => {
     setSelectedDay(event.target.value);
@@ -38,6 +52,18 @@ const SlotBooker = ({ doctor_id }) => {
     setSelectedDay("");
     setSelectedTimeSlot("");
     setSlots(originalData);
+  };
+
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
+  const handleSelectedPatient = (patient) => {
+    setSelectedPatient(patient);
   };
 
   const applyFilters = () => {
@@ -125,14 +151,48 @@ const SlotBooker = ({ doctor_id }) => {
     applyFilters();
   }, [selectedDay, selectedTimeSlot, originalData]);
 
-  const handleRowClick = async (slot) => {
-    const currentDate = new Date();
-    const chosenSlot = new Date(
-      `${slot.availableSlot.day} ${slot.availableSlot.timeSlot}`
-    );
-    if (chosenSlot < currentDate) {
-      setMessage("Selected slot is in the past");
-      return;
+  const handleRowClick = (slot) => {
+    handleOpenDialog();
+    setSelectedSlot(slot);
+  };
+
+  const handleBook = async () => {
+    try {
+      setLoading(true);
+      try {
+        const response = await axios.post(
+          "http://localhost:8000/patient/bahyone/bookAppointment",
+          {
+            doctor_id: selectedSlot._id,
+            patient_id: selectedPatient.patient_id,
+            day: selectedSlot.availableSlot.day,
+            timeSlot: selectedSlot.availableSlot.timeSlot,
+            startTime: selectedSlot.availableSlot.startTime,
+            national_id: selectedPatient.national_id,
+            slot_id: selectedSlot.availableSlot._id,
+            patient_name: selectedPatient.patient_name,
+          }
+        );
+
+        if (response.data.success) {
+          if (response.data.success) {
+            handleCloseDialog();
+            setMessage(response.data.message || "Slot booked successfully");
+          }
+        } else {
+          handleCloseDialog();
+          setMessage(response.data.message || "Slot booking failed");
+        }
+      } catch (err) {
+        handleCloseDialog();
+        setMessage(err.message || "Slot booking failed");
+      }
+
+      fetchData();
+    } catch (error) {
+      console.error("Error booking slot:", error);
+    } finally {
+      setLoading(false);
     }
 
     // Handle booking logic here
@@ -140,6 +200,7 @@ const SlotBooker = ({ doctor_id }) => {
 
   return (
     <div>
+      <p>{message}</p>
       {loading && <CircularProgress variant="solid" />}
       {!loading && slots.length > 0 && (
         <h2>Dr. {slots[0].doctor_name}'s Slots</h2>
@@ -202,7 +263,56 @@ const SlotBooker = ({ doctor_id }) => {
           </TableContainer>
         )}
       </div>
-      <p>{message}</p>
+      
+
+      <Dialog open={openDialog} onClose={handleCloseDialog}>
+        <DialogTitle>Slot Booking</DialogTitle>
+        <DialogContent>
+          <DialogTitle>Choose a patient to book for</DialogTitle>
+          <List>
+            {bookingOptions.map((option) => (
+              <ListItem key={option.patient_name}>
+                <ListItemText
+                  primary={`Name: ${option.patient_name}`}
+                  secondary={
+                    option.relation !== ""
+                      ? `Relation: ${option.relation}, link-type: ${option.type}`
+                      : `link-type: ${option.type}`
+                  }
+                />
+                <ListItemSecondaryAction>
+                  <Checkbox
+                    edge="end"
+                    checked={
+                      selectedPatient.patient_name === option.patient_name &&
+                      selectedPatient.patient_name !== null
+                    }
+                    onClick={() => handleSelectedPatient(option)}
+                  />
+                </ListItemSecondaryAction>
+              </ListItem>
+            ))}
+          </List>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              handleBook();
+            }}
+            variant="contained"
+            color="primary"
+          >
+            Book
+          </Button>
+          <Button
+            onClick={handleCloseDialog}
+            variant="contained"
+            color="secondary"
+          >
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
