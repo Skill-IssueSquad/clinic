@@ -3,6 +3,8 @@ import axios from "axios";
 
 const MedicalHistory = () => {
   const [email, setEmail] = useState("");
+  const [File, setFile] = useState("");
+
  
 
 
@@ -14,7 +16,14 @@ const MedicalHistory = () => {
       });
     };
 
+    
     fetchPatient();
+    /*const formData = new FormData();
+    formData.append('File', File);
+    axios.post('http://localhost:8000/patients/p8two/healthrecords', formData )*/
+
+
+
   }, []); // The empty dependency array ensures that this effect runs once when the component mounts
 
   return (
@@ -26,6 +35,10 @@ const MedicalHistory = () => {
           Patient's Email: {email}
         </p>
       )}
+
+      <input type="file" onChange={(e)=>setFile(e.target.files[0])}/>
+        
+
     </div>
   );
 };
