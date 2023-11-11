@@ -4,6 +4,7 @@ import axios from "axios";
 const MedicalHistory = () => {
   const [email, setEmail] = useState("");
   const [file, setFile] = useState(null);
+  const [healthRecords, setHealthRecords] = useState([]);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -25,6 +26,9 @@ const MedicalHistory = () => {
         },
       });
 
+      // After successful upload, fetch and update health records
+      fetchHealthRecords();
+      
       // Optionally, you can do something after successful upload
       alert("File uploaded successfully!");
     } catch (error) {
@@ -34,11 +38,22 @@ const MedicalHistory = () => {
     }
   };
 
+  const fetchHealthRecords = async () => {
+    try {
+      const response = await axios.get("http://localhost:8000/patient/p8two");
+      const records = response.data.data.healthRecords;
+      setHealthRecords(records);
+    } catch (error) {
+      console.error("Error fetching health records:", error.message);
+    }
+  };
+
   useEffect(() => {
     const fetchPatient = async () => {
       try {
         const response = await axios.get("http://localhost:8000/patient/p8two");
         setEmail(response.data.data.email);
+        setHealthRecords(response.data.data.healthRecords);
       } catch (error) {
         console.error("Error fetching patient:", error.message);
       }
@@ -54,8 +69,16 @@ const MedicalHistory = () => {
       {email && <p>Patient's Email: {email}</p>}
 
       <input type="file" onChange={handleFileChange} />
-
       <button onClick={handleUpload}>Upload</button>
+
+      <h2>Health Records:</h2>
+      <ul>
+        {healthRecords.map((record, index) => (
+          <li key={index}>
+            Document Type: {record.documentType}, Document Name: {record.documentName}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };

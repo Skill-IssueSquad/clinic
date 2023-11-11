@@ -28,6 +28,7 @@ const {
   getPatientAPI,
   getPatientemUsername,
   AddHealthRecord,
+  getAllHealthRecords,
 } = require("../controllers/PatientController");
 
 
@@ -35,6 +36,8 @@ const { create } = require("../models/Patient");
 const upload = multer({ storage: storage }).single('document');
 
 router.post('/patients/:username/healthrecords', upload, AddHealthRecord);
+router.get('/patients/:username/healthrecords', getAllHealthRecords);
+
 
 router.get("/:username", getPatientAPI);
 router.get("/email/:username", getPatientemUsername);

@@ -662,7 +662,7 @@ const AddHealthRecord = async (req, res) => {
       });
     }
 
-    let documentUrl = 'http://localhost:8000/documents/' + req.file.filename;
+    let documentUrl = 'http://localhost:8000/Documents/' + req.file.filename;
 
     try {
       const newHealthRecord = await Patient.findOneAndUpdate(
@@ -704,6 +704,38 @@ const AddHealthRecord = async (req, res) => {
 
 
 
+const getAllHealthRecords = async (req, res) => {
+  const { username } = req.params;
+
+  try {
+    const patient = await Patient.findOne({ username });
+
+    if (!patient) {
+      return res.status(404).json({
+        success: false,
+        message: 'Patient not found',
+        data: null,
+      });
+    }
+
+    const healthRecords = patient.healthRecords;
+
+    res.status(200).json({
+      success: true,
+      message: 'Health records retrieved successfully',
+      data: healthRecords,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      data: null,
+    });
+  }
+};
+
+
+
 
 module.exports = {
   addFamMember,
@@ -718,5 +750,5 @@ module.exports = {
   getPatientAPI,
   getPatientemUsername,
   AddHealthRecord,
-  
+  getAllHealthRecords,
 };
