@@ -33,7 +33,7 @@ const MedicalHistory = () => {
       alert("File uploaded successfully!");
     } catch (error) {
       // Handle error
-      console.error("Error uploading file:", error.message);
+      console.log("Error uploading file:", error);
       alert("File upload failed. Please try again.");
     }
   };

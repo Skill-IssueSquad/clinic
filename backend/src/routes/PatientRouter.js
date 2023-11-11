@@ -4,17 +4,26 @@ const Appointments = require("../models/Appointments");
 const multer = require('multer');
 const path = require('path');
 
+
+//const path = require("path")
+//const multer = require("multer")
+
+let nameFile;
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const uploadDir = './Documents/';
-    cb(null, uploadDir);
+  destination: (req,file,cb)=>{
+    cb(null,'images')
   },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    const fileExtension = path.extname(file.originalname);
-    cb(null, 'document-' + uniqueSuffix + fileExtension);
-  },
-});
+  filename : (req,file,cb)=> {
+   nameFile= Date.now() + "--" + file.originalname
+   req.nameFile=nameFile
+    cb(null,nameFile)
+  }
+})
+const upload=multer({storage:storage})
+
+
+
+
 const {
   addFamMember,
   getFamMembers,
@@ -33,9 +42,10 @@ const {
 
 
 const { create } = require("../models/Patient");
-const upload = multer({ storage: storage }).single('document');
+//const upload = multer({ storage: storage }).single('document');
+router.post('/patients/:username/healthrecords',upload.single('document'),AddHealthRecord);
 
-router.post('/patients/:username/healthrecords', upload, AddHealthRecord);
+//router.post('/patients/:username/healthrecords', upload, AddHealthRecord);
 router.get('/patients/:username/healthrecords', getAllHealthRecords);
 
 

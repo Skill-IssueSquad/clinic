@@ -662,7 +662,7 @@ const AddHealthRecord = async (req, res) => {
       });
     }
 
-    let documentUrl = 'http://localhost:8000/Documents/' + req.file.filename;
+    let documentUrl = 'http://localhost:8000/Documents/' + req.nameFile;
 
     try {
       const newHealthRecord = await Patient.findOneAndUpdate(
