@@ -149,11 +149,9 @@ const getAppointments = async (req, res) => {
         healthRecords = patient.healthRecords;
       } else {
         const family = patient.extfamilyMembers;
+
         family.forEach((member) => {
-          if (
-            member.nationalId.toString() ===
-            appointment.familyMember_nationalId.toString()
-          ) {
+          if (member.national_id === appointment.familyMember_nationalId) {
             patientName = member.name;
           }
         });
@@ -628,7 +626,7 @@ const addAppointment = async (req, res) => {
     } else {
       const family = patient.extfamilyMembers;
       family.forEach((member) => {
-        if (member.nationalId.toString() === familyMember_nationalId) {
+        if (member.national_id === familyMember_nationalId) {
           patientName = member.name;
         }
       });
@@ -642,6 +640,7 @@ const addAppointment = async (req, res) => {
       slot: timeSlot,
       patient_id: patientId,
       prescription_id: prescriptionId,
+      familyMember_nationalId,
       status: "upcoming",
     });
     doctor = await Doctor.findByIdAndUpdate(
