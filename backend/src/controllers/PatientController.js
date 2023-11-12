@@ -650,7 +650,7 @@ const AddHealthRecord = async (req, res) => {
     documentType,
     documentName,
     // other health record properties...
-  } = " ";
+  } = req.nameFile;
 
   // Use Multer to handle the file upload
   upload(req, res, async (err) => {
@@ -663,35 +663,45 @@ const AddHealthRecord = async (req, res) => {
     }
 
     let documentUrl = 'http://localhost:8000/documents/' + req.nameFile;
+    console.log('Username:', req.params.username);
 
     try {
-      const newHealthRecord = await Patient.findOneAndUpdate(
-        { username: req.params.username }, 
-        {
-          $push: {
-            healthRecords: {
-              documentType,
-              documentName,
-              documentUrl,
-            },
-          },
-        },
-        { new: true }
-      );
+      // Fetch existing health records
+      const patient = await Patient.findOne({ username: req.params.username });
 
-      if (newHealthRecord) {
-        res.status(201).json({
-          success: true,
-          message: 'Health record created successfully',
-          data: newHealthRecord,
-        });
-      } else {
-        res.status(404).json({
+      if (!patient) {
+        console.log('Patient not found:', req.params.username);
+
+        return res.status(404).json({
           success: false,
           message: 'Patient not found',
           data: null,
         });
       }
+
+      const existingHealthRecords = patient.healthRecords || [];
+
+      // Log the existing health records before adding the new record
+      console.log('Existing Health Records:', existingHealthRecords);
+
+      // Add the new health record to the array
+      const updatedHealthRecords = [...existingHealthRecords, { documentType, documentName, documentUrl }];
+
+      // Log the updated health records before updating in the database
+      console.log('Updated Health Records:', updatedHealthRecords);
+
+      // Update the health records in the database
+      const updatedPatient = await Patient.findOneAndUpdate(
+        { username: req.params.username },
+        { healthRecords: updatedHealthRecords },
+        { new: true }
+      );
+
+      res.status(201).json({
+        success: true,
+        message: 'Health record created successfully',
+        data: updatedPatient,
+      });
     } catch (error) {
       res.status(400).json({
         success: false,
@@ -701,7 +711,6 @@ const AddHealthRecord = async (req, res) => {
     }
   });
 };
-
 
 
 const getAllHealthRecords = async (req, res) => {
