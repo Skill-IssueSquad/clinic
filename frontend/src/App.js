@@ -18,6 +18,8 @@ import PatientDoctors from "./pages/Patient/PatientDoctors";
 import PatientAppointments from "./pages/Patient/PatientAppointments";
 import HealthPackageShop from "./pages/Patient/HealthPackageShop";
 import PatientBookSlots from "./pages/Patient/PatientBookSlots";
+import Payments from "./pages/Patient/Payments";
+import WalletBalance from "./pages/Patient/WalletBalance";
 
 function App() {
   return (
@@ -81,6 +83,17 @@ function App() {
               path="/patient/bookSlots/:doctor_id"
               element={<PatientBookSlots />}
             />
+
+            <Route 
+            exact path="/patient/payments/" 
+            element={<Payments />} 
+            />
+
+            <Route 
+            exact path="/patient/wallet/" 
+            element={<WalletBalance />} 
+            />
+
           </Routes>
         </div>
       </BrowserRouter>
