@@ -3,7 +3,6 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
   "dependencies": {
     "@ag-grid-community/react": "^30.2.0",
     "@emotion/react": "^11.11.1",
