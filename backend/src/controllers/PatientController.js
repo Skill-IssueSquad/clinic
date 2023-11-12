@@ -662,7 +662,7 @@ const AddHealthRecord = async (req, res) => {
       });
     }
 
-    let documentUrl = 'http://localhost:8000/Documents/' + req.nameFile;
+    let documentUrl = 'http://localhost:8000/documents/' + req.nameFile;
 
     try {
       const newHealthRecord = await Patient.findOneAndUpdate(
@@ -736,6 +736,51 @@ const getAllHealthRecords = async (req, res) => {
 
 
 
+const removeHealthRecord = async (req, res) => {
+  const recordId = req.params.recordId;
+
+  try {
+    const patient = await Patient.findOneAndUpdate(
+      { username: req.params.username },
+      {
+        $pull: {
+          healthRecords: { _id: recordId },
+        },
+      },
+      { new: true }
+    );
+
+    if (patient) {
+      res.status(200).json({
+        success: true,
+        message: 'Health record removed successfully',
+        data: patient,
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: 'Patient not found',
+        data: null,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      data: null,
+    });
+  }
+};
+
+module.exports = {
+  AddHealthRecord,
+  removeHealthRecord,
+  // other functions...
+};
+
+
+
+
 
 module.exports = {
   addFamMember,
@@ -751,4 +796,5 @@ module.exports = {
   getPatientemUsername,
   AddHealthRecord,
   getAllHealthRecords,
+  removeHealthRecord,
 };

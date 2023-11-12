@@ -38,12 +38,14 @@ const {
   getPatientemUsername,
   AddHealthRecord,
   getAllHealthRecords,
+  removeHealthRecord,
 } = require("../controllers/PatientController");
 
 
 const { create } = require("../models/Patient");
 //const upload = multer({ storage: storage }).single('document');
 router.post('/patients/:username/healthrecords',upload.single('document'),AddHealthRecord);
+router.delete('/patients/:username/healthrecords/:recordId', removeHealthRecord);
 
 //router.post('/patients/:username/healthrecords', upload, AddHealthRecord);
 router.get('/patients/:username/healthrecords', getAllHealthRecords);

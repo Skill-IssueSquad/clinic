@@ -62,6 +62,23 @@ const MedicalHistory = () => {
     fetchPatient();
   }, []);
 
+  const handleRemoveRecord = async (recordId) => {
+    try {
+      await axios.delete(`http://localhost:8000/patients/p8two/healthrecords/${recordId}`);
+
+      // After successful removal, fetch and update health records
+      fetchHealthRecords();
+
+      // Optionally, you can do something after successful removal
+      alert("Health record removed successfully!");
+    } catch (error) {
+      // Handle error
+      console.log("Error removing health record:", error);
+      alert("Health record removal failed. Please try again.");
+    }
+  };
+
+
   return (
     <div>
       <h1>Medical History</h1>
@@ -76,6 +93,7 @@ const MedicalHistory = () => {
         {healthRecords.map((record, index) => (
           <li key={index}>
             Document Type: {record.documentType}, Document Name: {record.documentName}
+            <button onClick={() => handleRemoveRecord(record._id)}>Remove</button>
           </li>
         ))}
       </ul>
