@@ -206,7 +206,7 @@ try {
       <input type="file" name="pid" onChange={handlePersonalIdChange}/>
       </div>
       <div>
-        Pharmacy Degree:
+        Doctor Degree:
       <input type="file"  name="pharmDegree" onChange={handlePharmacyDegreeChange}/>
       </div>
       <div>
