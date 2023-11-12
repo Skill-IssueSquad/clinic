@@ -16,6 +16,7 @@ import axios from "axios";
 import CircularProgress from "@mui/joy/CircularProgress";
 
 let fullRows = [];
+let testcols = [];
 
 function convertDateFormat(originalDateString) {
   // Parse the original date string into a Date object
@@ -61,20 +62,17 @@ const PrescriptionsMultiLevelFilterTable = ({ columns, API_GET_URL }) => {
         const response = await axios.get(API_GET_URL);
         const initialRows = response.data.data;
         fullRows = initialRows;
+        fullRows.map((row) => {
+          row["View Prescriptions"] = "";
+        })
 
-        const rows = initialRows.map((row) => {
-          let resJson = {};
-          columns.forEach((key) => {
-            console.log(key);
-            resJson[key] = row[key];
-          });
-
-          return resJson;
+        testcols = columns.map((col) => {
+          return col.toLowerCase();
         });
 
         console.log(rows);
 
-        setRows(rows);
+        setRows(initialRows);
         setLoading(false); // Set loading to false when data is available
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -345,11 +343,11 @@ const PrescriptionsMultiLevelFilterTable = ({ columns, API_GET_URL }) => {
                           modal
                         >
                           <span>
-                            {Object.keys(fullRows[i]).map((innerKey) =>
+                            {Object.keys(row).map((innerKey) =>
                               innerKey === "medicines" ? (
                                 <div>
                                   <p>Medicines:</p>
-                                  {fullRows[i][innerKey].map((medicine) => (
+                                  {row[innerKey].map((medicine) => (
                                     <div>
                                       <p>
                                         Medicine Name: {medicine.medicineName}
@@ -367,9 +365,9 @@ const PrescriptionsMultiLevelFilterTable = ({ columns, API_GET_URL }) => {
                       <TableCell>
                         {new Date(row[key]).toLocaleDateString("fr-FR")}
                       </TableCell>
-                    ) : (
+                    ) : testcols.includes(key.toLowerCase()) ? (
                       <TableCell>{row[key]}</TableCell>
-                    )}
+                    ) : null}
                   </React.Fragment>
                 ))}
               </TableRow>
