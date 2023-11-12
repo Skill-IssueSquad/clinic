@@ -85,7 +85,7 @@ router.post("/", upload.array('documents', 3),async (req, res) => {
   console.log(req.body)
 
   let personalId = "http://localhost:8000/documents/"+req.nameFiles[0];
-  let pharmacyDegree = "http://localhost:8000/documents/"+req.nameFiles[1];
+  let doctorDegree = "http://localhost:8000/documents/"+req.nameFiles[1];
   let workingLicense = "http://localhost:8000/documents/"+req.nameFiles[2];
   nameFiles=[]
   console.log("after: "+nameFiles)
@@ -99,8 +99,8 @@ router.post("/", upload.array('documents', 3),async (req, res) => {
     },
     {
       documentType: 'pdf',
-      documentName: 'pharmacyDegree',
-      documentUrl: pharmacyDegree,
+      documentName: 'doctorDegree',
+      documentUrl: doctorDegree,
     },
     {
       documentType: 'pdf',

@@ -40,7 +40,7 @@ const DoctorRegisterationForm = () => {
     setPersonalId(e.target.files[0]);
   };
 
-  const handlePharmacyDegreeChange = (e) => {
+  const handleDoctorDegreeChange = (e) => {
     setDoctorDegree(e.target.files[0]);
   };
 
@@ -207,7 +207,7 @@ try {
       </div>
       <div>
         Doctor Degree:
-      <input type="file"  name="pharmDegree" onChange={handlePharmacyDegreeChange}/>
+      <input type="file"  name="pharmDegree" onChange={handleDoctorDegreeChange}/>
       </div>
       <div>
         Working License: 
