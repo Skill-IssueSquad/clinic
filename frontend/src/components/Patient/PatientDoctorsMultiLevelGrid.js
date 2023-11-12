@@ -35,6 +35,8 @@ function displayDate(date) {
   return `${year}/${month}/${day} ${hour}:${minute} ${ampm}`;
 }
 
+let testcols = []
+
 const PatientMultiLevel = ({ columns, API_GET_URL, reqBody }) => {
   const navigate = useNavigate();
   const initFilter = {};
@@ -46,7 +48,7 @@ const PatientMultiLevel = ({ columns, API_GET_URL, reqBody }) => {
   const [sorting, setSorting] = useState({ field: "", order: "" });
   const [loading, setLoading] = useState(true); // Add a loading state
   const [openDialog, setOpenDialog] = useState(false);
-  const [selectedRowIndex, setSelectedRowIndex] = useState(null);
+  const [selectedRow, setSelectedRow] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,20 +59,13 @@ const PatientMultiLevel = ({ columns, API_GET_URL, reqBody }) => {
         const initialRows = response.data.data;
         fullRows = initialRows;
 
-        const rows = initialRows.map((row) => {
-          let resJson = {};
-          columns.forEach((key) => {
-            console.log(key);
-            resJson[key] = row[key];
-          });
-          resJson._id = row._id;
+        testcols = columns.map((col) => {return col.toLowerCase()})
 
-          return resJson;
-        });
+        //const rows = initialRows
 
         console.log(rows);
 
-        setRows(rows);
+        setRows(initialRows);
         setLoading(false); // Set loading to false when data is available
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -94,8 +89,8 @@ const PatientMultiLevel = ({ columns, API_GET_URL, reqBody }) => {
     setFilter((prevFilter) => ({ ...prevFilter, [name]: value }));
   };
 
-  const handleOpenDialog = (index) => {
-    setSelectedRowIndex(index); // Set the selectedRowIndex to the clicked row index
+  const handleOpenDialog = (row) => {
+    setSelectedRow(row); // Set the selectedRowIndex to the clicked row index
     setOpenDialog(true);
   };
 
@@ -255,18 +250,18 @@ const PatientMultiLevel = ({ columns, API_GET_URL, reqBody }) => {
           <TableBody>
             {filteredRows.map((row, i) => (
               <TableRow>
-                {Object.keys(row).map((key) => (
+                {columns.map((key) => (
                   <React.Fragment>
                     {key === "name" ? (
                       <TableCell>
                         <button
                           className="button"
-                          onClick={() => handleOpenDialog(i)}
+                          onClick={() => handleOpenDialog(row)}
                         >
                           {row[key]}
                         </button>
                       </TableCell>
-                    ) : (key === "_id") ? null : (
+                    ) : (
                       <TableCell>{row[key]}</TableCell>
                     )}
                   </React.Fragment>
@@ -289,18 +284,18 @@ const PatientMultiLevel = ({ columns, API_GET_URL, reqBody }) => {
       </TableContainer>
       {fullRows.length > 0 ? (
         <Dialog open={openDialog} onClose={handleCloseDialog}>
-          {selectedRowIndex !== null && (
+          {selectedRow !== null && (
             <>
-              <DialogTitle>{fullRows[selectedRowIndex].name}</DialogTitle>
+              <DialogTitle>{selectedRow.name}</DialogTitle>
               <DialogContent>
-                {console.log("Current Doc Data ", fullRows[selectedRowIndex])}
-                {Object.keys(fullRows[selectedRowIndex]).map((innerKey) =>
+                {console.log("Current Doc Data ", selectedRow)}
+                {Object.keys(selectedRow).map((innerKey) =>
                   innerKey === "patientList" ? null : innerKey ===
                     "password" ? null : innerKey === "__v" ? null : innerKey ===
                     "_id" ? null : innerKey === "availableSlots" ? (
                     <div key={innerKey}>
                       <p>Available slots</p>
-                      {fullRows[selectedRowIndex][innerKey].map(
+                      {selectedRow[innerKey].map(
                         (slot, index) => (
                           <div key={index}>
                             <p>
@@ -315,7 +310,7 @@ const PatientMultiLevel = ({ columns, API_GET_URL, reqBody }) => {
                     </div>
                   ) : (
                     <p key={innerKey}>
-                      {innerKey}: {fullRows[selectedRowIndex][innerKey]}
+                      {innerKey}: {selectedRow[innerKey]}
                     </p>
                   )
                 )}
