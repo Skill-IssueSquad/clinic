@@ -87,18 +87,18 @@ const HealthPackages = () => {
     // setSelectedPackages(newSelectedPackages);
   };
 
-  // const handleSelectFamilyMember = (familyMember) => {
-  //   const newSelectedFamilyMembers = [...selectedFamilyMembers];
-  //   if (newSelectedFamilyMembers.includes(familyMember)) {
-  //     newSelectedFamilyMembers.splice(
-  //       newSelectedFamilyMembers.indexOf(familyMember),
-  //       1
-  //     );
-  //   } else {
-  //     newSelectedFamilyMembers.push(familyMember);
-  //   }
-  //   setSelectedFamilyMembers(newSelectedFamilyMembers);
-  // };
+  const handleSelectFamilyMember = (familyMember) => {
+    const newSelectedFamilyMembers = [...selectedFamilyMembers];
+    if (newSelectedFamilyMembers.includes(familyMember)) {
+      newSelectedFamilyMembers.splice(
+        newSelectedFamilyMembers.indexOf(familyMember),
+        1
+      );
+    } else {
+      newSelectedFamilyMembers.push(familyMember);
+    }
+    setSelectedFamilyMembers(newSelectedFamilyMembers);
+  };
 
   const handleOpenDialog = () => {
     setOpenDialog(true);
@@ -134,6 +134,7 @@ const HealthPackages = () => {
     const formData = {
       healthPackage: packageName,
       renewal: oneYearFromNow,
+      familyMembers: selectedFamilyMembers,
     };
 
     try {
@@ -210,7 +211,7 @@ const HealthPackages = () => {
               </ListItem>
             )}
           </List>
-          {/* <DialogTitle>Family Members</DialogTitle>
+          <DialogTitle>Family Members</DialogTitle>
           <List>
             {familyMembers.map((familyMember) => (
               <ListItem key={familyMember.name}>
@@ -227,7 +228,7 @@ const HealthPackages = () => {
                 </ListItemSecondaryAction>
               </ListItem>
             ))}
-          </List> */}
+          </List>
         </DialogContent>
         <DialogActions>
           <Button onClick={handlePurchase} variant="contained" color="primary">

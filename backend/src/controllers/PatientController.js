@@ -782,7 +782,9 @@ const bookAppointment = async (req, res) => {
         },
       },
       {
-        arrayFilters: [{ "elem._id": new mongoose.Types.ObjectId(req.body.slot_id) }],
+        arrayFilters: [
+          { "elem._id": new mongoose.Types.ObjectId(req.body.slot_id) },
+        ],
         new: true,
       }
     ).catch((err) => {
@@ -1136,9 +1138,11 @@ const tempSub = async (req, res) => {
   }
 
   for (const famMember of patient.extfamilyMembers) {
-    famMember.healthPackageType.status = "subscribed";
-    famMember.healthPackageType.type = data.healthPackage;
-    famMember.healthPackageType.renewal = data.renewal;
+    if (data.familyMembers.includes(famMember.name)) {
+      famMember.healthPackageType.status = "subscribed";
+      famMember.healthPackageType.type = data.healthPackage;
+      famMember.healthPackageType.renewal = data.renewal;
+    }
   }
 
   for (const linkedAccount of patient.linkedAccounts) {
