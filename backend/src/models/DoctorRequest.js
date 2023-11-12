@@ -50,8 +50,8 @@ const doctorRequestSchema = new Schema({
           type: String,
           required: true,
         },
-        documentFile: {
-          type: Buffer, //not sure abt this tho
+        documentUrl: {
+          type: String,
           required: true,
         },
       },
