@@ -782,7 +782,9 @@ const bookAppointment = async (req, res) => {
         },
       },
       {
-        arrayFilters: [{ "elem._id": new mongoose.Types.ObjectId(req.body.slot_id) }],
+        arrayFilters: [
+          { "elem._id": new mongoose.Types.ObjectId(req.body.slot_id) },
+        ],
         new: true,
       }
     ).catch((err) => {
@@ -834,6 +836,27 @@ const bookAppointment = async (req, res) => {
         req.body,
         err.message || "Some error occurred while creating appointment."
       );
+    } else {
+      // check patient list
+      let found = req.body.patient_id in doctor.patientList;
+
+      if (!found) {
+        doctor.patientList.push({ patient_id: req.body.patient_id });
+      }
+
+      await Doctor.findByIdAndUpdate(
+        { _id: req.body.doctor_id },
+        { patientList: doctor.patientList }
+      ).catch((err) => {
+        if (err) {
+          return sendResponse(
+            500,
+            false,
+            req.body,
+            err.message || "Some error occurred while updating doctor patients."
+          );
+        }
+      });
     }
 
     return sendResponse(
