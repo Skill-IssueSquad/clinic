@@ -23,7 +23,7 @@ const DoctorRegisterationForm = () => {
   const [affiliatedHospital, setAffiliatedHospital] = useState("");
   const [educationalBackground, setEducationalBackground] = useState("");
   const [personalId, setPersonalId] = useState();
-  const [pharmacyDegree, setPharmacyDegree] = useState();
+  const [doctorDegree, setDoctorDegree] = useState();
   const [workingLicense, setWorkingLicense] = useState();
 
 
@@ -41,7 +41,7 @@ const DoctorRegisterationForm = () => {
   };
 
   const handlePharmacyDegreeChange = (e) => {
-    setPharmacyDegree(e.target.files[0]);
+    setDoctorDegree(e.target.files[0]);
   };
 
   const handleWorkingLicenseChange = (e) => {
@@ -60,7 +60,7 @@ const DoctorRegisterationForm = () => {
     formData.append('affiliatedHospital', affiliatedHospital);
     formData.append('educationalBackground', educationalBackground);
     formData.append('documents', personalId);
-    formData.append('documents', pharmacyDegree);
+    formData.append('documents', doctorDegree);
     formData.append('documents', workingLicense);
 
 
@@ -85,7 +85,7 @@ console.log(hourlyRate)
 console.log(affiliatedHospital)
 console.log(educationalBackground)
 console.log(personalId) 
-console.log(pharmacyDegree)  
+console.log(doctorDegree)  
 console.log(workingLicense)  
 
 
@@ -111,7 +111,7 @@ try {
   setAffiliatedHospital("");
   setEducationalBackground("");
   setPersonalId(null);
-  setPharmacyDegree(null);
+  setDoctorDegree(null);
   setWorkingLicense(null);
   e.target["pid"].value = [];
   e.target["pharmDegree"].value = [];
