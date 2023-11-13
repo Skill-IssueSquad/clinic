@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import DoctorRegisterationForm from "../components/doctorRegistrationForm";
+import axios from "axios";
+import { json } from "react-router-dom";
 
 const DoctorRegisteration = () => {
   const [doctors, setDoctors] = useState(null);

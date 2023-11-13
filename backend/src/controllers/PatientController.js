@@ -612,6 +612,181 @@ const createDoc = async (req, res) => {
   });
 };
 
+
+
+const getPatientemUsername = async (req, res) => {
+  const { username } = req.params;
+
+  try {
+    const patient = await Patient.findOne({ username });
+
+    if (patient) {
+      return res.status(200).json({
+        success: true,
+        data: { email: patient.email },
+        message: "Patient email retrieved successfully",
+      });
+    } else {
+      return res.status(404).json({
+        success: false,
+        data: null,
+        message: "Patient not found",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message:
+        error.message || "Some error occurred while retrieving patient email.",
+    });
+  }
+};
+
+
+const AddHealthRecord = async (req, res) => {
+  // Extract other health record properties from the request body
+  
+    const documentType= req.nameFile
+    const documentName = req.nameFile
+    // other health record properties...
+  
+
+  // Use Multer to handle the file upload
+ 
+
+    let documentUrl = 'http://localhost:8000/documents/' + req.nameFile;
+    console.log('Username:', req.params.username);
+
+    try {
+      // Fetch existing health records
+      const patient = await Patient.findOne({ username: req.params.username });
+
+      if (!patient) {
+        console.log('Patient not found:', req.params.username);
+
+        return res.status(404).json({
+          success: false,
+          message: 'Patient not found',
+          data: null,
+        });
+      }
+
+     /* const existingHealthRecords = patient.healthRecords || [];
+
+      // Log the existing health records before adding the new record
+      console.log('Existing Health Records:', existingHealthRecords);
+
+      // Add the new health record to the array
+      const updatedHealthRecords = [...existingHealthRecords, { documentType, documentName, documentUrl }];
+
+      // Log the updated health records before updating in the database
+      console.log('Updated Health Records:', updatedHealthRecords);*/
+     patient.healthRecords.push({ documentType, documentName, documentUrl })
+      // Update the health records in the database
+      /*const updatedPatient = await Patient.findOneAndUpdate(
+        { username: req.params.username },
+        patient.healthRecords,
+        { new: true }
+      );*/
+      const updatedPatient = await patient.save();
+
+
+      res.status(201).json({
+        success: true,
+        message: 'Health record created successfully',
+        data: updatedPatient,
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        error: error.message,
+        data: null,
+      });
+    }
+  
+
+};
+
+
+const getAllHealthRecords = async (req, res) => {
+  const { username } = req.params;
+
+  try {
+    const patient = await Patient.findOne({ username });
+
+    if (!patient) {
+      return res.status(404).json({
+        success: false,
+        message: 'Patient not found',
+        data: null,
+      });
+    }
+
+    const healthRecords = patient.healthRecords;
+
+    res.status(200).json({
+      success: true,
+      message: 'Health records retrieved successfully',
+      data: healthRecords,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      data: null,
+    });
+  }
+};
+
+
+
+const removeHealthRecord = async (req, res) => {
+  const recordId = req.params.recordId;
+
+  try {
+    const patient = await Patient.findOneAndUpdate(
+      { username: req.params.username },
+      {
+        $pull: {
+          healthRecords: { _id: recordId },
+        },
+      },
+      { new: true }
+    );
+
+    if (patient) {
+      res.status(200).json({
+        success: true,
+        message: 'Health record removed successfully',
+        data: patient,
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: 'Patient not found',
+        data: null,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      data: null,
+    });
+  }
+};
+
+module.exports = {
+  AddHealthRecord,
+  removeHealthRecord,
+  // other functions...
+};
+
+
+
+
+
 module.exports = {
   addFamMember,
   getFamMembers,
@@ -623,4 +798,8 @@ module.exports = {
   viewAllDoctorsAvailable,
   createDoc,
   getPatientAPI,
+  getPatientemUsername,
+  AddHealthRecord,
+  getAllHealthRecords,
+  removeHealthRecord,
 };

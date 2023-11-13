@@ -16,6 +16,7 @@ import DoctorRegisteration from "./pages/DoctorRegisteration";
 import Patient from "./pages/Patient";
 import PatientDoctors from "./pages/PatientDoctors";
 import PatientAppointments from "./pages/PatientAppointments";
+import MedicalHistory from "./pages/MedicalHistory";
 import Follow from "./pages/Doctor/FollowUp";
 
 function App() {
@@ -60,6 +61,7 @@ function App() {
               element={<DoctorRegisteration />}
             />
             <Route exact path="/patient/" element={<Patient />} />
+
             <Route
               exact
               path="/patient/doctors/"
@@ -69,6 +71,11 @@ function App() {
               exact
               path="/patient/appointments/"
               element={<PatientAppointments />}
+            />
+            <Route
+              exact
+              path="/patient/medicalHistory/"
+              element={<MedicalHistory />}
             />
           </Routes>
         </div>
