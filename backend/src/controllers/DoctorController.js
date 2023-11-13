@@ -170,6 +170,7 @@ const getAppointments = async (req, res) => {
       const appointmentInfo = {
         _id: patient._id,
         appID: appointment._id,
+        PUN: patient.username,
         id: i,
         date: appointmentDate,
         time: appointment.slot,

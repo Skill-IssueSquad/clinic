@@ -1,28 +1,24 @@
 const express = require("express");
 const router = express.Router();
 const Appointments = require("../models/Appointments");
-const multer = require('multer');
-const path = require('path');
-
+const multer = require("multer");
+const path = require("path");
 
 //const path = require("path")
 //const multer = require("multer")
 
 let nameFile;
 const storage = multer.diskStorage({
-  destination: (req,file,cb)=>{
-    cb(null,'documents')
+  destination: (req, file, cb) => {
+    cb(null, "documents");
   },
-  filename : (req,file,cb)=> {
-   nameFile= Date.now() + "--" + file.originalname
-   req.nameFile=nameFile
-    cb(null,nameFile)
-  }
-})
-const upload=multer({storage:storage})
-
-
-
+  filename: (req, file, cb) => {
+    nameFile = Date.now() + "--" + file.originalname;
+    req.nameFile = nameFile;
+    cb(null, nameFile);
+  },
+});
+const upload = multer({ storage: storage });
 
 const {
   addFamMember,
@@ -41,15 +37,17 @@ const {
   removeHealthRecord,
 } = require("../controllers/PatientController");
 
-
 const { create } = require("../models/Patient");
 //const upload = multer({ storage: storage }).single('document');
-router.post('/:username/healthrecords',upload.single('document'),AddHealthRecord);
-router.delete('/:username/healthrecords/:recordId', removeHealthRecord);
+router.post(
+  "/:username/healthrecords",
+  upload.single("document"),
+  AddHealthRecord
+);
+router.delete("/:username/healthrecords/:recordId", removeHealthRecord);
 
 //router.post('/patients/:username/healthrecords', upload, AddHealthRecord);
-router.get('/patients/:username/healthrecords', getAllHealthRecords);
-
+router.get("/:username/healthrecords", getAllHealthRecords);
 
 router.get("/:username", getPatientAPI);
 router.get("/email/:username", getPatientemUsername);

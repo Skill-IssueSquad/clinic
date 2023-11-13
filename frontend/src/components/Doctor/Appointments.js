@@ -430,13 +430,27 @@ const MultiLevelFilterTable = ({ username }) => {
                 >
                   Schedule a follow up
                 </button>
+
+                <button
+                  onClick={() =>
+                    navigate(
+                      `/patient/medicalHistory/?PUN=${
+                        selectedRow.PUN
+                      }&IP=${false}`
+                    )
+                  }
+                >
+                  Upload medical record
+                </button>
+
                 {Object.entries(selectedRow).map(([key, value]) => {
                   if (
                     key !== "id" &&
                     key != "healthRecords" &&
                     key !== "_id" &&
                     key !== "appID" &&
-                    key !== "familyMember_nationalId"
+                    key !== "familyMember_nationalId" &&
+                    key !== "PUN"
                   ) {
                     return (
                       <div key={key}>

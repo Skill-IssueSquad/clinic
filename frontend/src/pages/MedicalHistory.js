@@ -6,6 +6,12 @@ const MedicalHistory = () => {
   const [file, setFile] = useState(null);
   const [healthRecords, setHealthRecords] = useState([]);
 
+  const params = new URLSearchParams(window.location.search);
+  const isPatient = params.get("IP") === "true";
+
+  console.log(isPatient);
+  const patientUsername = params.get("PUN");
+
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
@@ -20,15 +26,19 @@ const MedicalHistory = () => {
     formData.append("document", file);
 
     try {
-      await axios.post(`http://localhost:8000/patient/p8two/healthrecords`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      await axios.post(
+        `http://localhost:8000/patient/${patientUsername}/healthrecords`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       // After successful upload, fetch and update health records
       fetchHealthRecords();
-      
+
       // Optionally, you can do something after successful upload
       alert("File uploaded successfully!");
     } catch (error) {
@@ -40,7 +50,9 @@ const MedicalHistory = () => {
 
   const fetchHealthRecords = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/patient/p8two");
+      const response = await axios.get(
+        `http://localhost:8000/patient/${patientUsername}`
+      );
       const records = response.data.data.healthRecords;
       setHealthRecords(records);
     } catch (error) {
@@ -51,7 +63,9 @@ const MedicalHistory = () => {
   useEffect(() => {
     const fetchPatient = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/patient/p8two");
+        const response = await axios.get(
+          `http://localhost:8000/patient/${patientUsername}`
+        );
         setEmail(response.data.data.email);
         setHealthRecords(response.data.data.healthRecords);
       } catch (error) {
@@ -64,7 +78,9 @@ const MedicalHistory = () => {
 
   const handleRemoveRecord = async (recordId) => {
     try {
-      await axios.delete(`http://localhost:8000/patient/p8two/healthrecords/${recordId}`);
+      await axios.delete(
+        `http://localhost:8000/patient/${patientUsername}/healthrecords/${recordId}`
+      );
 
       // After successful removal, fetch and update health records
       fetchHealthRecords();
@@ -77,7 +93,6 @@ const MedicalHistory = () => {
       alert("Health record removal failed. Please try again.");
     }
   };
-
 
   return (
     <div>
@@ -92,18 +107,19 @@ const MedicalHistory = () => {
       <ul>
         {healthRecords.map((record, index) => (
           <div>
-          <li key={index}>
-            Document Type: {record.documentType}, Document Name: {record.documentName}
-            <button onClick={() => handleRemoveRecord(record._id)}>Remove</button>
-          </li>
-          <PDFViewer pdfUrl={record.documentUrl} />
+            <li key={index}>
+              Document Type: {record.documentType}, Document Name:{" "}
+              {record.documentName}
+              {isPatient && (
+                <button onClick={() => handleRemoveRecord(record._id)}>
+                  Remove
+                </button>
+              )}
+            </li>
+            {isPatient && <PDFViewer pdfUrl={record.documentUrl} />}
           </div>
-
         ))}
-
       </ul>
-      
-    
     </div>
   );
 };
