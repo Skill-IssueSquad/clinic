@@ -1085,7 +1085,7 @@ const cancelHealthPackage = async (req, res) => {
   patient.healthPackageType.endDate = patient.healthPackageType.renewal;
 
   for (const famMember of patient.extfamilyMembers) {
-    famMember.healthPackageType.type = patient.healthPackageType.type;
+    //famMember.healthPackageType.type = patient.healthPackageType.type;
     famMember.healthPackageType.status = "cancelled";
     famMember.healthPackageType.endDate = patient.healthPackageType.renewal;
   }
@@ -1099,7 +1099,7 @@ const cancelHealthPackage = async (req, res) => {
     const linkedPatient = await Patient.findById(linkedAccount.patient_id);
     linkedPatient.healthPackageType.status = "cancelled";
     linkedPatient.healthPackageType.endDate = patient.healthPackageType.renewal;
-    linkedPatient.healthPackageType.type = patient.healthPackageType.type;
+    //linkedPatient.healthPackageType.type = patient.healthPackageType.type;
 
     await Patient.findByIdAndUpdate(linkedPatient._id, {
       healthPackageType: linkedPatient.healthPackageType,
@@ -1159,11 +1159,11 @@ const tempSub = async (req, res) => {
   }
 
   for (const famMember of patient.extfamilyMembers) {
-    if (data.familyMembers.includes(famMember.name)) {
-      famMember.healthPackageType.status = "subscribed";
-      famMember.healthPackageType.type = data.healthPackage;
-      famMember.healthPackageType.renewal = data.renewal;
-    }
+    //if (data.familyMembers.includes(famMember.name)) {
+    famMember.healthPackageType.status = "subscribed";
+    famMember.healthPackageType.type = data.healthPackage;
+    famMember.healthPackageType.renewal = data.renewal;
+    //}
   }
 
   for (const linkedAccount of patient.linkedAccounts) {

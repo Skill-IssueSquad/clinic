@@ -38,24 +38,23 @@ const HealthPackages = () => {
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [selectedFamilyMembers, setSelectedFamilyMembers] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
-  const [familyMembers, setFamilyMembers] = useState([]);
+  // const [familyMembers, setFamilyMembers] = useState([]);
 
   // Fetch family members from the backend when the component mounts
   useEffect(() => {
-    const fetchFamilyMembers = async () => {
-      try {
-        // Replace with your backend endpoint for fetching family members
-        const response = await axios.get(
-          "http://localhost:8000/patient/bahyone/getFamMember"
-        );
-        const data = response.data.data;
-        setFamilyMembers(data);
-      } catch (error) {
-        console.error("Error fetching family members:", error);
-      }
-    };
-
-    fetchFamilyMembers();
+    // const fetchFamilyMembers = async () => {
+    //   try {
+    //     // Replace with your backend endpoint for fetching family members
+    //     const response = await axios.get(
+    //       "http://localhost:8000/patient/bahyone/getFamMember"
+    //     );
+    //     const data = response.data.data;
+    //     setFamilyMembers(data);
+    //   } catch (error) {
+    //     console.error("Error fetching family members:", error);
+    //   }
+    // };
+    // fetchFamilyMembers();
   }, []);
 
   const availablePackages = [
@@ -87,18 +86,18 @@ const HealthPackages = () => {
     // setSelectedPackages(newSelectedPackages);
   };
 
-  const handleSelectFamilyMember = (familyMember) => {
-    const newSelectedFamilyMembers = [...selectedFamilyMembers];
-    if (newSelectedFamilyMembers.includes(familyMember)) {
-      newSelectedFamilyMembers.splice(
-        newSelectedFamilyMembers.indexOf(familyMember),
-        1
-      );
-    } else {
-      newSelectedFamilyMembers.push(familyMember);
-    }
-    setSelectedFamilyMembers(newSelectedFamilyMembers);
-  };
+  // const handleSelectFamilyMember = (familyMember) => {
+  //   const newSelectedFamilyMembers = [...selectedFamilyMembers];
+  //   if (newSelectedFamilyMembers.includes(familyMember)) {
+  //     newSelectedFamilyMembers.splice(
+  //       newSelectedFamilyMembers.indexOf(familyMember),
+  //       1
+  //     );
+  //   } else {
+  //     newSelectedFamilyMembers.push(familyMember);
+  //   }
+  //   setSelectedFamilyMembers(newSelectedFamilyMembers);
+  // };
 
   const handleOpenDialog = () => {
     setOpenDialog(true);
@@ -134,7 +133,7 @@ const HealthPackages = () => {
     const formData = {
       healthPackage: packageName,
       renewal: oneYearFromNow,
-      familyMembers: selectedFamilyMembers,
+      //familyMembers: selectedFamilyMembers,
     };
 
     try {
@@ -151,7 +150,7 @@ const HealthPackages = () => {
 
     // Clear the selected packages and family members
     setSelectedPackage(null);
-    setSelectedFamilyMembers([]);
+    //setSelectedFamilyMembers([]);
     setOpenDialog(false);
 
     // Redirect to payment page
@@ -211,7 +210,7 @@ const HealthPackages = () => {
               </ListItem>
             )}
           </List>
-          <DialogTitle>Family Members</DialogTitle>
+          {/* <DialogTitle>Family Members</DialogTitle>
           <List>
             {familyMembers.map((familyMember) => (
               <ListItem key={familyMember.name}>
@@ -228,7 +227,7 @@ const HealthPackages = () => {
                 </ListItemSecondaryAction>
               </ListItem>
             ))}
-          </List>
+          </List> */}
         </DialogContent>
         <DialogActions>
           <Button onClick={handlePurchase} variant="contained" color="primary">
