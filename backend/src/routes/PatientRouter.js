@@ -11,7 +11,7 @@ const path = require('path');
 let nameFile;
 const storage = multer.diskStorage({
   destination: (req,file,cb)=>{
-    cb(null,'images')
+    cb(null,'documents')
   },
   filename : (req,file,cb)=> {
    nameFile= Date.now() + "--" + file.originalname
@@ -44,8 +44,8 @@ const {
 
 const { create } = require("../models/Patient");
 //const upload = multer({ storage: storage }).single('document');
-router.post('/patients/:username/healthrecords',upload.single('document'),AddHealthRecord);
-router.delete('/patients/:username/healthrecords/:recordId', removeHealthRecord);
+router.post('/:username/healthrecords',upload.single('document'),AddHealthRecord);
+router.delete('/:username/healthrecords/:recordId', removeHealthRecord);
 
 //router.post('/patients/:username/healthrecords', upload, AddHealthRecord);
 router.get('/patients/:username/healthrecords', getAllHealthRecords);

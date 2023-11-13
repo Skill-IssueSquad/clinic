@@ -20,7 +20,7 @@ const MedicalHistory = () => {
     formData.append("document", file);
 
     try {
-      await axios.post(`http://localhost:8000/patients/p8two/healthrecords`, formData, {
+      await axios.post(`http://localhost:8000/patient/p8two/healthrecords`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -64,7 +64,7 @@ const MedicalHistory = () => {
 
   const handleRemoveRecord = async (recordId) => {
     try {
-      await axios.delete(`http://localhost:8000/patients/p8two/healthrecords/${recordId}`);
+      await axios.delete(`http://localhost:8000/patient/p8two/healthrecords/${recordId}`);
 
       // After successful removal, fetch and update health records
       fetchHealthRecords();

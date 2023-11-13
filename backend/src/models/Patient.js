@@ -95,25 +95,20 @@ const patientSchema = new Schema({
       },
     },
   ],
-  healthRecords: {
-    type: [
-      {
-        documentType: {
-          type: String,
-          required: true,
-        },
-        documentName: {
-          type: String,
-          required: true,
-        },
-        documentUrl: {
-          type: String, //not sure abt this tho
-          required: true,
-        },
-      },
-    ],
-    default: [],
-  },
+  healthRecords: [{
+    documentType: {
+      type: String,
+      required: true,
+    },
+    documentName: {
+      type: String,
+      required: true,
+    },
+    documentUrl: {
+      type: String,
+      required: true,
+    },
+  }],
   extfamilyMembers: [
     {
       name: {

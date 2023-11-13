@@ -646,21 +646,14 @@ const getPatientemUsername = async (req, res) => {
 
 const AddHealthRecord = async (req, res) => {
   // Extract other health record properties from the request body
-  const {
-    documentType,
-    documentName,
+  
+    const documentType= req.nameFile
+    const documentName = req.nameFile
     // other health record properties...
-  } = req.nameFile;
+  
 
   // Use Multer to handle the file upload
-  upload(req, res, async (err) => {
-    if (err) {
-      return res.status(500).json({
-        success: false,
-        error: err.message,
-        data: null,
-      });
-    }
+ 
 
     let documentUrl = 'http://localhost:8000/documents/' + req.nameFile;
     console.log('Username:', req.params.username);
@@ -679,7 +672,7 @@ const AddHealthRecord = async (req, res) => {
         });
       }
 
-      const existingHealthRecords = patient.healthRecords || [];
+     /* const existingHealthRecords = patient.healthRecords || [];
 
       // Log the existing health records before adding the new record
       console.log('Existing Health Records:', existingHealthRecords);
@@ -688,14 +681,16 @@ const AddHealthRecord = async (req, res) => {
       const updatedHealthRecords = [...existingHealthRecords, { documentType, documentName, documentUrl }];
 
       // Log the updated health records before updating in the database
-      console.log('Updated Health Records:', updatedHealthRecords);
-
+      console.log('Updated Health Records:', updatedHealthRecords);*/
+     patient.healthRecords.push({ documentType, documentName, documentUrl })
       // Update the health records in the database
-      const updatedPatient = await Patient.findOneAndUpdate(
+      /*const updatedPatient = await Patient.findOneAndUpdate(
         { username: req.params.username },
-        { healthRecords: updatedHealthRecords },
+        patient.healthRecords,
         { new: true }
-      );
+      );*/
+      const updatedPatient = await patient.save();
+
 
       res.status(201).json({
         success: true,
@@ -709,7 +704,8 @@ const AddHealthRecord = async (req, res) => {
         data: null,
       });
     }
-  });
+  
+
 };
 
 
