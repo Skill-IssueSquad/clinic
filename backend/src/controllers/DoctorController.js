@@ -673,10 +673,11 @@ const addAppointment = async (req, res) => {
       (1 - discount)
     ).toFixed(2);
     // console.log("The session price is :", sessionPrice);
+    const oldAmountDue = patient.amountDue;
     patient = await Patient.findByIdAndUpdate(
       { _id: patientId },
       {
-        $inc: { walletBalance: sessionPrice },
+        $inc: { amountDue: sessionPrice + oldAmountDue },
       },
       { new: true }
     );
