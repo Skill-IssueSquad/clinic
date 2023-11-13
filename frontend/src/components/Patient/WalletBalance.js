@@ -5,12 +5,12 @@ import axios from "axios";
 
 //get patient detials
 const patientDetails = async (username) => {
-  const res = await axios.get(`/patient/getPatient/${username}`);
-  return res.data;
+  const res = await axios.get(`http://localhost:8000/patient/${username}`);
+  return res.data.data;
 };
 
 //display the wallet balance of the patient
-const WalletBalance = ({ username }) => {
+const WalletBalanceComp = ({ username }) => {
   const [patient, setPatient] = useState({});
   const [loading, setLoading] = useState(true);
 
@@ -38,4 +38,4 @@ const WalletBalance = ({ username }) => {
 };
 
 
-export default WalletBalance;
+export default WalletBalanceComp;
