@@ -43,16 +43,16 @@ const HealthPackages = () => {
   // Fetch family members from the backend when the component mounts
   useEffect(() => {
     const fetchFamilyMembers = async () => {
-      // try {
-      //   // Replace with your backend endpoint for fetching family members
-      //   const response = await axios.get(
-      //     "http://localhost:8000/patient/bahyone/getFamMember"
-      //   );
-      //   const data = response.data.data;
-      //   setFamilyMembers(data);
-      // } catch (error) {
-      //   console.error("Error fetching family members:", error);
-      // }
+      try {
+        // Replace with your backend endpoint for fetching family members
+        const response = await axios.get(
+          "http://localhost:8000/patient/bahyone/getFamMember"
+        );
+        const data = response.data.data;
+        setFamilyMembers(data);
+      } catch (error) {
+        console.error("Error fetching family members:", error);
+      }
     };
 
     fetchFamilyMembers();
