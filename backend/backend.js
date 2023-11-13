@@ -47,6 +47,8 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use("/DoctorStaticData", express.static("DoctorStaticData"));
+app.use("/documents", express.static("documents"));
+
 
 app.use("/doctor", doctorRouter);
 app.use("/admin", adminRouter);

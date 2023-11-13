@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-
+import PDFViewer from "../components/pdf.js";
 const MedicalHistory = () => {
   const [email, setEmail] = useState("");
   const [file, setFile] = useState(null);
@@ -91,12 +91,19 @@ const MedicalHistory = () => {
       <h2>Health Records:</h2>
       <ul>
         {healthRecords.map((record, index) => (
+          <div>
           <li key={index}>
             Document Type: {record.documentType}, Document Name: {record.documentName}
             <button onClick={() => handleRemoveRecord(record._id)}>Remove</button>
           </li>
+          <PDFViewer pdfUrl={record.documentUrl} />
+          </div>
+
         ))}
+
       </ul>
+      
+    
     </div>
   );
 };
