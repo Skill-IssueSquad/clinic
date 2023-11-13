@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Button,
   Dialog,
@@ -35,6 +36,8 @@ const purchaseButtonStyle = {
 };
 
 const HealthPackages = () => {
+  const navigate = useNavigate();
+
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [selectedFamilyMembers, setSelectedFamilyMembers] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
@@ -108,10 +111,6 @@ const HealthPackages = () => {
   };
 
   const handlePurchase = async () => {
-    // Implement the logic to proceed to the payment page with selected packages and family members' details.
-    // You can use react-router or another routing solution for this.
-    // Redirect code here...
-
     var oneYearFromNow = new Date();
     let packageName = "";
 
@@ -131,30 +130,30 @@ const HealthPackages = () => {
 
     oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
     const formData = {
+      username: "bahyone",
       healthPackage: packageName,
       renewal: oneYearFromNow,
       //familyMembers: selectedFamilyMembers,
     };
 
-    try {
-      // Replace with your backend endpoint for purchasing health packages
-      const response = await axios.patch(
-        "http://localhost:8000/patient/bahyone/subscriptions/subscribe",
-        formData
-      );
-      const data = response.data.data;
-      console.log(data);
-    } catch (error) {
-      console.error("Error purchasing health package:", error);
-    }
+    navigate("/patient/payments/");
+
+    // try {
+    //   // Replace with your backend endpoint for purchasing health packages
+    //   const response = await axios.patch(
+    //     "http://localhost:8000/patient/bahyone/subscriptions/subscribe",
+    //     formData
+    //   );
+    //   const data = response.data.data;
+    //   console.log(data);
+    // } catch (error) {
+    //   console.error("Error purchasing health package:", error);
+    // }
 
     // Clear the selected packages and family members
     setSelectedPackage(null);
     //setSelectedFamilyMembers([]);
     setOpenDialog(false);
-
-    // Redirect to payment page
-    // Redirect code here...
   };
 
   return (
