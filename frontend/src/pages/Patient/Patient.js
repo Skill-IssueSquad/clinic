@@ -57,7 +57,7 @@ const Patient = () => {
     };
 
     fetchPatient();
-  }, [submitFamMember, linkFamMember]); // Empty dependency array to run once on component mount
+  }, [submitFamMember, linkFamMember, handleCancelSubscription]); // Empty dependency array to run once on component mount
 
   if (!patient) return null;
 
