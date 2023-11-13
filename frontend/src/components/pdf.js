@@ -1,19 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import "react-pdf/dist/esm/Page/TextLayer.css";
 
 import { Document, Page, pdfjs } from "react-pdf";
-
-// Configure the worker URL for pdfjs
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 const PDFViewer = ({ pdfUrl }) => {
+  const [numPages, setNumPages] = useState(null);
+
+  function onDocumentLoadSuccess({ numPages }) {
+    setNumPages(numPages);
+  }
+
   return (
     <div>
       <Document
         file={pdfUrl}
+        onLoadSuccess={onDocumentLoadSuccess}
         options={{ workerSrc: pdfjs.GlobalWorkerOptions.workerSrc }}
       >
-        <Page pageNumber={1} renderTextLayer={false} />
+        {Array.from(new Array(numPages), (el, index) => (
+          <Page key={`page_${index + 1}`} pageNumber={index + 1} />
+        ))}
       </Document>
     </div>
   );
