@@ -116,7 +116,7 @@ const MedicalHistory = () => {
                 </button>
               )}
             </li>
-            {isPatient && <PDFViewer pdfUrl={record.documentUrl} />}
+            <PDFViewer pdfUrl={record.documentUrl} />
           </div>
         ))}
       </ul>
