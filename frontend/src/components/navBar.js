@@ -15,7 +15,7 @@ import AdbIcon from '@mui/icons-material/Adb';
 import { useNavigate } from 'react-router-dom';
 
 const pages = ['Home', 'Doctors', 'Appointments', 'Medical History', 'Health Packages'];
-const settings = ['Profile', 'Account', 'Dashboard', "Change Password", 'Logout'];
+const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 const ResponsiveAppBar = ({ username }) => {
 let navigate = useNavigate();
@@ -36,8 +36,6 @@ let navigate = useNavigate();
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-
-  }
 
   return (
     <AppBar position="static">
@@ -168,14 +166,9 @@ let navigate = useNavigate();
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {/* {settings.map((setting) => (
+              {settings.map((setting) => (
                 <MenuItem key={setting} onClick={handleCloseUserMenu}>
                   <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))} */}
-              {settings.map((text) => (
-                <MenuItem key={text} onClick={() => handleUserMenu(text)}>
-                  <Typography textAlign="center">{text}</Typography>
                 </MenuItem>
               ))}
             </Menu>
