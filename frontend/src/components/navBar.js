@@ -14,7 +14,7 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { useNavigate } from 'react-router-dom';
 
-const pages = ['Home', 'Doctors', 'Appointments', 'Medical History'];
+const pages = ['Home', 'Doctors', 'Appointments', 'Medical History', 'Health Packages'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 const ResponsiveAppBar = ({ username }) => {
@@ -130,6 +130,8 @@ let navigate = useNavigate();
                         username
                       }&IP=${true}`
                     
+                } else if (page == "Health Packages") {
+                  url = "/patient/healthPackages/"
                 }
                 return(
               <Button
