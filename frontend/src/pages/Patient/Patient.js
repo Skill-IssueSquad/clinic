@@ -7,8 +7,15 @@ import PrescriptionsMultiLevelFilterTable from "../../components/PrescriptionsMu
 import AddFamilyMember from "../../components/Patient/addFamilyMember";
 import PatientDetails from "../../components/Patient/PatientDetails";
 import LinkFamilyMemberForm from "../../components/Patient/linkFamilyMemberform";
+import { auth } from "./Protected/AuthProvider";
 
 const Patient = () => {
+  let show = false;
+
+  if (auth() && localStorage.getItem("role") === "Patient") {
+    show = false;
+  }
+
   const [patient, setPatient] = useState(null);
   //const [prescriptions, setPrescriptions] = useState(null);
 
@@ -64,37 +71,43 @@ const Patient = () => {
   //if (!prescriptions) return null;
 
   return (
-    <div className="patient">
-      <NavBar name={"Patient Dashboard"} username={"bahyone"} />
-      <PatientDetails
-        patient={patient}
-        handleCancelSubscription={handleCancelSubscription}
-      />
-      <p></p>
-      <Typography
-        variant="h6"
-        gutterBottom
-        borderLeft={15}
-        borderColor={"white"}
-      >
-        Add Family Member
-      </Typography>
-      <AddFamilyMember onSubmit={submitFamMember} />
-      <p></p>
-      <Typography
-        variant="h6"
-        gutterBottom
-        borderLeft={15}
-        borderColor={"white"}
-      >
-        Link Family Member account
-      </Typography>
-      <LinkFamilyMemberForm onSubmit={linkFamMember} />
-      <p></p>
-      <PrescriptionsMultiLevelFilterTable
-        columns={["doctor_name", "date", "isFilled", "View Prescriptions"]}
-        API_GET_URL={"http://localhost:8000/patient/bahyone/prescriptions"}
-      />
+    <div>
+      {show ? (
+        <div className="patient">
+          (<NavBar name={"Patient Dashboard"} username={"bahyone"} />
+          <PatientDetails
+            patient={patient}
+            handleCancelSubscription={handleCancelSubscription}
+          />
+          <p></p>
+          <Typography
+            variant="h6"
+            gutterBottom
+            borderLeft={15}
+            borderColor={"white"}
+          >
+            Add Family Member
+          </Typography>
+          <AddFamilyMember onSubmit={submitFamMember} />
+          <p></p>
+          <Typography
+            variant="h6"
+            gutterBottom
+            borderLeft={15}
+            borderColor={"white"}
+          >
+            Link Family Member account
+          </Typography>
+          <LinkFamilyMemberForm onSubmit={linkFamMember} />
+          <p></p>
+          <PrescriptionsMultiLevelFilterTable
+            columns={["doctor_name", "date", "isFilled", "View Prescriptions"]}
+            API_GET_URL={"http://localhost:8000/patient/bahyone/prescriptions"}
+          />
+        </div>
+      ) : (
+        <h2>No access</h2>
+      )}
     </div>
   );
 };
