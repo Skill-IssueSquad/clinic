@@ -10,7 +10,6 @@ import {
 } from "@mui/material";
 
 import { useNavigate } from "react-router-dom";
-import WalletBalanceComp from "../../components/Patient/WalletBalance";
 
 
 

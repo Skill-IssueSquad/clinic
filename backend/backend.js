@@ -46,6 +46,24 @@ mongoose
   })
   .catch((err) => console.log(err));
 
+app.get("/config", (req, res) => {
+  res.send({
+    publicKey: process.env.STRIPE_PUBLISHABLE_KEY,
+  });
+});
+
+app.post("/create-payment-intent", async (req, res) => {
+  const { items } = req.body;
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount: 1000,
+    currency: "usd",
+    payment_method_types: ["card"],
+  });
+  res.send({
+    clientSecret: paymentIntent.client_secret,
+  });
+});
+
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
