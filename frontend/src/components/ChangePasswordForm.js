@@ -68,9 +68,6 @@ function App() {
 
     const validateForm = async (data) => {
         const errors = {};
-        if (!data.oldPassword) {
-            errors.oldPassword = 'Old password is required';
-        }
         if (!data.password) {
             errors.password = 'New password is required';
         }
@@ -152,18 +149,6 @@ function App() {
             <li>Minimum length of 8 characters</li>
             
             <br/>
-            <TextField
-                type="password"
-                label="Old Password"
-                name="oldPassword"
-                value={formData.oldPassword}
-                onChange={handleChange}
-                error={!!errors.oldPassword}
-                helperText={errors.oldPassword}
-                fullWidth
-                style={{ width:500, height:30, marginBottom: '20px' }}
-            />
-            <br />
             <TextField
                 type="password"
                 label="Password"
