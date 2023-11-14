@@ -9,6 +9,7 @@ const adminRouter = require("./src/routes/AdminRouter");
 const PatientRegisteration = require("./src/routes/patientRegisteration");
 const DoctorRegisteration = require("./src/routes/doctorRegisteration");
 const patientRouter = require("./src/routes/PatientRouter");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY, { apiVersion: '' });
 // Import necessary modules
 const multer = require('multer');
 const path = require('path');

@@ -70,7 +70,6 @@ const doctorSchema = new Schema({
           type: String,
           required: true,
         },
-        startTime: {
         day: {
           type: String,
           required: true,
@@ -83,7 +82,6 @@ const doctorSchema = new Schema({
           type: Date,
           required: true,
         },
-        endTime: {
         endTime: {
           type: Date,
           required: true,
