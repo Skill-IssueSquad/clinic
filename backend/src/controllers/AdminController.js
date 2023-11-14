@@ -8,7 +8,6 @@ const HealthPackage = require("../models/Packages");
 //View all admins 
 const viewAdmins = async (req,res) => {
     try{
-        console.log("does it get here?");
         const admins = await Admin.find();
         const reply = {
             success: true,

@@ -9,10 +9,11 @@ const adminRouter = require("./src/routes/AdminRouter");
 const PatientRegisteration = require("./src/routes/patientRegisteration");
 const DoctorRegisteration = require("./src/routes/doctorRegisteration");
 const patientRouter = require("./src/routes/PatientRouter");
-//const registerationRouter = require("./src/routes/RegisterationRouter");
+const doctorRequestRouter = require("./src/routes/DoctorRequestRouter");
 const accountRouter = require("./src/routes/AccountRouter");
 const cookieParser = require('cookie-parser');
-const {authAdmin, authDoctor, authPatient} = require("./src/middleware/Authentication");
+const {authAdmin, authDoctor, authDoctorRequest ,authPatient} = require("./src/middleware/Authentication");
+const doctorRequest = require("./src/models/DoctorRequest");
 
 
 mongoose
@@ -34,5 +35,6 @@ app.use("/register/patient", PatientRegisteration);
 app.use("/register/doctor", DoctorRegisteration);
 app.use("/patient", authPatient, patientRouter);
 app.use("/account", accountRouter);
+app.use("/doctorRequest", authDoctorRequest, doctorRequestRouter);
 
 

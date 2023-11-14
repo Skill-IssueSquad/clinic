@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import AdminSideBar from "../../components/Admin/AdminSideBar";
-import DashboardView from "../../components/Admin/DashboardView";
+import DoctorInfo from "../../components/DoctorRequest/ViewInfo";
 
-const Admin = () => {
+const DoctorRequest = () => {
     return(
         <div>
-            <AdminSideBar flag = {true}/>
+            <DoctorInfo flag = {true}/>
         </div>
     );
 };
 
-export default Admin;
+export default DoctorRequest;

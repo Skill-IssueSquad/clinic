@@ -13,6 +13,7 @@ import ViewPatients from "./pages/Admin/ViewPatients";
 import ViewRequests from "./pages/Admin/ViewRequests";
 import ViewPackages from "./pages/Admin/ViewPackages";
 import Patients from "./pages/Patients";
+import DoctorRequest from "./pages/DoctorRequest/DoctorRequest"
 import PatientRegisteration from "./pages/Home/PatientRegisteration";
 import DoctorRegisteration from "./pages/Home/DoctorRegisteration";
 import Patient from "./pages/Patient";
@@ -35,6 +36,7 @@ function App() {
             <Route path="/ResetPassword" element={<ResetPassword />} />
             <Route path="/DoctorRegisteration" element={<DoctorRegisteration/>} />
             <Route path="/PatientRegisteration" element={<PatientRegisteration/>} />
+            <Route exact path="/DoctorRequest" element={<DoctorRequest />} />
             <Route exact path="/Doctor_Home" element={<Doctor />} />
             <Route exact path="/Doctor_Profile" element={<DoctorProfile />} />
             <Route exact path="/Admin" element={<Admin />} />

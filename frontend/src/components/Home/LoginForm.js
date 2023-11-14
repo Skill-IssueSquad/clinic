@@ -73,6 +73,7 @@ function App() {
               
                 if(response.ok){
                      // Update the state with the fetched data
+                     const username = data.username;
                     setFormData({
                     username: '',
                     password: ''
@@ -85,6 +86,8 @@ function App() {
                     {
                         case "Admin" : navigate('/Admin'); break;
                         case "Doctor": navigate('/Doctor_Home'); break;
+                        //check here
+                        case "DoctorRequest": navigate('/DoctorRequest' ,{replace:true, state: {username}}); break;
                         default:  navigate('/patient');
                     }
                 }

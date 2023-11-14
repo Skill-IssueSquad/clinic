@@ -172,11 +172,12 @@ const login = async (req,res) => {
       const user1 = await Admin.findOne({username});
       const user2 = await Doctor.findOne({username});
       const user3 = await Patient.findOne({username});
+      const user4 = await DoctorRequest.findOne({username});
       let hashedPassword;
       let role;
       let reply;
 
-      if(!user1 && !user2 && !user3){
+      if(!user1 && !user2 && !user3 && !user4){
         reply = {
           success: false,
           data: null,
@@ -192,6 +193,10 @@ const login = async (req,res) => {
         else if (user2){
           hashedPassword = user2.password;
           role = "Doctor";
+        }
+        else if (user4){
+          hashedPassword = user4.password;
+          role = "DoctorRequest";
         }
         else{
           hashedPassword = user3.password;
@@ -257,7 +262,9 @@ const forgotPassword = async (req, res) => {
       const user1 = await Admin.findOne({email});
       const user2 = await Doctor.findOne({email});
       const user3 = await Patient.findOne({email});
-      if(!user1 && !user2 && !user3){
+      const user4 = await DoctorRequest.findOne({email});
+
+      if(!user1 && !user2 && !user3 && !user4){
         reply = {
           success: false,
           data: null,
@@ -272,6 +279,9 @@ const forgotPassword = async (req, res) => {
         else if (user2){
           role = "Doctor";
         }
+        else if (user4){
+          role = "DoctorRequest";
+        }
         else{
           role = "Patient";
         }
@@ -282,6 +292,7 @@ const forgotPassword = async (req, res) => {
         switch(role){
           case "Admin": await Admin.updateOne({email: email}, { $set: {otp: otp, otpExpiry: otpExpiry}}); break;
           case "Doctor": await Doctor.updateOne({email: email}, { $set: {otp: otp, otpExpiry: otpExpiry}}); break;
+          case "DoctorRequest": await DoctorRequest.updateOne({email: email}, { $set: {otp: otp, otpExpiry: otpExpiry}}); break;
           default: await Patient.updateOne({email: email}, { $set: {otp: otp, otpExpiry: otpExpiry}}); 
         }
 
@@ -338,12 +349,16 @@ const verifyOTP = async (req,res) => {
     const user1 = await Admin.findOne({email});
     const user2 = await Doctor.findOne({email});
     const user3 = await Patient.findOne({email});
+    const user4 = await DoctorRequest.findOne({email});
     let flag = false;
     if (user1) {
       role = "Admin";
     }
     else if (user2){
       role = "Doctor";
+    }
+    else if (user4){
+      role = "DoctorRequest";
     }
     else{
       role = "Patient";
@@ -359,6 +374,11 @@ const verifyOTP = async (req,res) => {
                         await Doctor.updateOne({email: email}, { $set: {otp: '', otpExpiry: ''}});                 
                       }
                       break;
+      case "DoctorRequest": if(user4.otp === otp && user4.otpExpiry > now()) {
+                              flag = true;
+                              await DoctorRequest.updateOne({email: email}, { $set: {otp: '', otpExpiry: ''}});                 
+                            }
+                            break;
       default: if(user3.otp === otp && user3.otpExpiry > now()) {
                   flag = true;
                   await Patient.updateOne({email: email}, { $set: {otp: '', otpExpiry: ''}});                 
@@ -404,11 +424,15 @@ const resetPassword = async (req,res) => {
     const user1 = await Admin.findOne({email});
     const user2 = await Doctor.findOne({email});
     const user3 = await Patient.findOne({email});
+    const user4 = await DoctorRequest.findOne({email});
     if (user1) {
       role = "Admin";
     }
     else if (user2){
       role = "Doctor";
+    }
+    else if (user4){
+      role = "DoctorRequest";
     }
     else{
       role = "Patient";
@@ -416,6 +440,7 @@ const resetPassword = async (req,res) => {
     switch(role){
       case "Admin": await Admin.updateOne({email: email}, { $set: {password: hashedPassword}}); break; 
       case "Doctor": await Doctor.updateOne({email: email}, { $set: {password: hashedPassword}}); break; 
+      case "DoctorRequest": await DoctorRequest.updateOne({email: email}, { $set: {password: hashedPassword}}); break; 
       default: await Patient.updateOne({email: email}, { $set: {password: hashedPassword}});
     }
     reply = {
