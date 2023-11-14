@@ -20,6 +20,7 @@ import Patient from "./pages/Patient";
 import PatientDoctors from "./pages/PatientDoctors";
 import PatientAppointments from "./pages/PatientAppointments";
 import { useState } from "react";
+import ChangePassword from "./pages/ChangePassword";
 
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
             <Route path="/ResetPassword" element={<ResetPassword />} />
             <Route path="/DoctorRegisteration" element={<DoctorRegisteration/>} />
             <Route path="/PatientRegisteration" element={<PatientRegisteration/>} />
+            <Route path="/ChangePassword" element={<ChangePassword />} />
             <Route exact path="/DoctorRequest" element={<DoctorRequest />} />
             <Route exact path="/Doctor_Home" element={<Doctor />} />
             <Route exact path="/Doctor_Profile" element={<DoctorProfile />} />

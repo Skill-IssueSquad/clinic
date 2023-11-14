@@ -13,7 +13,7 @@ const Patient = () => {
   let show = false;
 
   if (auth() && localStorage.getItem('role') === "Patient"){
-    show=false;
+    show=true;
   }
   
   const [patient, setPatient] = useState(null);
@@ -21,7 +21,7 @@ const Patient = () => {
   const submitFamMember =async (formData) => {
     try {
       const res = await axios.patch(
-        "http://localhost:8000/patient/bahyone/addFamMember",
+        "http://localhost:8000/patient/gamed/addFamMember",
         formData
       );
       console.log(res.data);
@@ -34,9 +34,12 @@ const Patient = () => {
 
   useEffect(() => {
     const fetchPatient = async () => {
-      await axios.get("http://localhost:8000/patient/bahyone").then((res) => {
-        setPatient(res.data.data);
-      });
+      // await fetch("http://localhost:8000/patient/gamed").then((res) => {
+      //   setPatient(res.data);
+      // });
+      const response = await fetch("http://localhost:8000/patient/gamed")
+    
+                const json = await response.json();
     };
 
     fetchPatient();
@@ -57,7 +60,7 @@ const Patient = () => {
       <p></p>
       <PrescriptionsMultiLevelFilterTable
         columns={["doctor_name", "date", "isFilled", "View Prescriptions"]}
-        API_GET_URL={"http://localhost:8000/patient/bahyone/getPrescriptions"}
+        API_GET_URL={"http://localhost:8000/patient/gamed/getPrescriptions"}
         />
     </div>) : 
     (<h2>No access</h2>)

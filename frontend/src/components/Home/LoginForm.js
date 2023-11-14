@@ -74,6 +74,7 @@ function App() {
                 if(response.ok){
                      // Update the state with the fetched data
                      const username = data.username;
+                     console.log(json);
                     setFormData({
                     username: '',
                     password: ''
@@ -82,6 +83,7 @@ function App() {
                     //setToken(json.data);
                     localStorage.setItem('token',json.data);
                     localStorage.setItem('role',role);
+                    localStorage.setItem('username', username);
                     switch(role)
                     {
                         case "Admin" : navigate('/Admin'); break;
