@@ -111,6 +111,7 @@ const authDoctorRequest = async = (req, res, next) => {
 //Authenticate patient is logged in
 const authPatient = async = (req, res, next) => {
     const token = req.cookies.jwt
+    console.log(token);
     if (token) {
       jwt.verify(token, jwtSecret, (err, decodedToken) => {
         if (err) {
