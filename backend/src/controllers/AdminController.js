@@ -173,6 +173,62 @@ const viewDoctorApplications = async (req,res) => {
     }
 };
 
+//Accept doctor request
+const acceptDoctor = async (req,res) => {
+    try{
+        const username = req.body.user;
+        const doctorRequest = await DoctorRequest.findOneAndUpdate({username: username}, {$set: {status: "Accepted"}});
+        const doctor = await Doctor.create(
+            {
+                username: doctorRequest.username,
+                name: doctorRequest.name,
+                email: doctorRequest.email,
+                password: doctorRequest.password,
+                dateOfBirth: doctorRequest.dateOfBirth,
+                hourlyRate: doctorRequest.hourlyRate,
+                affiliatedHospital: doctorRequest.affiliatedHospital,
+                educationalBackground: doctorRequest.educationalBackground,
+            }
+        );
+        const reply = {
+            success: true,
+            data: doctor,
+            message: "Doctor has been accepted successfully",
+        }
+        res.status(200).json(reply);
+    }catch(error){
+        const reply = {
+            success: false,
+            data: null,
+            message: error.message,
+        };
+        res.status(400).json(reply);
+    }
+};
+
+//Reject doctor request
+const rejectDoctor = async (req,res) => {
+    const condition = {username: req.body.user};
+    const update = { $set: {status: "Rejected"} };
+    DoctorRequest.updateOne(condition, update)
+    .then(() => {
+       const reply = {
+           success: true,
+           data: req.params.packageType,
+           message: "Doctor has been rejected successfully",
+       };
+       res.status(200).json(reply);
+    })
+    .catch((error) => {
+       const reply = {
+           success: false,
+           data: null,
+           message: error.message,
+       };
+       res.status(400).json(reply);
+    })
+};
+
 //View all health packages 
 const viewHealthPackages = async (req,res) => {
     try{
@@ -273,6 +329,8 @@ module.exports = {
     viewPatients,
     removePatient,
     viewDoctorApplications,
+    acceptDoctor,
+    rejectDoctor,
     viewHealthPackages,
     addHealthPackage,
     updateHealthPackage,

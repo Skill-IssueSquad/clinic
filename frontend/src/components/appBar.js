@@ -42,6 +42,24 @@ function ResponsiveAppBar() {
     }
   };
 
+  const handleUserMenu = async (text) => {
+    switch(text){
+      case "Profile": navigate('/Admin'); break;
+      case "Account": navigate('/Admin/ViewAdmins'); break;
+      case "Dashboard": navigate('/Admin/ViewDoctors'); break;
+      default: {
+        const response = await fetch('/account/logout', {method: 'GET'});
+        const json = await response.json();
+        if (response.ok){
+          //setToken();
+          localStorage.setItem('token','');
+          localStorage.setItem('role','');
+          navigate('/');
+        }
+      };
+    }
+  }
+
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
@@ -186,12 +204,17 @@ function ResponsiveAppBar() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
+              {/* {settings.map((setting) => (
                 <MenuItem
                   key={setting}
                   onClick={() => handleCloseUserMenu(setting)}
                 >
                   <Typography textAlign="center">{setting}</Typography>
+                </MenuItem>
+              ))} */}
+              {settings.map((text) => (
+                <MenuItem key={text} onClick={() => handleUserMenu(text)}>
+                  <Typography textAlign="center">{text}</Typography>
                 </MenuItem>
               ))}
             </Menu>

@@ -35,7 +35,12 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({ storage: storage });const doctorRequestRouter = require("./src/routes/DoctorRequestRouter");
+const accountRouter = require("./src/routes/AccountRouter");
+const cookieParser = require('cookie-parser');
+const {authAdmin, authDoctor, authDoctorRequest ,authPatient} = require("./src/middleware/Authentication");
+const doctorRequest = require("./src/models/DoctorRequest");
+
 
 mongoose
   .connect(process.env.DATABASE_URL, { useNewUrlParser: true })
@@ -52,10 +57,14 @@ app.use(express.json());
 app.use("/DoctorStaticData", express.static("DoctorStaticData"));
 app.use("/documents", express.static("documents"));
 
-
-app.use("/doctor", doctorRouter);
-app.use("/admin", adminRouter);
+app.use(cookieParser());
+app.use("/doctor", authDoctor, doctorRouter);
+app.use("/admin", authAdmin, adminRouter);
 app.use("/AdminStaticData", express.static("AdminStaticData"));
 app.use("/register/patient", PatientRegisteration);
 app.use("/register/doctor", DoctorRegisteration);
-app.use("/patient", patientRouter);
+app.use("/patient", authPatient, patientRouter);
+app.use("/account", accountRouter);
+app.use("/doctorRequest", authDoctorRequest, doctorRequestRouter);
+
+

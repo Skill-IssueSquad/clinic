@@ -183,6 +183,12 @@ const patientSchema = new Schema({
     type: Number,
     default: 0,
   },
+  otp: {
+    type: String,
+  },
+  otpExpiry: {
+    type: Date,
+  }
 });
 
 const patientModel = mongoose.model("Patient", patientSchema);
