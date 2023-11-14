@@ -74,6 +74,7 @@ function App() {
                 if(response.ok){
                      // Update the state with the fetched data
                      const username = data.username;
+                     console.log(json);
                     setFormData({
                     username: '',
                     password: ''

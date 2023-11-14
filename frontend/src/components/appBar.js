@@ -15,7 +15,7 @@ import AdbIcon from "@mui/icons-material/Adb";
 import { useNavigate, Link } from "react-router-dom";
 
 const pages = ["Appointments", "Patients"];
-const settings = ["Profile", "Logout"];
+const settings = ["Profile", "Change Password", "Logout"];
 
 function ResponsiveAppBar() {
   const navigate = useNavigate();
@@ -47,6 +47,7 @@ function ResponsiveAppBar() {
       case "Profile": navigate((localStorage.getItem("role").toLocaleLowerCase() === "doctor") ? "/Doctor_Profile" : '/Admin'); break;
       case "Account": navigate('/Admin/ViewAdmins'); break;
       case "Dashboard": navigate('/Admin/ViewDoctors'); break;
+      case "Change Password": navigate('/ChangePassword'); break;
       default: {
         const response = await fetch('/account/logout', {method: 'GET'});
         const json = await response.json();
@@ -54,6 +55,7 @@ function ResponsiveAppBar() {
           //setToken();
           localStorage.setItem('token','');
           localStorage.setItem('role','');
+          localStorage.setItem('username', '');
           navigate('/');
         }
       };

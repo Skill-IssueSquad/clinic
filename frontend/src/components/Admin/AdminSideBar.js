@@ -79,7 +79,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   justifyContent: 'flex-end',
 }));
 
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const settings = ['Profile', 'Account', 'Dashboard', "Change Password", 'Logout'];
 
 export default function PersistentDrawerLeft({flag, ViewComponent}) {
   const navigate = useNavigate();
@@ -121,6 +121,7 @@ export default function PersistentDrawerLeft({flag, ViewComponent}) {
       case "Profile": navigate('/Admin'); break;
       case "Account": navigate('/Admin/ViewAdmins'); setOpen(false); break;
       case "Dashboard": navigate('/Admin/ViewDoctors'); setOpen(false); break;
+      case "Change Password": navigate('/ChangePassword'); break;
       default: {
         const response = await fetch('/account/logout', {method: 'GET'});
         const json = await response.json();
@@ -128,6 +129,7 @@ export default function PersistentDrawerLeft({flag, ViewComponent}) {
           //setToken();
           localStorage.setItem('token','');
           localStorage.setItem('role','');
+          localStorage.setItem('username', '');
           navigate('/');
         }
       };

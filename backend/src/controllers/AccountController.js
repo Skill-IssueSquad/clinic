@@ -415,18 +415,32 @@ const verifyOTP = async (req,res) => {
 const resetPassword = async (req,res) => {
   const password = req.body.password;
   const email = req.body.email;
-  console.log(password);
-  console.log(email);
-  try{
-    const salt = await bcrypt.genSalt();
-    const hashedPassword = await bcrypt.hash(password, salt);
+  const username = req.body.username;
+  console.log(req.body);
 
-    const user1 = await Admin.findOne({email});
-    const user2 = await Doctor.findOne({email});
-    const user3 = await Patient.findOne({email});
-    const user4 = await DoctorRequest.findOne({email});
+  if(username !== "undefined"){
+    loggedin=true;
+  }
+
+  try{
+    let user1, user2, user3, user4;
+
+    if(loggedin){
+      user1 = await Admin.findOne({username});
+      user2 = await Doctor.findOne({username});
+      user3 = await Patient.findOne({username});
+      user4 = await DoctorRequest.findOne({username});
+    }
+    else{
+      user1 = await Admin.findOne({email});
+      user2 = await Doctor.findOne({email});
+      user3 = await Patient.findOne({email});
+      user4 = await DoctorRequest.findOne({email});
+    }
+
     if (user1) {
       role = "Admin";
+      console.log("hena");
     }
     else if (user2){
       role = "Doctor";
@@ -434,21 +448,37 @@ const resetPassword = async (req,res) => {
     else if (user4){
       role = "DoctorRequest";
     }
-    else{
+    else if(user3){
       role = "Patient";
     }
-    switch(role){
-      case "Admin": await Admin.updateOne({email: email}, { $set: {password: hashedPassword}}); break; 
-      case "Doctor": await Doctor.updateOne({email: email}, { $set: {password: hashedPassword}}); break; 
-      case "DoctorRequest": await DoctorRequest.updateOne({email: email}, { $set: {password: hashedPassword}}); break; 
-      default: await Patient.updateOne({email: email}, { $set: {password: hashedPassword}});
-    }
-    reply = {
-      success: true,
-      data: null,
-      message: 'Password has been reset successfully',
-    }
-    res.status(200).json(reply);
+
+
+      const salt = await bcrypt.genSalt();
+      const hashedPassword = await bcrypt.hash(password, salt);
+
+      let updateField;
+      if(loggedin){
+        switch(role){
+          case "Admin": await Admin.updateOne({username: username}, { $set: {password: hashedPassword}}); break; 
+          case "Doctor": await Doctor.updateOne({username: username}, { $set: {password: hashedPassword}}); break; 
+          case "DoctorRequest": await DoctorRequest.updateOne({username: username}, { $set: {password: hashedPassword}}); break; 
+          default: await Patient.updateOne({username: username}, { $set: {password: hashedPassword}});
+        }
+      }
+      else{
+        switch(role){
+          case "Admin": await Admin.updateOne({email: email}, { $set: {password: hashedPassword}}); break; 
+          case "Doctor": await Doctor.updateOne({email: email}, { $set: {password: hashedPassword}}); break; 
+          case "DoctorRequest": await DoctorRequest.updateOne({email: email}, { $set: {password: hashedPassword}}); break; 
+          default: await Patient.updateOne({email: email}, { $set: {password: hashedPassword}});
+        }
+      }      
+      reply = {
+        success: true,
+        data: null,
+        message: 'Password has been reset successfully',
+      }
+      res.status(200).json(reply);
   }catch(error){
     reply = {
       success: false,
