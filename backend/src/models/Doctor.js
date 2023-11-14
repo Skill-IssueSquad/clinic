@@ -71,12 +71,33 @@ const doctorSchema = new Schema({
           required: true,
         },
         startTime: {
+        day: {
+          type: String,
+          required: true,
+        },
+        timeSlot: {
+          type: String,
+          required: true,
+        },
+        startTime: {
           type: Date,
           required: true,
         },
         endTime: {
+        endTime: {
           type: Date,
           required: true,
+        },
+        isBooked: {
+          type: Boolean,
+          required: true,
+          default: false,
+        },
+        patientName: {
+          type: String,
+        },
+        appointmentType: {
+          type: String,
         },
         isBooked: {
           type: Boolean,

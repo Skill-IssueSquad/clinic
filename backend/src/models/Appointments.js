@@ -22,6 +22,10 @@ const appointmentSchema = new Schema({
   },
   slot: {
     type: String,
+    required: true,
+  },
+  slot: {
+    type: String,
     required: true,
   },
   patient_id: {
@@ -44,6 +48,11 @@ const appointmentSchema = new Schema({
     type: String,
     enum: ["upcoming", "completed", "cancelled", "rescheduled"],
     required: true,
+  },
+  familyMember_nationalId: {
+    type: String,
+    // required: true,
+    default: null,
   },
 });
 

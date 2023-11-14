@@ -95,25 +95,22 @@ const patientSchema = new Schema({
       },
     },
   ],
-  healthRecords: {
-    type: [
-      {
-        documentType: {
-          type: String,
-          required: true,
-        },
-        documentName: {
-          type: String,
-          required: true,
-        },
-        documentUrl: {
-          type: String, //not sure abt this tho
-          required: true,
-        },
+  healthRecords: [
+    {
+      documentType: {
+        type: String,
+        required: true,
       },
-    ],
-    default: [],
-  },
+      documentName: {
+        type: String,
+        required: true,
+      },
+      documentUrl: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
   extfamilyMembers: [
     {
       name: {
@@ -182,6 +179,10 @@ const patientSchema = new Schema({
       },
     },
   ],
+  amountDue: {
+    type: Number,
+    default: 0,
+  },
 });
 
 const patientModel = mongoose.model("Patient", patientSchema);

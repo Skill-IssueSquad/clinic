@@ -4,12 +4,14 @@ const Appointments = require("../models/Appointments");
 const fs = require("fs");
 const numberToWords = require("number-to-words");
 const Prescription = require("../models/Prescription");
+const Clinic = require("../models/Clinic");
+const Packages = require("../models/Packages");
 
 const getDoctor = async (req, res) => {
-  // console.log("I am here");
+  //console.log("I am here");
   const { username } = req.params;
-  // console.log(username);
-  const doctor = await Doctor.find({ username }).catch((err) => {
+  // console.log("The Username", username);
+  const doctor = await Doctor.findOne({ username }).catch((err) => {
     const send = {
       success: false,
       data: null,
@@ -18,11 +20,11 @@ const getDoctor = async (req, res) => {
     res.status(500).json(send);
     return;
   });
-  if (doctor.length === 0) {
+  if (!doctor) {
     const send = {
       success: false,
       data: null,
-      message: "Doctor not found",
+      message: "Doctor not found1",
     };
     res.status(404).json(send);
     return;
@@ -140,7 +142,21 @@ const getAppointments = async (req, res) => {
     for (const appointment of appointments) {
       const patientId = appointment.patient_id;
       const patient = await Patient.findById({ _id: patientId });
-      const patientName = patient.name;
+      var healthRecords = null;
+      var patientName = "";
+      if (appointment.familyMember_nationalId === null) {
+        patientName = patient.name;
+        healthRecords = patient.healthRecords;
+      } else {
+        const family = patient.extfamilyMembers;
+
+        family.forEach((member) => {
+          if (member.national_id === appointment.familyMember_nationalId) {
+            patientName = member.name;
+          }
+        });
+      }
+
       i++;
       //const appointmentDate = new Date(appointment.date).toLocaleDateString();
       const appointmentDate = new Date(appointment.date).toLocaleDateString(
@@ -152,15 +168,19 @@ const getAppointments = async (req, res) => {
         }
       );
       const appointmentInfo = {
+        _id: patient._id,
+        appID: appointment._id,
+        PUN: patient.username,
         id: i,
         date: appointmentDate,
+        time: appointment.slot,
         status: appointment.status,
         name: patientName,
         gender: patient.gender,
         age: patient.age,
         type: appointment.type,
         mobileNumber: patient.mobileNumber,
-        healthRecords: patient.healthRecords,
+        healthRecords: healthRecords,
       };
       result.push(appointmentInfo);
     }
@@ -390,6 +410,327 @@ const createAppointment = async (req, res) => {
   res.status(200).json(send);
 };
 
+const approveDoctor = async (req, res) => {
+  try {
+    const { username } = req.params;
+    var doctor = await Doctor.findOne({ username });
+    const doctorId = doctor._id;
+    doctor = await Doctor.findByIdAndUpdate(
+      { _id: doctorId },
+      {
+        adminApproval: true,
+      },
+      { new: true }
+    );
+    const send = {
+      success: true,
+      data: doctor,
+      message: "Doctor approved successfully",
+    };
+    res.status(200).json(send);
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    res.status(500).json(send);
+  }
+};
+
+const addMoney = async (req, res) => {
+  try {
+    const { username } = req.params;
+    const { amount } = req.body;
+    var doctor = await Doctor.findOne({ username });
+    const doctorId = doctor._id;
+    const newWalletBalance = doctor.walletBalance + amount;
+    doctor = await Doctor.findByIdAndUpdate(
+      { _id: doctorId },
+      {
+        walletBalance: newWalletBalance,
+      },
+      { new: true }
+    );
+    const send = {
+      success: true,
+      data: doctor,
+      message: "Money added successfully",
+    };
+    res.status(200).json(send);
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    res.status(500).json(send);
+  }
+};
+
+const acceptContract = async (req, res) => {
+  try {
+    //console.log("I am here");
+    const { username } = req.params;
+    var doctor = await Doctor.findOne({ username });
+    const doctorId = doctor._id;
+    // console.log(doctorId);
+    doctor = await Doctor.findByIdAndUpdate(
+      { _id: doctorId },
+      {
+        contractAccepted: true,
+      },
+      { new: true }
+    );
+    const send = {
+      success: true,
+      data: doctor,
+      message: "Doctor accepted successfully",
+    };
+    res.status(200).json(send);
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    res.status(500).json(send);
+  }
+};
+
+const addSlot = async (req, res) => {
+  try {
+    const { username } = req.params;
+    const { day, timeSlot } = req.body;
+    var doctor = await Doctor.findOne({ username });
+    // console.log(timeSlot);
+    const doctorId = doctor._id;
+    //console.log(timeSlot); // prints 13:00
+    let dayComponents = day.split("-");
+    let timeComponents = timeSlot.split(":");
+
+    let year = parseInt(dayComponents[0]);
+    let month = parseInt(dayComponents[1]) - 1; // JavaScript months are 0-indexed
+    let dayOfMonth = parseInt(dayComponents[2]);
+
+    let hours = parseInt(timeComponents[0]);
+    let minutes = parseInt(timeComponents[1]);
+
+    let startTime = new Date(Date.UTC(year, month, dayOfMonth, hours, minutes));
+    // console.log(startTime);
+
+    let endTime = new Date(Date.UTC(year, month, dayOfMonth, hours, minutes));
+
+    // Get the minutes from the Date object
+    minutes = endTime.getMinutes();
+
+    // Add 30 to the minutes
+    minutes += 30;
+
+    // Set the new minutes to the Date object
+    endTime.setMinutes(minutes);
+    //  startTime.setHours(startTime.getHours() + 2);
+    // endTime.setHours(endTime.getHours() + 2);
+    // console.log(startTime);
+    // console.log(endTime);
+    const isBooked = false;
+    const patientName = "";
+    const appointmentType = "";
+    const newSlot = {
+      day,
+      timeSlot,
+      startTime,
+      endTime,
+      isBooked,
+      patientName,
+      appointmentType,
+    };
+    doctor = await Doctor.findById({ _id: doctorId });
+    const slots = doctor.availableSlots;
+    var flag = false;
+    slots.forEach((slot) => {
+      if (slot.day === day && slot.timeSlot === timeSlot) {
+        flag = true;
+      }
+    });
+    if (flag) {
+      throw new Error("Slot already exists");
+    }
+    doctor = await Doctor.findByIdAndUpdate(
+      { _id: doctorId },
+      {
+        $push: { availableSlots: newSlot },
+      },
+      { new: true }
+    );
+    const send = {
+      success: true,
+      data: doctor,
+      message: "Slot added successfully",
+    };
+    res.status(200).json(send);
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    res.status(500).json(send);
+  }
+};
+
+const getSchedule = async (req, res) => {
+  try {
+    const { username } = req.params;
+    const { day } = req.body;
+    //console.log(day);
+    const doctor = await Doctor.findOne({ username });
+    const slots = doctor.availableSlots;
+    const result = [];
+    slots.forEach((slot) => {
+      if (slot.day === day) {
+        result.push(slot);
+      }
+    });
+    result.sort((a, b) => {
+      return a.startTime - b.startTime;
+    });
+    const send = {
+      success: true,
+      data: result,
+      message: "Schedule found successfully",
+    };
+    res.status(200).json(send);
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    res.status(500).json(send);
+  }
+};
+
+const addAppointment = async (req, res) => {
+  try {
+    const { username } = req.params;
+    const { day, timeSlot, startTime, type, patientId, appID } = req.body;
+    var patient = await Patient.findById({ _id: patientId });
+    var doctor = await Doctor.findOne({ username });
+    const doctorId = doctor._id;
+    var patientName = null;
+    // console.log("My name is :", patientName);
+    var appointment = await Appointments.findById({ _id: appID });
+    const familyMember_nationalId = appointment.familyMember_nationalId;
+    if (familyMember_nationalId === null) {
+      patientName = patient.name;
+    } else {
+      const family = patient.extfamilyMembers;
+      family.forEach((member) => {
+        if (member.national_id === familyMember_nationalId) {
+          patientName = member.name;
+        }
+      });
+    }
+    const prescriptionId = appointment.prescription_id;
+    const followUp = await Appointments.create({
+      doctor_id: doctorId,
+      type,
+      date: startTime,
+      day,
+      slot: timeSlot,
+      patient_id: patientId,
+      prescription_id: prescriptionId,
+      familyMember_nationalId,
+      status: "upcoming",
+    });
+    doctor = await Doctor.findByIdAndUpdate(
+      { _id: doctorId },
+      {
+        $set: {
+          "availableSlots.$[elem].isBooked": true,
+          "availableSlots.$[elem].patientName": patientName,
+          "availableSlots.$[elem].appointmentType": type,
+        },
+      },
+      {
+        arrayFilters: [{ "elem.day": day, "elem.timeSlot": timeSlot }],
+        new: true,
+      }
+    );
+    const markup = (await Clinic.findOne({})).markupPercentage;
+    // console.log("The markup is :", markup);
+    var discount = 0;
+    if (patient.healthPackageType.status === "subscribed") {
+      discount = (
+        await Packages.findOne({ type: patient.healthPackageType.type })
+      ).discountOnSession;
+    }
+    // console.log("The discount is :", discount);
+    const sessionPrice = (
+      (doctor.hourlyRate / 2) *
+      (1 + markup / 100) *
+      (1 - discount)
+    ).toFixed(2);
+    // console.log("The session price is :", sessionPrice);
+    patient = await Patient.findByIdAndUpdate(
+      { _id: patientId },
+      {
+        $inc: { amountDue: sessionPrice  },
+      },
+      { new: true }
+    );
+
+    const data = {
+      name: patientName,
+      followUp,
+    };
+    const send = {
+      success: true,
+      data,
+      message: `${type} scheduled successfully for ${patientName}`,
+    };
+    res.status(200).json(send);
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    res.status(500).json(send);
+  }
+};
+
+const getMarkup = async (req, res) => {
+  try {
+    // console.log("I am here");
+    const { username } = req.params;
+    const doctor = await Doctor.findOne({ username });
+    const markup = (await Clinic.findOne({})).markupPercentage;
+    const hourlyRate = doctor.hourlyRate;
+    const totalPrice = (hourlyRate * (1 + markup / 100)).toFixed(2);
+    // console.log("The markup is :", markup);
+    const data = {
+      markup,
+      hourlyRate,
+      totalPrice,
+    };
+    const send = {
+      success: true,
+      data: data,
+      message: "Markup found successfully",
+    };
+    res.status(200).json(send);
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    res.status(500).json(send);
+  }
+};
+
 module.exports = {
   getDoctor,
   createDoctor,
@@ -400,4 +741,11 @@ module.exports = {
   getPatients,
   saveFile,
   createAppointments,
+  approveDoctor,
+  addMoney,
+  acceptContract,
+  addSlot,
+  getSchedule,
+  addAppointment,
+  getMarkup,
 };
