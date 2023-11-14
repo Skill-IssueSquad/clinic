@@ -663,7 +663,7 @@ const addAppointment = async (req, res) => {
     var discount = 0;
     if (patient.healthPackageType.status === "subscribed") {
       discount = (
-        await Packages.findOne({ type: patient.healthPackageType.type })
+        await Packages.findOne({ packageType: patient.healthPackageType.type })
       ).discountOnSession;
     }
     // console.log("The discount is :", discount);

@@ -52,7 +52,9 @@ function displayDate(date) {
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, "0"); // Month is zero-based, so add 1 and format to two digits.
   const day = String(d.getDate()).padStart(2, "0");
-  const hour = String(d.getHours() > 12 ? d.getHours() - 12: d.getHours()).padStart(2, "0");
+  const hour = String(
+    d.getHours() > 12 ? d.getHours() - 12 : d.getHours()
+  ).padStart(2, "0");
   const minute = String(d.getMinutes()).padStart(2, "0");
   const ampm = d.getHours() < 12 ? "AM" : "PM";
 
@@ -85,6 +87,7 @@ const AppointmentsMulti = ({ columns, API_GET_URL }) => {
             if (key == "doctor_name") {
               docNames.add(row[key]);
             }
+            resJson["familyMember_nationalId"] = row["familyMember_nationalId"];
           });
 
           return resJson;
@@ -371,6 +374,7 @@ const AppointmentsMulti = ({ columns, API_GET_URL }) => {
                   ></Button>
                 </TableCell>
               ))}
+              <TableCell>RELATION</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -379,10 +383,16 @@ const AppointmentsMulti = ({ columns, API_GET_URL }) => {
                 {Object.keys(row).map((key) =>
                   isMongoDbIsoDate(row[key]) ? (
                     <TableCell>{displayDate(row[key])}</TableCell>
-                  ) : (
+                  ) : key !== "familyMember_nationalId" ? (
                     <TableCell>{row[key]}</TableCell>
-                  )
+                  ) : null
                 )}
+                {row["familyMember_nationalId"] ? (
+                  <TableCell>Family Member</TableCell>
+                ) : (
+                  <TableCell>Self</TableCell>
+                )}
+                {<TableCell></TableCell>}
               </TableRow>
             ))}
           </TableBody>
