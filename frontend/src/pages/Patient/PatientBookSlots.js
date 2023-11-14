@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 function PatientBookSlots() {
   return (
     <div className="PatientDoctors">
-      <NavBar name={"Patient Dashboard"} />
+      <NavBar name={"Patient Dashboard"} username={"bahyone"} />
       
       <SlotBooker doctor_id={useParams().doctor_id}/>
     </div>

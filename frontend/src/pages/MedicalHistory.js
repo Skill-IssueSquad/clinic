@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import PDFViewer from "../components/pdf.js";
+import NavBar from "../components/navBar";
+
 const MedicalHistory = () => {
   const [email, setEmail] = useState("");
   const [file, setFile] = useState(null);
@@ -96,6 +98,7 @@ const MedicalHistory = () => {
 
   return (
     <div>
+      {isPatient && <NavBar name={"Patient Dashboard"} username={"bahyone"} />}
       <h1>Medical History</h1>
 
       {email && <p>Patient's Email: {email}</p>}

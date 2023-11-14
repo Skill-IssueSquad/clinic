@@ -65,7 +65,7 @@ const Patient = () => {
 
   return (
     <div className="patient">
-      <NavBar name={"Patient Dashboard"} />
+      <NavBar name={"Patient Dashboard"} username={"bahyone"} />
       <PatientDetails
         patient={patient}
         handleCancelSubscription={handleCancelSubscription}
