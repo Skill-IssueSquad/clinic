@@ -22,7 +22,6 @@ const Packages = ({refresh}) => {
 
           if (response.ok) {
             //json.data.sort((a, b) => a.name.localeCompare(b.name));
-            console.log(json.data);
             setCardDataList(json.data); // Assuming data is an array of card data objects
           } else {
             throw new Error('Failed to fetch data');

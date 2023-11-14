@@ -7,8 +7,15 @@ import NavBar from "../components/navBar";
 import PrescriptionsMultiLevelFilterTable from "../components/PrescriptionsMultiLevelFilterTable";
 import AddFamilyMember from "../components/addFamilyMember";
 import PatientDetails from "../components/PatientDetails";
+import { auth } from "./Protected/AuthProvider";
 
 const Patient = () => {
+  let show = false;
+
+  if (auth() && localStorage.getItem('role') === "Patient"){
+    show=false;
+  }
+  
   const [patient, setPatient] = useState(null);
 
   const submitFamMember =async (formData) => {
@@ -40,7 +47,9 @@ const Patient = () => {
   //if (!prescriptions) return null;
 
   return (
-    <div className="patient">
+    <div>
+      {show?
+    (<div className="patient">
       <NavBar name={"Patient Dashboard"} />
       <PatientDetails patient={patient} />
       <p></p>
@@ -49,8 +58,11 @@ const Patient = () => {
       <PrescriptionsMultiLevelFilterTable
         columns={["doctor_name", "date", "isFilled", "View Prescriptions"]}
         API_GET_URL={"http://localhost:8000/patient/bahyone/getPrescriptions"}
-      />
-    </div>
+        />
+    </div>) : 
+    (<h2>No access</h2>)
+    }
+      </div>
   );
 };
 

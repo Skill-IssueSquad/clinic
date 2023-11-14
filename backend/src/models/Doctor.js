@@ -77,6 +77,12 @@ const doctorSchema = new Schema({
     required: true,
     default: [],
   },
+  otp: {
+    type: String,
+  },
+  otpExpiry: {
+    type: Date,
+  }
 });
 
 const Doctor = mongoose.model("Doctor", doctorSchema);

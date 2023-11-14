@@ -9,13 +9,21 @@ import {
   IconButton,
   Box,
 } from "@mui/material";
+import { auth } from "./Protected/AuthProvider";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import AppBar from "../components/appBar";
 import Loading from "../components/Loading";
 const validator = require("validator");
 
+
 const UserProfile = () => {
+  let show = false;
+
+  if(auth() && localStorage.getItem('role')==="Doctor"){
+      show = true;
+  }
+
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
   const [oldDoctor, setOldDoctor] = useState(null);
@@ -102,6 +110,8 @@ const UserProfile = () => {
 
   return (
     <div>
+      {show? (
+    <div>
       <AppBar />
       {user ? (
         <Container maxWidth="md">
@@ -182,7 +192,11 @@ const UserProfile = () => {
           <Loading />
         </Box>
       )}
+    </div>) :
+    (<h2>No access</h2>)
+    }
     </div>
+
   );
 };
 

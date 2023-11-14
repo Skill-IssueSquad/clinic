@@ -33,6 +33,7 @@ export default function DataTable() {
           <RequestDialouge rows={rows} username={params.row.username}/>
         ),
       },
+      { field: 'status', headerName: 'Status',flex:1 ,align: 'center', headerAlign: 'center'},
     ];
 
 

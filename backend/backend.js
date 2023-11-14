@@ -9,6 +9,10 @@ const adminRouter = require("./src/routes/AdminRouter");
 const PatientRegisteration = require("./src/routes/patientRegisteration");
 const DoctorRegisteration = require("./src/routes/doctorRegisteration");
 const patientRouter = require("./src/routes/PatientRouter");
+//const registerationRouter = require("./src/routes/RegisterationRouter");
+const accountRouter = require("./src/routes/AccountRouter");
+const cookieParser = require('cookie-parser');
+const {authAdmin, authDoctor, authPatient} = require("./src/middleware/Authentication");
 
 
 mongoose
@@ -22,12 +26,13 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use("/DoctorStaticData", express.static("DoctorStaticData"));
-
-app.use("/doctor", doctorRouter);
-app.use("/admin", adminRouter);
+app.use(cookieParser());
+app.use("/doctor", authDoctor, doctorRouter);
+app.use("/admin", authAdmin, adminRouter);
 app.use("/AdminStaticData", express.static("AdminStaticData"));
 app.use("/register/patient", PatientRegisteration);
 app.use("/register/doctor", DoctorRegisteration);
-app.use("/patient", patientRouter);
+app.use("/patient", authPatient, patientRouter);
+app.use("/account", accountRouter);
 
 

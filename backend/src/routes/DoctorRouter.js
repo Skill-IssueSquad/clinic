@@ -1,4 +1,6 @@
 const router = require("express").Router();
+const {authDoctor} = require("../middleware/Authentication");
+
 const multer = require("multer");
 var crypto = require("crypto");
 const storage = multer.diskStorage({
@@ -31,13 +33,13 @@ const {
   saveFile,
   createAppointment,
 } = require("../controllers/DoctorController");
-router.get("/:username", getDoctor);
+router.get("/:username",  getDoctor);
 router.post("/create", createDoctor);
-router.put("/update/:username", updateDoctor);
+router.put("/update/:username",  updateDoctor);
 router.get("/appointments/:username", getAppointments);
 router.post("/createPatient", createPatient);
 router.post("/createAppointments", createAppointments);
-router.get("/getPatients/:username", getPatients);
+router.get("/getPatients/:username",  getPatients);
 router.post("/createAppointment", createAppointment);
 router.post("/saveFile", upload.any(), saveFile);
 module.exports = router;

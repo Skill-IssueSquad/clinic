@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Appointments = require("../models/Appointments");
+const{authPatient} = require("../middleware/Authentication");
 
 const {
   addFamMember,
