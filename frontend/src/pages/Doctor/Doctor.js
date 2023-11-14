@@ -1,6 +1,6 @@
-import AppBar from "../components/appBar";
-import Appointments from "../components/Appointments";
-import { auth } from "./Protected/AuthProvider";
+import AppBar from "../../components/appBar";
+import Appointments from "../../components/Doctor/Appointments";
+import { auth } from "../Protected/AuthProvider";
 
 const Doctor = () => {
   let show = false;
@@ -9,7 +9,7 @@ const Doctor = () => {
     show = true;
   }
 
-  const un = "opa%20nseet%20esmy";
+  const un = localStorage.getItem("username");
 
   return (
     <div>

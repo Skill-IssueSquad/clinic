@@ -7,13 +7,13 @@ import PrescriptionsMultiLevelFilterTable from "../../components/PrescriptionsMu
 import AddFamilyMember from "../../components/Patient/addFamilyMember";
 import PatientDetails from "../../components/Patient/PatientDetails";
 import LinkFamilyMemberForm from "../../components/Patient/linkFamilyMemberform";
-import { auth } from "./Protected/AuthProvider";
+import { auth } from "../Protected/AuthProvider";
 
 const Patient = () => {
   let show = false;
 
   if (auth() && localStorage.getItem("role") === "Patient") {
-    show = false;
+    show = true;
   }
 
   const [patient, setPatient] = useState(null);
@@ -22,7 +22,7 @@ const Patient = () => {
   const submitFamMember = async (formData) => {
     try {
       const res = await axios.patch(
-        "http://localhost:8000/patient/bahyone/addFamMember",
+        "http://localhost:8000/patient/gamed/addFamMember",
         formData
       );
       console.log(res.data);
@@ -36,7 +36,7 @@ const Patient = () => {
   const linkFamMember = async (formData) => {
     try {
       const res = await axios.patch(
-        "http://localhost:8000/patient/bahyone/linkFamMember",
+        "http://localhost:8000/patient/gamed/linkFamMember",
         formData
       );
       console.log(res.data);
@@ -49,7 +49,7 @@ const Patient = () => {
   const handleCancelSubscription = async () => {
     try {
       await axios.patch(
-        "http://localhost:8000/patient/bahyone/subscriptions/cancel"
+        "http://localhost:8000/patient/gamed/subscriptions/cancel"
       );
     } catch (error) {
       console.log(error);
@@ -58,7 +58,7 @@ const Patient = () => {
 
   useEffect(() => {
     const fetchPatient = async () => {
-      await axios.get("http://localhost:8000/patient/bahyone").then((res) => {
+      await axios.get("http://localhost:8000/patient/gamed").then((res) => {
         setPatient(res.data.data);
       });
     };
@@ -102,7 +102,7 @@ const Patient = () => {
           <p></p>
           <PrescriptionsMultiLevelFilterTable
             columns={["doctor_name", "date", "isFilled", "View Prescriptions"]}
-            API_GET_URL={"http://localhost:8000/patient/bahyone/prescriptions"}
+            API_GET_URL={"http://localhost:8000/patient/gamed/prescriptions"}
           />
         </div>
       ) : (

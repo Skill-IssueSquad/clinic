@@ -15,7 +15,7 @@ import ViewRequests from "./pages/Admin/ViewRequests";
 import ViewPackages from "./pages/Admin/ViewPackages";
 //import Patients from "./pages/Patient/Patients";
 import DoctorRequest from "./pages/DoctorRequest/DoctorRequest"
-import PatientRegisteration from "./pages/Patient/Home/PatientRegisteration";
+import PatientRegisteration from "./pages/Home/PatientRegisteration";
 import DoctorRegisteration from "./pages/Home/DoctorRegisteration";
 import Patient from "./pages/Patient/Patient";
 import PatientDoctors from "./pages/Patient/PatientDoctors";

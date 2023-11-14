@@ -1,6 +1,6 @@
 import NavBar from "../../components/navBar";
 import AppointmentsMulti from "../../components/Patient/PatientAppointmentMulti";
-import { auth } from "./Protected/AuthProvider";
+import { auth } from "../Protected/AuthProvider";
 
 function PatientAppointments() {
   let show = false;

@@ -44,7 +44,7 @@ function ResponsiveAppBar() {
 
   const handleUserMenu = async (text) => {
     switch(text){
-      case "Profile": navigate('/Admin'); break;
+      case "Profile": navigate((localStorage.getItem("role").toLocaleLowerCase() === "doctor") ? "/Doctor_Profile" : '/Admin'); break;
       case "Account": navigate('/Admin/ViewAdmins'); break;
       case "Dashboard": navigate('/Admin/ViewDoctors'); break;
       default: {

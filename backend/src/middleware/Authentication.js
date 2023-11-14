@@ -5,6 +5,7 @@ const jwtSecret = '4715aed3c946f7b0a38e6b53d700770d572af3dce43625dd';
 //Authenticate admin is logged in
 const authAdmin = async = (req, res, next) => {
     const token = req.cookies.jwt
+    //console.log("Admiiiiiin >>>>>>>>> ", token);
     if (token) {
       jwt.verify(token, jwtSecret, (err, decodedToken) => {
         if (err) {
@@ -110,7 +111,9 @@ const authDoctorRequest = async = (req, res, next) => {
 
 //Authenticate patient is logged in
 const authPatient = async = (req, res, next) => {
+  try {
     const token = req.cookies.jwt
+    //console.log("Patient >>" , req);
     if (token) {
       jwt.verify(token, jwtSecret, (err, decodedToken) => {
         if (err) {
@@ -141,6 +144,11 @@ const authPatient = async = (req, res, next) => {
         }
         res.status(401).json(reply);
     }
+  } catch (error) {
+    console.log(error.message);
+    res.status(401).json(error);
+  }
+
 };
 
 

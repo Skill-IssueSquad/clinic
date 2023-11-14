@@ -82,6 +82,7 @@ function App() {
                     //setToken(json.data);
                     localStorage.setItem('token',json.data);
                     localStorage.setItem('role',role);
+                    localStorage.setItem('username',username)
                     switch(role)
                     {
                         case "Admin" : navigate('/Admin'); break;
