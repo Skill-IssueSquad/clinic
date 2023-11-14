@@ -36,7 +36,7 @@ function PatientDoctors() {
 
   return (
     <div className="PatientDoctors">
-      <NavBar name={"Patient Dashboard"} />
+      <NavBar name={"Patient Dashboard"} username={"bahyone"} />
       <h2>Doctors</h2>
       <PatientDoctorAvailibityDatePicker onChange={handleApiAndBodyChange} />
       <PatientMultiLevel

@@ -14,10 +14,10 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { useNavigate } from 'react-router-dom';
 
-const pages = ['Home', 'Doctors', 'Appointments'];
+const pages = ['Home', 'Doctors', 'Appointments', 'Medical History'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
-function ResponsiveAppBar() {
+const ResponsiveAppBar = ({ username }) => {
 let navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -124,6 +124,12 @@ let navigate = useNavigate();
                     url = "/patient/doctors"
                 } else if (page === "Appointments") {   
                     url = "/patient/appointments"
+                } else if (page === "Medical History") {
+                    url =  
+                      `/patient/medicalHistory/?PUN=${
+                        username
+                      }&IP=${true}`
+                    
                 }
                 return(
               <Button
