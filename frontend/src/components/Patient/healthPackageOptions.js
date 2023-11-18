@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../Protected/AuthProvider";
+import { auth } from "../../pages/Protected/AuthProvider";
 
 import {
   Button,
@@ -38,6 +38,12 @@ const purchaseButtonStyle = {
 };
 
 const HealthPackages = () => {
+  let show = false;
+
+  if (auth() && localStorage.getItem("role") === "Patient") {
+    show = true;
+  }
+
   const navigate = useNavigate();
 
   const [selectedPackage, setSelectedPackage] = useState(null);
@@ -132,7 +138,7 @@ const HealthPackages = () => {
 
     oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
     const formData = {
-      username: "bahyone",
+      username: localStorage.getItem("username"),
       healthPackage: packageName,
       renewal: oneYearFromNow,
       //familyMembers: selectedFamilyMembers,
@@ -159,59 +165,61 @@ const HealthPackages = () => {
   };
 
   return (
-    <div
-      style={{
-        backgroundColor: "#f5f5f5",
-        padding: "16px",
-        border: "1px solid #ddd",
-        borderRadius: "8px",
-      }}
-    >
-      <h2>Health Packages</h2>
-      {availablePackages.map((healthPackage, index) => (
-        <div key={index} style={packageItemStyle}>
-          <ListItem button onClick={() => handleSelectPackage(index)}>
-            <ListItemText
-              primary={
-                <span style={packageTitleStyle}>{healthPackage.name}</span>
-              }
-              secondary={
-                <span style={packageDescriptionStyle}>
-                  {healthPackage.description}
-                </span>
-              }
-            />
-            <ListItemSecondaryAction>
-              <Checkbox
-                edge="end"
-                checked={selectedPackage === index}
-                onChange={() => handleSelectPackage(index)}
-              />
-            </ListItemSecondaryAction>
-          </ListItem>
-        </div>
-      ))}
-      <Button
-        style={purchaseButtonStyle}
-        variant="contained"
-        onClick={handleOpenDialog}
-        disabled={selectedPackage === null}
-      >
-        Purchase
-      </Button>
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>Selected Packages</DialogTitle>
-        <DialogContent>
-          <List>
-            {selectedPackage !== null && (
-              <ListItem>
+    <div>
+      {show ? (
+        <div
+          style={{
+            backgroundColor: "#f5f5f5",
+            padding: "16px",
+            border: "1px solid #ddd",
+            borderRadius: "8px",
+          }}
+        >
+          <h2>Health Packages</h2>
+          {availablePackages.map((healthPackage, index) => (
+            <div key={index} style={packageItemStyle}>
+              <ListItem button onClick={() => handleSelectPackage(index)}>
                 <ListItemText
-                  primary={availablePackages[selectedPackage].name}
+                  primary={
+                    <span style={packageTitleStyle}>{healthPackage.name}</span>
+                  }
+                  secondary={
+                    <span style={packageDescriptionStyle}>
+                      {healthPackage.description}
+                    </span>
+                  }
                 />
+                <ListItemSecondaryAction>
+                  <Checkbox
+                    edge="end"
+                    checked={selectedPackage === index}
+                    onChange={() => handleSelectPackage(index)}
+                  />
+                </ListItemSecondaryAction>
               </ListItem>
-            )}
-          </List>
-          {/* <DialogTitle>Family Members</DialogTitle>
+            </div>
+          ))}
+          <Button
+            style={purchaseButtonStyle}
+            variant="contained"
+            onClick={handleOpenDialog}
+            disabled={selectedPackage === null}
+          >
+            Purchase
+          </Button>
+          <Dialog open={openDialog} onClose={handleCloseDialog}>
+            <DialogTitle>Selected Packages</DialogTitle>
+            <DialogContent>
+              <List>
+                {selectedPackage !== null && (
+                  <ListItem>
+                    <ListItemText
+                      primary={availablePackages[selectedPackage].name}
+                    />
+                  </ListItem>
+                )}
+              </List>
+              {/* <DialogTitle>Family Members</DialogTitle>
           <List>
             {familyMembers.map((familyMember) => (
               <ListItem key={familyMember.name}>
@@ -229,21 +237,29 @@ const HealthPackages = () => {
               </ListItem>
             ))}
           </List> */}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handlePurchase} variant="contained" color="primary">
-            Proceed to Payment
-          </Button>
-          <Button
-            onClick={handleCloseDialog}
-            variant="contained"
-            color="secondary"
-            style={{ backgroundColor: "red" }}
-          >
-            Cancel
-          </Button>
-        </DialogActions>
-      </Dialog>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={handlePurchase}
+                variant="contained"
+                color="primary"
+              >
+                Proceed to Payment
+              </Button>
+              <Button
+                onClick={handleCloseDialog}
+                variant="contained"
+                color="secondary"
+                style={{ backgroundColor: "red" }}
+              >
+                Cancel
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </div>
+      ) : (
+        <h2>No Access</h2>
+      )}
     </div>
   );
 };

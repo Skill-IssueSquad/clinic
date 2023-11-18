@@ -1,14 +1,28 @@
 import AppBar from "../../components/appBar";
 import WalletBalanceComp from "../../components/Patient/WalletBalance";
 import NavBar from "../../components/navBar";
-import { auth } from "../Protected/AuthProvider";
+import { auth } from "../../pages/Protected/AuthProvider";
 
 function WalletBalance() {
+  let show = false;
+
+  if (auth() && localStorage.getItem("role") === "Patient") {
+    show = true;
+  }
+
   return (
-    
-    <div className="WalletBalance">
-      <NavBar name={"Patient Dashboard"} username={"bahyone"} />
-      <WalletBalanceComp username={"bahyone"}/>
+    <div>
+      {show ? (
+        <div className="WalletBalance">
+          <NavBar
+            name={"Patient Dashboard"}
+            username={localStorage.getItem("username")}
+          />
+          <WalletBalanceComp username={localStorage.getItem("username")} />
+        </div>
+      ) : (
+        <h2>No access</h2>
+      )}
     </div>
   );
 }

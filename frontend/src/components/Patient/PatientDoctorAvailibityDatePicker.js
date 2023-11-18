@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
 import DateTime from "react-datetime";
 import Button from "@mui/material/Button";
+import { auth } from "../../pages/Protected/AuthProvider";
 
 function convertDateFormat(originalDateString) {
   // Parse the original date string into a Date object
@@ -32,6 +33,12 @@ function convertDateFormat(originalDateString) {
 }
 
 const PatientDoctorAvailabilityDatePicker = ({ onChange }) => {
+  let show = false;
+
+  if (auth() && localStorage.getItem("role") === "Patient") {
+    show = true;
+  }
+
   const [newUrl, setNewUrl] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [oldUrl, setOldUrl] = useState("");
@@ -39,7 +46,11 @@ const PatientDoctorAvailabilityDatePicker = ({ onChange }) => {
 
   const handleChangeUrl = () => {
     setOldUrl(newUrl);
-    onChange("http://localhost:8000/patient/bahyone/doctors/available");
+    onChange(
+      `http://localhost:8000/patient/${localStorage.getItem(
+        "username"
+      )}/doctors/available`
+    );
   };
 
   const handleDateChange = (date) => {
@@ -52,45 +63,61 @@ const PatientDoctorAvailabilityDatePicker = ({ onChange }) => {
 
   const handleCloseDatePicker = () => {
     setShowDatePicker(false);
-    onChange("http://localhost:8000/patient/bahyone/doctors", {});
+    onChange(
+      `http://localhost:8000/patient/${localStorage.getItem(
+        "username"
+      )}/doctors`,
+      {}
+    );
   };
 
   return (
     <div>
-      {/* <TextField
+      {show ? (
+        <div>
+          {/* <TextField
         type="text"
         label="Enter new API URL"
         value={newUrl}
         onChange={(e) => setNewUrl(e.target.value)}
       /> */}
-      {showDatePicker ? (
-        <div className="modern-datepicker">
-          <DateTime
-            value={selectedDate}
-            onChange={handleDateChange}
-            inputProps={{ className: "form-control" }}
-          />
-          <button
-            className="btn btn-primary"
-            onClick={() =>
-              onChange(
-                "http://localhost:8000/patient/bahyone/doctors/available",
-                { datetime: convertDateFormat(selectedDate) }
-              )
-            }
-          >
-            View Available Doctors
-          </button>
-          <button className="btn btn-secondary" onClick={handleCloseDatePicker}>
-            Close Date Picker
-          </button>
+          {showDatePicker ? (
+            <div className="modern-datepicker">
+              <DateTime
+                value={selectedDate}
+                onChange={handleDateChange}
+                inputProps={{ className: "form-control" }}
+              />
+              <button
+                className="btn btn-primary"
+                onClick={() =>
+                  onChange(
+                    `http://localhost:8000/patient/${localStorage.getItem(
+                      "username"
+                    )}/doctors/available`,
+                    { datetime: convertDateFormat(selectedDate) }
+                  )
+                }
+              >
+                View Available Doctors
+              </button>
+              <button
+                className="btn btn-secondary"
+                onClick={handleCloseDatePicker}
+              >
+                Close Date Picker
+              </button>
+            </div>
+          ) : (
+            <Button variant="outlined" onClick={handleChooseDate}>
+              Check Doctors Available By Specific Date
+            </Button>
+          )}
+          {oldUrl && <p>Old URL: {oldUrl}</p>}
         </div>
       ) : (
-        <Button variant="outlined" onClick={handleChooseDate}>
-          Check Doctors Available By Specific Date
-        </Button>
+        <h2>No access</h2>
       )}
-      {oldUrl && <p>Old URL: {oldUrl}</p>}
     </div>
   );
 };

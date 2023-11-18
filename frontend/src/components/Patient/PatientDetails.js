@@ -10,7 +10,7 @@ import {
   DialogActions,
 } from "@mui/material";
 import axios from "axios";
-import { auth } from "../Protected/AuthProvider";
+import { auth } from "../../pages/Protected/AuthProvider";
 
 const PatientDetails = ({ patient, handleCancelSubscription }) => {
   const [isDialogOpen, setDialogOpen] = useState(false);

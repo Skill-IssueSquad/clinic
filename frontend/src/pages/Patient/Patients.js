@@ -1,6 +1,6 @@
 import AppBar from "../../components/appBar";
 import PatientsData from "../../components/Patient/PatientsData";
-import { auth } from "../Protected/AuthProvider";
+import { auth } from "../../pages/Protected/AuthProvider";
 
 const Patients = () => {
   return (

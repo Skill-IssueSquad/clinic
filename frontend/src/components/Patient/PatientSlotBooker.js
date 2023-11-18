@@ -22,10 +22,17 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import CircularProgress from "@mui/joy/CircularProgress";
+import { auth } from "../../pages/Protected/AuthProvider";
 
 let bookingOptions = [];
 
 const SlotBooker = ({ doctor_id }) => {
+  let show = false;
+
+  if (auth() && localStorage.getItem("role") === "Patient") {
+    show = true;
+  }
+
   const [selectedDay, setSelectedDay] = useState("");
   const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
   const [message, setMessage] = useState("");
@@ -110,7 +117,9 @@ const SlotBooker = ({ doctor_id }) => {
       );
 
       let bookOptions = await axios.get(
-        "http://localhost:8000/patient/bahyone/bookingOptions"
+        `http://localhost:8000/patient/${localStorage.getItem(
+          "username"
+        )}/bookingOptions`
       );
 
       bookingOptions = bookOptions.data.data;
@@ -161,7 +170,9 @@ const SlotBooker = ({ doctor_id }) => {
       setLoading(true);
       try {
         const response = await axios.post(
-          "http://localhost:8000/patient/bahyone/bookAppointment",
+          `http://localhost:8000/patient/${localStorage.getItem(
+            "username"
+          )}/bookAppointment`,
           {
             doctor_id: selectedSlot._id,
             patient_id: selectedPatient.patient_id,
@@ -200,119 +211,131 @@ const SlotBooker = ({ doctor_id }) => {
 
   return (
     <div>
-      <p>{message}</p>
-      {loading && <CircularProgress variant="solid" />}
-      {!loading && slots.length > 0 && (
-        <h2>Dr. {slots[0].doctor_name}'s Slots</h2>
-      )}
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <TextField
-            type="date"
-            label="Select Day"
-            InputLabelProps={{ shrink: true }}
-            onChange={handleDayChange}
-            value={selectedDay}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            type="time"
-            label="Select TimeSlot"
-            InputLabelProps={{ shrink: true }}
-            onChange={handleTimeSlotChange}
-            value={selectedTimeSlot}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <Button variant="contained" color="secondary" onClick={clearFilters}>
-            Clear Filters
-          </Button>
-        </Grid>
-      </Grid>
-      <br />
-      <div style={{ maxWidth: 400 }}>
-        {!loading && slots.length > 0 && (
-          <TableContainer component={Paper}>
-            <Table sx={{ maxWidth: 400 }} aria-label="simple table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Day</TableCell>
-                  <TableCell>TimeSlot</TableCell>
-                  <TableCell>Action</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {slots.map((slot) => (
-                  <TableRow key={slot.availableSlot._id}>
-                    <TableCell>{slot.availableSlot.day}</TableCell>
-                    <TableCell>{slot.availableSlot.timeSlot}</TableCell>
-                    <TableCell>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => handleRowClick(slot)}
-                      >
-                        Book
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        )}
-      </div>
-      
+      {show ? (
+        <div>
+          <p>{message}</p>
+          {loading && <CircularProgress variant="solid" />}
+          {!loading && slots.length > 0 && (
+            <h2>Dr. {slots[0].doctor_name}'s Slots</h2>
+          )}
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                type="date"
+                label="Select Day"
+                InputLabelProps={{ shrink: true }}
+                onChange={handleDayChange}
+                value={selectedDay}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                type="time"
+                label="Select TimeSlot"
+                InputLabelProps={{ shrink: true }}
+                onChange={handleTimeSlotChange}
+                value={selectedTimeSlot}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={clearFilters}
+              >
+                Clear Filters
+              </Button>
+            </Grid>
+          </Grid>
+          <br />
+          <div style={{ maxWidth: 400 }}>
+            {!loading && slots.length > 0 && (
+              <TableContainer component={Paper}>
+                <Table sx={{ maxWidth: 400 }} aria-label="simple table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Day</TableCell>
+                      <TableCell>TimeSlot</TableCell>
+                      <TableCell>Action</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {slots.map((slot) => (
+                      <TableRow key={slot.availableSlot._id}>
+                        <TableCell>{slot.availableSlot.day}</TableCell>
+                        <TableCell>{slot.availableSlot.timeSlot}</TableCell>
+                        <TableCell>
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => handleRowClick(slot)}
+                          >
+                            Book
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            )}
+          </div>
 
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>Slot Booking</DialogTitle>
-        <DialogContent>
-          <DialogTitle>Choose a patient to book for</DialogTitle>
-          <List>
-            {bookingOptions.map((option) => (
-              <ListItem key={option.patient_name}>
-                <ListItemText
-                  primary={`Name: ${option.patient_name}`}
-                  secondary={
-                    option.relation !== ""
-                      ? `Relation: ${option.relation}, link-type: ${option.type}`
-                      : `link-type: ${option.type}`
-                  }
-                />
-                <ListItemSecondaryAction>
-                  <Checkbox
-                    edge="end"
-                    checked={
-                      selectedPatient.patient_name === option.patient_name &&
-                      selectedPatient.patient_name !== null
-                    }
-                    onClick={() => handleSelectedPatient(option)}
-                  />
-                </ListItemSecondaryAction>
-              </ListItem>
-            ))}
-          </List>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => {
-              handleBook();
-            }}
-            variant="contained"
-            color="primary"
-          >
-            Book
-          </Button>
-          <Button
-            onClick={handleCloseDialog}
-            variant="contained"
-            color="secondary"
-          >
-            Cancel
-          </Button>
-        </DialogActions>
-      </Dialog>
+          <Dialog open={openDialog} onClose={handleCloseDialog}>
+            <DialogTitle>Slot Booking</DialogTitle>
+            <DialogContent>
+              <DialogTitle>Choose a patient to book for</DialogTitle>
+              <List>
+                {bookingOptions.map((option) => (
+                  <ListItem key={option.patient_name}>
+                    <ListItemText
+                      primary={`Name: ${option.patient_name}`}
+                      secondary={
+                        option.relation !== ""
+                          ? `Relation: ${option.relation}, link-type: ${option.type}`
+                          : `link-type: ${option.type}`
+                      }
+                    />
+                    <ListItemSecondaryAction>
+                      <Checkbox
+                        edge="end"
+                        checked={
+                          selectedPatient.patient_name ===
+                            option.patient_name &&
+                          selectedPatient.patient_name !== null
+                        }
+                        onClick={() => handleSelectedPatient(option)}
+                      />
+                    </ListItemSecondaryAction>
+                  </ListItem>
+                ))}
+              </List>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={() => {
+                  handleBook();
+                }}
+                variant="contained"
+                color="primary"
+              >
+                Book
+              </Button>
+              <Button
+                onClick={handleCloseDialog}
+                variant="contained"
+                color="secondary"
+              >
+                Cancel
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </div>
+      ) : (
+        <div>
+          <p>Only patients can book slots</p>
+        </div>
+      )}
     </div>
   );
 };

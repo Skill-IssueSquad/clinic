@@ -13,7 +13,7 @@ import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import axios from "axios";
 import CircularProgress from "@mui/joy/CircularProgress";
 import { Select, MenuItem } from "@mui/material";
-import { auth } from "../Protected/AuthProvider";
+import { auth } from "../../pages/Protected/AuthProvider";
 
 function convertDateFormat(originalDateString) {
   // Parse the original date string into a Date object

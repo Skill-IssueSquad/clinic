@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { auth } from "../Protected/AuthProvider";
+import { auth } from "../../pages/Protected/AuthProvider";
 
 import {
   FormControl,

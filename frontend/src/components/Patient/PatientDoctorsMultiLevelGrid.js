@@ -18,6 +18,7 @@ import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useNavigate } from 'react-router-dom';
+import { auth } from "../../pages/Protected/AuthProvider";
 
 let fullRows = [];
 
