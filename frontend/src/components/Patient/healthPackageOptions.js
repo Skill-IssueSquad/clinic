@@ -144,19 +144,19 @@ const HealthPackages = () => {
       //familyMembers: selectedFamilyMembers,
     };
 
-    navigate("/patient/payments/");
+    //navigate("/patient/payments/");
 
-    // try {
-    //   // Replace with your backend endpoint for purchasing health packages
-    //   const response = await axios.patch(
-    //     "http://localhost:8000/patient/bahyone/subscriptions/subscribe",
-    //     formData
-    //   );
-    //   const data = response.data.data;
-    //   console.log(data);
-    // } catch (error) {
-    //   console.error("Error purchasing health package:", error);
-    // }
+    try {
+      // Replace with your backend endpoint for purchasing health packages
+      const response = await axios.patch(
+        `http://localhost:8000/patient/${localStorage.getItem("username")}/subscriptions/subscribe`,
+        formData
+      );
+      const data = response.data.data;
+      console.log(data);
+    } catch (error) {
+      console.error("Error purchasing health package:", error);
+    }
 
     // Clear the selected packages and family members
     setSelectedPackage(null);
