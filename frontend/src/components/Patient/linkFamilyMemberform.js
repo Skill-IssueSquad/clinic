@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { auth } from "../Protected/AuthProvider";
+
 import {
   FormControl,
   InputLabel,
