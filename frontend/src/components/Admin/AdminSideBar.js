@@ -29,6 +29,8 @@ import Doctor from '@mui/icons-material/Person';
 import Patient from '@mui/icons-material/PersonOutline';
 import Request from '@mui/icons-material/StickyNote2';
 import Package from '@mui/icons-material/HealthAndSafety';
+import { useAuth } from '../../pages/Protected/AuthProvider';
+
 
 const drawerWidth = 240;
 
@@ -77,10 +79,11 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   justifyContent: 'flex-end',
 }));
 
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const settings = ['Profile', 'Account', 'Dashboard', "Change Password", 'Logout'];
 
 export default function PersistentDrawerLeft({flag, ViewComponent}) {
   const navigate = useNavigate();
+  //const {setToken} = useAuth();
   const theme = useTheme();
   const [open, setOpen] = React.useState(flag);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -102,7 +105,7 @@ export default function PersistentDrawerLeft({flag, ViewComponent}) {
   }
 
   const handleClickAdmin = (text) => {
-    console.log(text);
+    //console.log(text);
     switch(text){
       case "Dashboard": navigate('/Admin'); break;
       case "Admin": navigate('/Admin/ViewAdmins'); setOpen(false); break;
@@ -110,6 +113,26 @@ export default function PersistentDrawerLeft({flag, ViewComponent}) {
       case "Patient":  navigate('/Admin/ViewPatients'); setOpen(false); break;
       case "Join Requests":  navigate('/Admin/ViewRequests'); setOpen(false); break;
       default:  navigate('/Admin/ViewPackages');
+    }
+  }
+
+  const handleUserMenu = async (text) => {
+    switch(text){
+      case "Profile": navigate('/Admin'); break;
+      case "Account": navigate('/Admin/ViewAdmins'); setOpen(false); break;
+      case "Dashboard": navigate('/Admin/ViewDoctors'); setOpen(false); break;
+      case "Change Password": navigate('/ChangePassword'); break;
+      default: {
+        const response = await fetch('/account/logout', {method: 'GET'});
+        const json = await response.json();
+        if (response.ok){
+          //setToken();
+          localStorage.setItem('token','');
+          localStorage.setItem('role','');
+          localStorage.setItem('username', '');
+          navigate('/');
+        }
+      };
     }
   }
 
@@ -167,9 +190,9 @@ export default function PersistentDrawerLeft({flag, ViewComponent}) {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
+              {settings.map((text) => (
+                <MenuItem key={text} onClick={() => handleUserMenu(text)}>
+                  <Typography textAlign="center">{text}</Typography>
                 </MenuItem>
               ))}
             </Menu>

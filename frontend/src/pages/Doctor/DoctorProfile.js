@@ -24,7 +24,7 @@ const UserProfile = () => {
   const [oldDoctor, setOldDoctor] = useState(null);
   const [walletBalance, setWalletBalance] = useState(0);
   const [contractAccepted, setContractAccepted] = useState(false);
-  const username = "opa%20nseet%20esmy";
+  const username = localStorage.getItem("username");;
   useEffect(() => {
     const f = async () => {
       try {

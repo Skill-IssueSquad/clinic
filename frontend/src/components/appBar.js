@@ -15,7 +15,7 @@ import AdbIcon from "@mui/icons-material/Adb";
 import { useNavigate, Link } from "react-router-dom";
 
 const pages = ["Appointments", "Patients"];
-const settings = ["Profile", "Logout"];
+const settings = ["Profile", "Change Password", "Logout"];
 
 function ResponsiveAppBar() {
   const navigate = useNavigate();
@@ -41,6 +41,26 @@ function ResponsiveAppBar() {
       navigate("/Doctor_Profile");
     }
   };
+
+  const handleUserMenu = async (text) => {
+    switch(text){
+      case "Profile": navigate((localStorage.getItem("role").toLocaleLowerCase() === "doctor") ? "/Doctor_Profile" : '/Admin'); break;
+      case "Account": navigate('/Admin/ViewAdmins'); break;
+      case "Dashboard": navigate('/Admin/ViewDoctors'); break;
+      case "Change Password": navigate('/ChangePassword'); break;
+      default: {
+        const response = await fetch('/account/logout', {method: 'GET'});
+        const json = await response.json();
+        if (response.ok){
+          //setToken();
+          localStorage.setItem('token','');
+          localStorage.setItem('role','');
+          localStorage.setItem('username', '');
+          navigate('/');
+        }
+      };
+    }
+  }
 
   return (
     <AppBar position="static">
@@ -186,12 +206,17 @@ function ResponsiveAppBar() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
+              {/* {settings.map((setting) => (
                 <MenuItem
                   key={setting}
                   onClick={() => handleCloseUserMenu(setting)}
                 >
                   <Typography textAlign="center">{setting}</Typography>
+                </MenuItem>
+              ))} */}
+              {settings.map((text) => (
+                <MenuItem key={text} onClick={() => handleUserMenu(text)}>
+                  <Typography textAlign="center">{text}</Typography>
                 </MenuItem>
               ))}
             </Menu>

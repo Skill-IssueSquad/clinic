@@ -2,12 +2,44 @@ const Patient = require("../models/Patient");
 const Doctor = require("../models/Doctor");
 const Appointments = require("../models/Appointments");
 const Prescription = require("../models/Prescription");
+const Clinic = require("../models/Clinic");
+const mongoose = require("mongoose");
 
 const getPatientAPI = async (req, res) => {
   const { username } = req.params;
 
   try {
     const patient = await getPatient(username);
+    if (patient) {
+      return res.status(200).json({
+        success: true,
+        data: patient,
+        message: "Patient retrieved successfully",
+      });
+    } else {
+      return res.status(404).json({
+        success: false,
+        data: null,
+        message: "Patient not found",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message:
+        error.message || "Some error occurred while retrieving patients.",
+    });
+  }
+};
+
+const getPatientAPIByID = async (req, res) => {
+  const { id } = req.params;
+  console.log("The new acc");
+  console.log(id);
+
+  try {
+    const patient = await Patient.findById(id);
     if (patient) {
       return res.status(200).json({
         success: true,
@@ -275,9 +307,30 @@ const getAllAppointments = async (req, res) => {
         }
       });
 
+      let fullAppointments = [];
+
+      for (const appointment of appointments) {
+        const fullAppointment = {
+          ...appointment._doc,
+          doctor_name: "",
+        };
+
+        await Doctor.findById(appointment.doctor_id)
+          .then((doctor) => {
+            fullAppointment.doctor_name = doctor.name;
+          })
+          .catch((err) => {
+            console.log(
+              err + "doctor with id: " + appointment.doctor_id + " not found"
+            );
+          });
+
+        fullAppointments.push(fullAppointment);
+      }
+
       return res.status(200).json({
         success: true,
-        data: appointments,
+        data: fullAppointments,
         message: "Successfully retrieved all appointments",
       });
     } else {
@@ -418,7 +471,7 @@ const viewAllDoctors = async (req, res) => {
       });
     }
 
-    let doctors = await Doctor.find().catch((err) => {
+    let doctors = await Doctor.find({ contractAccepted: true }).catch((err) => {
       if (err) {
         return res.status(500).json({
           success: false,
@@ -429,37 +482,41 @@ const viewAllDoctors = async (req, res) => {
       }
     });
 
+    const markup = (await Clinic.findOne({})).markupPercentage;
+
     doctors = doctors.map((doctor) => {
       // get each doctors markup from contract
-      if (doctor.contracts.length > 0) {
-        const markup = doctor.contracts[0].markupOnSalary;
+      // if (doctor.contracts.length > 0) {
 
-        // check on health package type for discount
-        let discount = 0;
-        if (patient.healthPackageType) {
-          if (patient.healthPackageType.status === "subscribed") {
-            if (patient.healthPackageType.type === "silver") {
-              discount = 0.4;
-            } else if (patient.healthPackageType.type === "platinum") {
-              discount = 0.8;
-            } else if (patient.healthPackageType.type === "gold") {
-              discount = 0.6;
-            }
+      // check on health package type for discount
+      let discount = 0;
+      if (patient.healthPackageType) {
+        if (patient.healthPackageType.status === "subscribed") {
+          if (patient.healthPackageType.type === "silver") {
+            discount = 0.4;
+          } else if (patient.healthPackageType.type === "platinum") {
+            discount = 0.8;
+          } else if (patient.healthPackageType.type === "gold") {
+            discount = 0.6;
           }
         }
-
-        const sessionPrice =
-          (doctor.hourlyRate + 0.1 * markup) * (1 - discount);
-
-        // Return a new object with the modified properties
-        return { ...doctor._doc, sessionPrice };
-      } else {
-        // no contract for this doctor
-        const sessionPrice = -1;
-
-        // Return a new object with the modified properties
-        return { ...doctor._doc, sessionPrice };
       }
+
+      const sessionPrice = (
+        (doctor.hourlyRate / 2) *
+        (1 + markup / 100) *
+        (1 - discount)
+      ).toFixed(2);
+
+      // Return a new object with the modified properties
+      return { ...doctor._doc, sessionPrice };
+      //   } else {
+      //     // no contract for this doctor
+      //     const sessionPrice = -1;
+
+      //     // Return a new object with the modified properties
+      //     return { ...doctor._doc, sessionPrice };
+      //   }
     });
 
     return res.status(200).json({
@@ -501,10 +558,11 @@ const viewAllDoctorsAvailable = async (req, res) => {
     }
 
     let doctors = await Doctor.find({
+      contractAccepted: true,
       availableSlots: {
         $elemMatch: {
-          starttime: { $lte: req.body.datetime },
-          endtime: { $gt: req.body.datetime },
+          startTime: { $lte: req.body.datetime },
+          endTime: { $gt: req.body.datetime },
         },
       },
     }).catch((err) => {
@@ -518,40 +576,43 @@ const viewAllDoctorsAvailable = async (req, res) => {
       }
     });
 
-    console.log("DOCS MATCHING: ",doctors);
+    console.log("DOCS MATCHING: ", doctors);
+
+    const markup = (await Clinic.findOne({})).markupPercentage;
 
     doctors = doctors.map((doctor) => {
       // get each doctors markup from contract
-      if (doctor.contracts.length > 0) {
-        const markup = doctor.contracts[0].markupOnSalary;
+      // if (doctor.contracts.length > 0) {
 
-        // check on health package type for discount
-        let discount = 0;
-        if (patient.healthPackageType) {
-          if (patient.healthPackageType.status === "subscribed") {
-            // TODO: change to use of .discountOnSession
-            if (patient.healthPackageType.type === "silver") {
-              discount = 0.4;
-            } else if (patient.healthPackageType.type === "platinum") {
-              discount = 0.8;
-            } else if (patient.healthPackageType.type === "gold") {
-              discount = 0.6;
-            }
+      // check on health package type for discount
+      let discount = 0;
+      if (patient.healthPackageType) {
+        if (patient.healthPackageType.status === "subscribed") {
+          if (patient.healthPackageType.type === "silver") {
+            discount = 0.4;
+          } else if (patient.healthPackageType.type === "platinum") {
+            discount = 0.8;
+          } else if (patient.healthPackageType.type === "gold") {
+            discount = 0.6;
           }
         }
-
-        const sessionPrice =
-          (doctor.hourlyRate + 0.1 * markup) * (1 - discount);
-
-        // Return a new object with the modified properties
-        return { ...doctor._doc, sessionPrice };
-      } else {
-        // no contract for this doctor
-        const sessionPrice = -1;
-
-        // Return a new object with the modified properties
-        return { ...doctor._doc, sessionPrice };
       }
+
+      const sessionPrice = (
+        (doctor.hourlyRate / 2) *
+        (1 + markup / 100) *
+        (1 - discount)
+      ).toFixed(2);
+
+      // Return a new object with the modified properties
+      return { ...doctor._doc, sessionPrice };
+      //   } else {
+      //     // no contract for this doctor
+      //     const sessionPrice = -1;
+
+      //     // Return a new object with the modified properties
+      //     return { ...doctor._doc, sessionPrice };
+      //   }
     });
 
     return res.status(200).json({
@@ -565,6 +626,252 @@ const viewAllDoctorsAvailable = async (req, res) => {
       data: null,
       message: err.message || "Some error occurred while retrieving doctors.",
     });
+  }
+};
+
+const getAllFreeDocAppointments = async (req, res) => {
+  // ASSUMES JWT AUTHENTICATION
+  // EXPECTED INPUT: { doctor_id: "69fe353h55g3h34hg53h" }
+  try {
+    // get doctor_id from query params
+    const appointments = await Doctor.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(req.query.doctor_id),
+        },
+      },
+      {
+        $unwind: "$availableSlots",
+      },
+      {
+        $match: {
+          "availableSlots.isBooked": false,
+        },
+      },
+      {
+        $project: {
+          doctor_name: "$name",
+          availableSlot: "$availableSlots",
+        },
+      },
+    ]).catch((err) => {
+      if (err) {
+        return res.status(500).json({
+          success: false,
+          data: null,
+          message:
+            err.message || "Some error occurred while retrieving appointments.",
+        });
+      }
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: appointments,
+      message: "Successfully retrieved all appointments",
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      data: req.params.doctor_id,
+      message: err.message,
+    });
+  }
+};
+
+const getPatientBookingOptions = async (req, res) => {
+  // ASSUMES JWT AUTHENTICATION
+  // EXPECTED INPUT: param: username
+
+  try {
+    const username = req.params.username;
+    const patient = await getPatient(username);
+
+    if (!patient) {
+      return res.status(404).json({
+        success: false,
+        data: username,
+        message: `Patient with username ${username} does not exist`,
+      });
+    }
+
+    const bookingOptions = [];
+
+    // pushing self
+    bookingOptions.push({
+      patient_id: patient._id,
+      patient_name: patient.name,
+      national_id: "",
+      type: "Yourself",
+      relation: "",
+    });
+
+    // pushing linked family members
+    for (const linked of patient.linkedAccounts) {
+      const patient_id = linked.patient_id;
+      const patient_name = await Patient.findById(patient_id)
+        .then((patient) => {
+          return patient.name;
+        })
+        .catch((err) => {
+          return res.status(500).json({
+            success: false,
+            data: patient_id,
+            message:
+              err.message || "Some error occurred while retrieving patient.",
+          });
+        });
+
+      bookingOptions.push({
+        patient_id: patient_id,
+        patient_name: patient_name,
+        national_id: "",
+        type: "linked Account",
+        relation: linked.relation,
+      });
+    }
+
+    // pushing external family members
+    for (const familyMember of patient.extfamilyMembers) {
+      bookingOptions.push({
+        patient_id: patient._id,
+        patient_name: familyMember.name,
+        national_id: familyMember.national_id,
+        type: "external family member",
+        relation: familyMember.relation,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: bookingOptions,
+      message: "Successfully retrieved all booking options",
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: err.message,
+    });
+  }
+};
+
+const bookAppointment = async (req, res) => {
+  // ASSUMES JWT AUTHENTICATION
+  // EXPECTED INPUT: param: self_username, { doctor_id: "69fe353h55g3h34hg53h",
+  //    startTime: "2022-05-01T00:00:00.000+00:00", day: "2023-4-5", timeSlot: "22:00",
+  //    patient_id, national_id(can be null), patient_name, slot_id}
+  let responseSent = false; // Track whether a response has been sent
+
+  const sendResponse = (statusCode, success, data, message) => {
+    if (!responseSent) {
+      responseSent = true;
+      return res.status(statusCode).json({ success: success, data, message });
+    }
+  };
+
+  try {
+    // edit availableSlots array in doctor
+    const doctor = await Doctor.findByIdAndUpdate(
+      { _id: req.body.doctor_id },
+      {
+        $set: {
+          "availableSlots.$[elem].isBooked": true,
+          "availableSlots.$[elem].patientName": req.body.patient_name,
+          "availableSlots.$[elem].appointmentType": "appointment",
+        },
+      },
+      {
+        arrayFilters: [
+          { "elem._id": new mongoose.Types.ObjectId(req.body.slot_id) },
+        ],
+        new: true,
+      }
+    ).catch((err) => {
+      if (err) {
+        return sendResponse(
+          500,
+          false,
+          req.body,
+          err.message || "Some error occurred while updating doctor."
+        );
+      }
+    });
+
+    if (!doctor) {
+      return sendResponse(
+        500,
+        false,
+        req.body,
+        err.message || "Some error occurred while updating doctor."
+      );
+    }
+
+    // create new appointment
+    const appointment = await Appointments.create({
+      doctor_id: req.body.doctor_id,
+      type: "appointment",
+      date: req.body.startTime,
+      day: req.body.day,
+      slot: req.body.timeSlot,
+      patient_id: req.body.patient_id,
+      prescription_id: null,
+      familyMember_nationalId: req.body.national_id,
+      status: "upcoming",
+    }).catch((err) => {
+      if (err) {
+        return sendResponse(
+          500,
+          false,
+          req.body,
+          err.message || "Some error occurred while creating appointment."
+        );
+      }
+    });
+
+    if (!appointment) {
+      return sendResponse(
+        500,
+        false,
+        req.body,
+        err.message || "Some error occurred while creating appointment."
+      );
+    } else {
+      // check patient list
+      let found = req.body.patient_id in doctor.patientList;
+
+      if (!found) {
+        doctor.patientList.push({ patient_id: req.body.patient_id });
+      }
+
+      await Doctor.findByIdAndUpdate(
+        { _id: req.body.doctor_id },
+        { patientList: doctor.patientList }
+      ).catch((err) => {
+        if (err) {
+          return sendResponse(
+            500,
+            false,
+            req.body,
+            err.message || "Some error occurred while updating doctor patients."
+          );
+        }
+      });
+    }
+
+    return sendResponse(
+      200,
+      true,
+      appointment,
+      "Appointment created successfully"
+    );
+  } catch (err) {
+    return sendResponse(
+      500,
+      false,
+      req.body,
+      err.message || "Some error occurred while creating appointment."
+    );
   }
 };
 
@@ -612,7 +919,298 @@ const createDoc = async (req, res) => {
   });
 };
 
+const linkFamMember = async (req, res) => {
+  //find the fam member account from the unique email or phone number (find out which one was provided)
+  //if not found return error
+  //if found add link to the patient account (in both accounts)
 
+  const { emailOrPhone, relation } = req.body;
+  const { username } = req.params;
+
+  //find the account of the family member
+  const famMember = await Patient.findOne({
+    $or: [{ email: emailOrPhone }, { phone: emailOrPhone }],
+  }).catch((err) => {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: err.message || "Some error occurred while retrieving patient.",
+    });
+  });
+
+  if (!famMember) {
+    return res.status(404).json({
+      success: false,
+      data: null,
+      message: "Family member account not found",
+    });
+  }
+
+  const famMember_id = famMember._id;
+
+  //get the original patient
+  const patient = await getPatient(username);
+
+  // let found = false;
+  // if (!patient.extfamilyMembers) {
+  //   patient.extfamilyMembers = [];
+  // }
+
+  if (!patient.linkedAccounts) {
+    patient.linkedAccounts = [];
+  }
+
+  if (!famMember.linkedAccounts) {
+    famMember.linkedAccounts = [];
+  }
+
+  // if (!famMember.extfamilyMembers) {
+  //   famMember.extfamilyMembers = [];
+  // }
+
+  //check if family member found is not already in extFamilyMembers array, if not in array then add
+  // for (const familyMember of patient.extfamilyMembers) {
+  //   if (famMember.name === familyMember.name) {
+  //     found = true;
+  //     break;
+  //   }
+  // }
+
+  // if (!found) {
+  //   //add new family member info to patient's extfamilyMembers array
+  //   patient.extfamilyMembers.push({
+  //     name: famMember.name,
+  //     relation: relation, //wife, husband, son, daughter
+  //     age: famMember.age,
+  //     gender: famMember.gender, //M, F, Bahy
+  //     healthPackageType: patient.healthPackageType,
+  //   });
+  // }
+
+  let newRel = "";
+
+  if (relation === "wife") {
+    newRel = "husband";
+  } else if (relation === "husband") {
+    newRel = "wife";
+  } else if (relation === "son" || relation === "daughter") {
+    if (patient.gender === "M") {
+      newRel = "father";
+    } else {
+      newRel = "mother";
+    }
+  }
+
+  // famMember.extfamilyMembers.push({
+  //   name: patient.name,
+  //   relation: newRel, //wife, husband, father, mother
+  //   age: patient.age,
+  //   gender: patient.gender, //M, F, Bahy
+  //   healthPackageType: patient.healthPackageType,
+  // });
+
+  //add to linked accounts array in both accounts
+  patient.linkedAccounts.push({
+    patient_id: famMember_id,
+    relation: relation,
+  });
+  famMember.linkedAccounts.push({ patient_id: patient._id, relation: newRel });
+
+  //update the existing patient
+  await Patient.findByIdAndUpdate(patient._id, {
+    //extfamilyMembers: patient.extfamilyMembers,
+    linkedAccounts: patient.linkedAccounts,
+  }).catch((err) => {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: err.message || "Some error occurred while updating patient.",
+    });
+  });
+
+  //update the existing family member
+  await Patient.findByIdAndUpdate(famMember_id, {
+    linkedAccounts: famMember.linkedAccounts,
+    //extfamilyMembers: famMember.extfamilyMembers,
+    healthPackageType: patient.healthPackageType,
+  }).catch((err) => {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message:
+        err.message ||
+        "Some error occurred while updating family member account.",
+    });
+  });
+
+  const newPatient = await Patient.findById(patient._id).catch((err) => {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: err.message || "Some error occurred while retrieving patient.",
+    });
+  });
+
+  return res.status(200).json({
+    success: true,
+    data: newPatient,
+    message: "Family member account linked successfully",
+  });
+};
+
+const cancelHealthPackage = async (req, res) => {
+  //find the fam member account from the unique email or phone number (find out which one was provided)
+  //if not found return error
+  //if found add link to the patient account (in both accounts)
+
+  const { username } = req.params;
+
+  const patient = await getPatient(username);
+
+  if (!patient) {
+    return res.status(404).json({
+      success: false,
+      data: null,
+      message: "Patient account not found",
+    });
+  }
+
+  if (!patient.extfamilyMembers) {
+    patient.extfamilyMembers = [];
+  }
+
+  //change package status to cancelled and set the end date to be the renewal date
+  //do same for all family members
+  patient.healthPackageType.status = "cancelled";
+  patient.healthPackageType.endDate = patient.healthPackageType.renewal;
+
+  for (const famMember of patient.extfamilyMembers) {
+    //famMember.healthPackageType.type = patient.healthPackageType.type;
+    famMember.healthPackageType.status = "cancelled";
+    famMember.healthPackageType.endDate = patient.healthPackageType.renewal;
+  }
+
+  if (!patient.linkedAccounts) {
+    patient.linkedAccounts = [];
+  }
+
+  //TODO: also check linked accounts and cancel their health packages
+  for (const linkedAccount of patient.linkedAccounts) {
+    const linkedPatient = await Patient.findById(linkedAccount.patient_id);
+    linkedPatient.healthPackageType.status = "cancelled";
+    linkedPatient.healthPackageType.endDate = patient.healthPackageType.renewal;
+    //linkedPatient.healthPackageType.type = patient.healthPackageType.type;
+
+    await Patient.findByIdAndUpdate(linkedPatient._id, {
+      healthPackageType: linkedPatient.healthPackageType,
+    }).catch((err) => {
+      return res.status(500).json({
+        success: false,
+        data: null,
+        message:
+          err.message ||
+          "Some error occurred while updating linked patient account.",
+      });
+    });
+  }
+
+  //update the existing patient
+  await Patient.findByIdAndUpdate(patient._id, {
+    healthPackageType: patient.healthPackageType,
+    extfamilyMembers: patient.extfamilyMembers,
+  }).catch((err) => {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: err.message || "Some error occurred while updating patient.",
+    });
+  });
+
+  const newPatient = await Patient.findById(patient._id).catch((err) => {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: err.message || "Some error occurred while retrieving patient.",
+    });
+  });
+
+  return res.status(200).json({
+    success: true,
+    data: newPatient,
+    message: "Health package cancelled successfully",
+  });
+};
+
+const tempSub = async (req, res) => {
+  const data = req.body;
+  const { username } = req.params;
+
+  const patient = await getPatient(username);
+  patient.healthPackageType.status = "subscribed";
+  patient.healthPackageType.type = data.healthPackage;
+  patient.healthPackageType.renewal = data.renewal;
+
+  if (!patient.extfamilyMembers) {
+    patient.extfamilyMembers = [];
+  }
+
+  if (!patient.linkedAccounts) {
+    patient.linkedAccounts = [];
+  }
+
+  for (const famMember of patient.extfamilyMembers) {
+    //if (data.familyMembers.includes(famMember.name)) {
+    famMember.healthPackageType.status = "subscribed";
+    famMember.healthPackageType.type = data.healthPackage;
+    famMember.healthPackageType.renewal = data.renewal;
+    //}
+  }
+
+  for (const linkedAccount of patient.linkedAccounts) {
+    const linkedPatient = await Patient.findById(linkedAccount.patient_id);
+    linkedPatient.healthPackageType.status = "subscribed";
+    linkedPatient.healthPackageType.type = data.healthPackage;
+    linkedPatient.healthPackageType.renewal = data.renewal;
+
+    await Patient.findByIdAndUpdate(linkedPatient._id, {
+      healthPackageType: linkedPatient.healthPackageType,
+    }).catch((err) => {
+      return res.status(500).json({
+        success: false,
+        data: null,
+        message:
+          err.message ||
+          "Some error occurred while updating linked patient account.",
+      });
+    });
+  }
+
+  //update the existing patient
+  await Patient.findByIdAndUpdate(patient._id, {
+    healthPackageType: patient.healthPackageType,
+    extfamilyMembers: patient.extfamilyMembers,
+  }).catch((err) => {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: err.message || "Some error occurred while updating patient.",
+    });
+  });
+
+  const newPatient = await Patient.findById(patient._id).catch((err) => {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: err.message || "Some error occurred while retrieving patient.",
+    });
+  });
+
+  return res.status(200).json({
+    success: true,
+    data: newPatient,
+    message: "Health package cancelled successfully",
+  });
+};
 
 const getPatientemUsername = async (req, res) => {
   const { username } = req.params;
@@ -643,36 +1241,33 @@ const getPatientemUsername = async (req, res) => {
   }
 };
 
-
 const AddHealthRecord = async (req, res) => {
   // Extract other health record properties from the request body
-  
-    const documentType= req.nameFile
-    const documentName = req.nameFile
-    // other health record properties...
-  
+
+  const documentType = req.nameFile;
+  const documentName = req.nameFile;
+  // other health record properties...
 
   // Use Multer to handle the file upload
- 
 
-    let documentUrl = 'http://localhost:8000/documents/' + req.nameFile;
-    console.log('Username:', req.params.username);
+  let documentUrl = "http://localhost:8000/documents/" + req.nameFile;
+  console.log("Username:", req.params.username);
 
-    try {
-      // Fetch existing health records
-      const patient = await Patient.findOne({ username: req.params.username });
+  try {
+    // Fetch existing health records
+    const patient = await Patient.findOne({ username: req.params.username });
 
-      if (!patient) {
-        console.log('Patient not found:', req.params.username);
+    if (!patient) {
+      console.log("Patient not found:", req.params.username);
 
-        return res.status(404).json({
-          success: false,
-          message: 'Patient not found',
-          data: null,
-        });
-      }
+      return res.status(404).json({
+        success: false,
+        message: "Patient not found",
+        data: null,
+      });
+    }
 
-     /* const existingHealthRecords = patient.healthRecords || [];
+    /* const existingHealthRecords = patient.healthRecords || [];
 
       // Log the existing health records before adding the new record
       console.log('Existing Health Records:', existingHealthRecords);
@@ -682,32 +1277,28 @@ const AddHealthRecord = async (req, res) => {
 
       // Log the updated health records before updating in the database
       console.log('Updated Health Records:', updatedHealthRecords);*/
-     patient.healthRecords.push({ documentType, documentName, documentUrl })
-      // Update the health records in the database
-      /*const updatedPatient = await Patient.findOneAndUpdate(
+    patient.healthRecords.push({ documentType, documentName, documentUrl });
+    // Update the health records in the database
+    /*const updatedPatient = await Patient.findOneAndUpdate(
         { username: req.params.username },
         patient.healthRecords,
         { new: true }
       );*/
-      const updatedPatient = await patient.save();
+    const updatedPatient = await patient.save();
 
-
-      res.status(201).json({
-        success: true,
-        message: 'Health record created successfully',
-        data: updatedPatient,
-      });
-    } catch (error) {
-      res.status(400).json({
-        success: false,
-        error: error.message,
-        data: null,
-      });
-    }
-  
-
+    res.status(201).json({
+      success: true,
+      message: "Health record created successfully",
+      data: updatedPatient,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message,
+      data: null,
+    });
+  }
 };
-
 
 const getAllHealthRecords = async (req, res) => {
   const { username } = req.params;
@@ -718,7 +1309,7 @@ const getAllHealthRecords = async (req, res) => {
     if (!patient) {
       return res.status(404).json({
         success: false,
-        message: 'Patient not found',
+        message: "Patient not found",
         data: null,
       });
     }
@@ -727,7 +1318,7 @@ const getAllHealthRecords = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'Health records retrieved successfully',
+      message: "Health records retrieved successfully",
       data: healthRecords,
     });
   } catch (error) {
@@ -738,8 +1329,6 @@ const getAllHealthRecords = async (req, res) => {
     });
   }
 };
-
-
 
 const removeHealthRecord = async (req, res) => {
   const recordId = req.params.recordId;
@@ -758,13 +1347,13 @@ const removeHealthRecord = async (req, res) => {
     if (patient) {
       res.status(200).json({
         success: true,
-        message: 'Health record removed successfully',
+        message: "Health record removed successfully",
         data: patient,
       });
     } else {
       res.status(404).json({
         success: false,
-        message: 'Patient not found',
+        message: "Patient not found",
         data: null,
       });
     }
@@ -783,10 +1372,6 @@ module.exports = {
   // other functions...
 };
 
-
-
-
-
 module.exports = {
   addFamMember,
   getFamMembers,
@@ -798,6 +1383,13 @@ module.exports = {
   viewAllDoctorsAvailable,
   createDoc,
   getPatientAPI,
+  getPatientAPIByID,
+  linkFamMember,
+  getAllFreeDocAppointments,
+  cancelHealthPackage,
+  tempSub,
+  getPatientBookingOptions,
+  bookAppointment,
   getPatientemUsername,
   AddHealthRecord,
   getAllHealthRecords,

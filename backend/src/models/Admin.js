@@ -11,6 +11,11 @@ const adminSchema = new Schema({
     type: String,
     required: true,
   },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
   firstName: {
     type: String,
     //required: true,
@@ -18,6 +23,12 @@ const adminSchema = new Schema({
   lastName: {
     type: String,
     //required: true,
+  },
+  otp: {
+    type: String,
+  },
+  otpExpiry: {
+    type: Date,
   }
 });
 

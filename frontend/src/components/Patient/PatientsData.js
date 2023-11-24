@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import Loading from "./Loading";
+import Loading from "../Loading";
 import { Container } from "@mui/material";
+import { auth } from "../../pages/Protected/AuthProvider";
 
 const columns = [
   { field: "id", headerName: "ID", width: 100 },

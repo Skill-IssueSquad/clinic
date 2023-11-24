@@ -14,22 +14,32 @@ import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import axios from "axios";
 import CircularProgress from "@mui/joy/CircularProgress";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import { useNavigate } from 'react-router-dom';
+import { auth } from "../../pages/Protected/AuthProvider";
 
 let fullRows = [];
 
 function displayDate(date) {
   const d = new Date(date);
   const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0'); // Month is zero-based, so add 1 and format to two digits.
-  const day = String(d.getDate()).padStart(2, '0');
-  const hour = String(d.getHours()).padStart(2, '0');
-  const minute = String(d.getMinutes()).padStart(2, '0');
-  const ampm = d.getHours() < 12 ? 'AM' : 'PM';
+  const month = String(d.getMonth() + 1).padStart(2, "0"); // Month is zero-based, so add 1 and format to two digits.
+  const day = String(d.getDate()).padStart(2, "0");
+  const hour = String(
+    d.getHours() > 12 ? d.getHours() - 12 : d.getHours()
+  ).padStart(2, "0");
+  const minute = String(d.getMinutes()).padStart(2, "0");
+  const ampm = d.getHours() < 12 ? "AM" : "PM";
 
   return `${year}/${month}/${day} ${hour}:${minute} ${ampm}`;
 }
 
+let testcols = []
+
 const PatientMultiLevel = ({ columns, API_GET_URL, reqBody }) => {
+  const navigate = useNavigate();
   const initFilter = {};
   columns.forEach((key) => {
     initFilter[key] = "";
@@ -38,6 +48,8 @@ const PatientMultiLevel = ({ columns, API_GET_URL, reqBody }) => {
   const [rows, setRows] = useState([]);
   const [sorting, setSorting] = useState({ field: "", order: "" });
   const [loading, setLoading] = useState(true); // Add a loading state
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedRow, setSelectedRow] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,19 +60,13 @@ const PatientMultiLevel = ({ columns, API_GET_URL, reqBody }) => {
         const initialRows = response.data.data;
         fullRows = initialRows;
 
-        const rows = initialRows.map((row) => {
-          let resJson = {};
-          columns.forEach((key) => {
-            console.log(key);
-            resJson[key] = row[key];
-          });
+        testcols = columns.map((col) => {return col.toLowerCase()})
 
-          return resJson;
-        });
+        //const rows = initialRows
 
         console.log(rows);
 
-        setRows(rows);
+        setRows(initialRows);
         setLoading(false); // Set loading to false when data is available
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -71,9 +77,22 @@ const PatientMultiLevel = ({ columns, API_GET_URL, reqBody }) => {
     fetchData();
   }, [API_GET_URL, columns, reqBody]);
 
+  // const handleOpenDialog = () => {
+  //   setOpenDialog(true);
+  // };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilter((prevFilter) => ({ ...prevFilter, [name]: value }));
+  };
+
+  const handleOpenDialog = (row) => {
+    setSelectedRow(row); // Set the selectedRowIndex to the clicked row index
+    setOpenDialog(true);
   };
 
   const handleSort = (field) => {
@@ -184,6 +203,14 @@ const PatientMultiLevel = ({ columns, API_GET_URL, reqBody }) => {
     return <CircularProgress variant="solid" />; // Render a loading message
   }
 
+  
+
+
+  const handleBookSlotsClick = (doctorId) => {
+    // Use the navigate function to navigate to the specified URL
+    navigate(`/patient/bookslots/${doctorId}`);
+  };
+
   return (
     <div>
       {columns.map((key) => (
@@ -194,7 +221,6 @@ const PatientMultiLevel = ({ columns, API_GET_URL, reqBody }) => {
           onChange={handleFilterChange}
         />
       ))}
-
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -219,58 +245,81 @@ const PatientMultiLevel = ({ columns, API_GET_URL, reqBody }) => {
                   ></Button>
                 </TableCell>
               ))}
+              <TableCell>Book Slots</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {filteredRows.map((row, i) => (
               <TableRow>
-                {Object.keys(row).map((key) => (
+                {columns.map((key) => (
                   <React.Fragment>
                     {key === "name" ? (
                       <TableCell>
-                        <Popup
-                          trigger={
-                            <button className="button">{row[key]}</button>
-                          }
-                          modal
+                        <button
+                          className="button"
+                          onClick={() => handleOpenDialog(row)}
                         >
-                          <span>
-                            {console.log("Current Doc Data ", fullRows[i])}
-                            {Object.keys(fullRows[i]).map((innerKey) =>
-                              innerKey === "patientList" ? null : 
-                              innerKey === "password" ? null : 
-                              innerKey === "__v" ? null :
-                              innerKey === "_id" ? null :
-                              innerKey ===
-                                "availableSlots" ? (
-                                <div>
-                                  <p>Available slots</p>
-                                  {fullRows[i][innerKey].map((slot) => (
-                                    <div>
-                                      <p>starttime: {displayDate(new Date(slot.starttime))}</p>
-                                      <p>endtime: {displayDate(new Date(slot.endtime))}</p>
-                                    </div>
-                                  ))}
-                                </div>
-                              ) : (
-                                <p>
-                                  {innerKey}: {fullRows[i][innerKey]}
-                                </p>
-                              )
-                            )}
-                          </span>
-                        </Popup>
+                          {row[key]}
+                        </button>
                       </TableCell>
                     ) : (
                       <TableCell>{row[key]}</TableCell>
                     )}
                   </React.Fragment>
                 ))}
+                <TableCell>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={
+                      () => handleBookSlotsClick(row["_id"])}
+                    
+                  >
+                    View Free Slots
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
+      {fullRows.length > 0 ? (
+        <Dialog open={openDialog} onClose={handleCloseDialog}>
+          {selectedRow !== null && (
+            <>
+              <DialogTitle>{selectedRow.name}</DialogTitle>
+              <DialogContent>
+                {console.log("Current Doc Data ", selectedRow)}
+                {Object.keys(selectedRow).map((innerKey) =>
+                  innerKey === "patientList" ? null : innerKey ===
+                    "password" ? null : innerKey === "__v" ? null : innerKey ===
+                    "_id" ? null : innerKey === "availableSlots" ? (
+                    <div key={innerKey}>
+                      <p>Available slots</p>
+                      {selectedRow[innerKey].map(
+                        (slot, index) => (
+                          <div key={index}>
+                            <p>
+                              startTime: {displayDate(new Date(slot.startTime))}
+                            </p>
+                            <p>
+                              endTime: {displayDate(new Date(slot.endTime))}
+                            </p>
+                          </div>
+                        )
+                      )}
+                    </div>
+                  ) : (
+                    <p key={innerKey}>
+                      {innerKey}: {selectedRow[innerKey]}
+                    </p>
+                  )
+                )}
+              </DialogContent>
+            </>
+          )}
+        </Dialog>
+      ) : null}
     </div>
   );
 };

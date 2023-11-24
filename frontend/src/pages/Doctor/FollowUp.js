@@ -1,11 +1,21 @@
 import Book from "../../components/Doctor/bookSlot";
+import { auth } from "../Protected/AuthProvider";
+
 const Follow = () => {
-  const username = "opa%20nseet%20esmy";
+
+  let show = false;
+
+  if (auth() && localStorage.getItem("role") === "Doctor") {
+    show = true;
+  }
+
+  const username = localStorage.getItem("username");
   const params = new URLSearchParams(window.location.search);
   const patientId = params.get("patientId");
   const appID = params.get("appID");
   return (
-    <div
+    show ? (
+     <div
       style={{
         display: "flex",
         flexDirection: "column",
@@ -16,7 +26,7 @@ const Follow = () => {
     >
       <h1>Follow up</h1>
       <Book username={username} patientId={patientId} appID={appID} />
-    </div>
+    </div>) : (<h1>Access Denied</h1>)
   );
 };
 

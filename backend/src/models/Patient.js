@@ -165,6 +165,10 @@ const patientSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         //ref: "Patient",
       },
+      relation: {
+        type: String,
+        enum: ["wife", "husband", "son", "daughter", "father", "mother"],
+      },
     },
   ],
   perscreption_ids: [
@@ -179,6 +183,12 @@ const patientSchema = new Schema({
     type: Number,
     default: 0,
   },
+  otp: {
+    type: String,
+  },
+  otpExpiry: {
+    type: Date,
+  }
 });
 
 const patientModel = mongoose.model("Patient", patientSchema);
