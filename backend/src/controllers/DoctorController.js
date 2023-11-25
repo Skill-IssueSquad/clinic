@@ -167,6 +167,7 @@ const getAppointments = async (req, res) => {
           year: "numeric",
         }
       );
+      const uniqueName = `${patientName}(${patient.username})`;
       const appointmentInfo = {
         _id: patient._id,
         appID: appointment._id,
@@ -175,7 +176,7 @@ const getAppointments = async (req, res) => {
         date: appointmentDate,
         time: appointment.slot,
         status: appointment.status,
-        name: patientName,
+        name: uniqueName,
         gender: patient.gender,
         age: patient.age,
         type: appointment.type,
@@ -614,13 +615,41 @@ const getSchedule = async (req, res) => {
 const addAppointment = async (req, res) => {
   try {
     const { username } = req.params;
-    const { day, timeSlot, startTime, type, patientId, appID } = req.body;
+    const { day, timeSlot, startTime, type, patientId, appID, isFollowUp } =
+      req.body;
     var patient = await Patient.findById({ _id: patientId });
     var doctor = await Doctor.findOne({ username });
     const doctorId = doctor._id;
     var patientName = null;
     // console.log("My name is :", patientName);
     var appointment = await Appointments.findById({ _id: appID });
+    const oldSlot = appointment.slot;
+    const oldDay = appointment.day;
+    if (!isFollowUp) {
+      appointment = await Appointments.findByIdAndUpdate(
+        { _id: appID },
+        {
+          status: "rescheduled",
+        },
+        { new: true }
+      );
+      doctor = await Doctor.findByIdAndUpdate(
+        { _id: doctorId },
+        {
+          $set: {
+            "availableSlots.$[elem].isBooked": false,
+            "availableSlots.$[elem].patientName": "",
+            "availableSlots.$[elem].appointmentType": "",
+          },
+        },
+        {
+          arrayFilters: [
+            { "elem.day": appointment.day, "elem.timeSlot": appointment.slot },
+          ],
+          new: true,
+        }
+      );
+    }
     const familyMember_nationalId = appointment.familyMember_nationalId;
     if (familyMember_nationalId === null) {
       patientName = patient.name;
@@ -658,37 +687,46 @@ const addAppointment = async (req, res) => {
         new: true,
       }
     );
-    const markup = (await Clinic.findOne({})).markupPercentage;
-    // console.log("The markup is :", markup);
-    var discount = 0;
-    if (patient.healthPackageType.status === "subscribed") {
-      discount = (
-        await Packages.findOne({ packageType: patient.healthPackageType.type })
-      ).discountOnSession;
+    if (isFollowUp) {
+      const markup = (await Clinic.findOne({})).markupPercentage;
+      // console.log("The markup is :", markup);
+      var discount = 0;
+      if (patient.healthPackageType.status === "subscribed") {
+        discount = (
+          await Packages.findOne({
+            packageType: patient.healthPackageType.type,
+          })
+        ).discountOnSession;
+      }
+      // console.log("The discount is :", discount);
+      const sessionPrice = (
+        (doctor.hourlyRate / 2) *
+        (1 + markup / 100) *
+        (1 - discount)
+      ).toFixed(2);
+      // console.log("The session price is :", sessionPrice);
+      patient = await Patient.findByIdAndUpdate(
+        { _id: patientId },
+        {
+          $inc: { amountDue: sessionPrice },
+        },
+        { new: true }
+      );
     }
-    // console.log("The discount is :", discount);
-    const sessionPrice = (
-      (doctor.hourlyRate / 2) *
-      (1 + markup / 100) *
-      (1 - discount)
-    ).toFixed(2);
-    // console.log("The session price is :", sessionPrice);
-    patient = await Patient.findByIdAndUpdate(
-      { _id: patientId },
-      {
-        $inc: { amountDue: sessionPrice  },
-      },
-      { new: true }
-    );
 
     const data = {
       name: patientName,
       followUp,
+      type,
+      oldSlot,
+      oldDay,
     };
     const send = {
       success: true,
       data,
-      message: `${type} scheduled successfully for ${patientName}`,
+      message: `${type} ${
+        isFollowUp ? "scheduled" : "rescheduled"
+      } successfully for ${patientName}`,
     };
     res.status(200).json(send);
   } catch (error) {

@@ -424,11 +424,20 @@ const MultiLevelFilterTable = ({ username }) => {
                 <button
                   onClick={() =>
                     navigate(
-                      `/Doctor_FollowUp/?patientId=${selectedRow._id}&appID=${selectedRow.appID}`
+                      `/Doctor_FollowUp/?patientId=${selectedRow._id}&appID=${selectedRow.appID}&type=followUp&A=F`
                     )
                   }
                 >
                   Schedule a follow up
+                </button>
+                <button
+                  onClick={() =>
+                    navigate(
+                      `/Doctor_FollowUp/?patientId=${selectedRow._id}&appID=${selectedRow.appID}&type=${selectedRow.type}&A=R`
+                    )
+                  }
+                >
+                  Reschedule
                 </button>
 
                 <button

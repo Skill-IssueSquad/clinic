@@ -51,11 +51,16 @@ const timeSlots = [
   "23:30",
 ];
 
-const DayTimeSlotSelector = ({ username, patientId, appID }) => {
+const DayTimeSlotSelector = ({
+  username,
+  patientId,
+  appID,
+  type,
+  isFollowUp,
+}) => {
   const [selectedDay, setSelectedDay] = useState("");
   const [message, setMessage] = useState("");
   const [slots, setSlots] = useState([]);
-
   const handleDayChange = (event) => {
     setSelectedDay(event.target.value);
   };
@@ -102,10 +107,11 @@ const DayTimeSlotSelector = ({ username, patientId, appID }) => {
       body: JSON.stringify({
         day: slot.day,
         timeSlot: slot.timeSlot,
-        type: "followUp",
+        type,
         startTime: slot.startTime,
         patientId,
         appID,
+        isFollowUp,
       }),
     });
     const data = await response.json();
@@ -115,7 +121,16 @@ const DayTimeSlotSelector = ({ username, patientId, appID }) => {
         if (s._id === slot._id) {
           s.isBooked = true;
           s.patientName = data.data.name;
-          s.appointmentType = "followUp";
+          s.appointmentType = data.data.type;
+        }
+        if (
+          s.timeSlot === data.data.oldSlot &&
+          s.day === data.data.oldDay &&
+          !isFollowUp
+        ) {
+          s.isBooked = false;
+          s.patientName = "";
+          s.appointmentType = "";
         }
       });
     }
