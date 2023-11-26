@@ -273,6 +273,14 @@ const MultiLevelFilterTable = ({ username }) => {
     }
   };
 
+  const handelAddPrescription = async (row) => {
+    window.location.href = `http://localhost:3001/Doctor/Prescription?appID=${selectedRow.appID}`;
+  };
+
+  const handleEditPrescription = async (row) => {
+    window.location.href = `http://localhost:3001/Doctor/Prescription?appID=${selectedRow.appID}&prescriptionID=${selectedRow.prescription_id}`;
+  };
+
   return (
     <div>
       <h2 style={{ textAlign: "center" }}>My Patients</h2>
@@ -478,7 +486,19 @@ const MultiLevelFilterTable = ({ username }) => {
                     </button>
                   </div>
                 )}
-
+                {selectedRow.status === "completed" &&
+                  (selectedRow.prescription_id === null ||
+                  selectedRow.prescription_id === undefined ||
+                  selectedRow.prescription_id === "" ? (
+                    <button onClick={() => handelAddPrescription()}>
+                      Prescription
+                    </button>
+                  ) : (
+                    // Code to be executed if the condition is false
+                    <button onClick={() => handleEditPrescription()}>
+                      Prescription
+                    </button>
+                  ))}
                 <button
                   onClick={() =>
                     navigate(
@@ -498,7 +518,8 @@ const MultiLevelFilterTable = ({ username }) => {
                     key !== "_id" &&
                     key !== "appID" &&
                     key !== "familyMember_nationalId" &&
-                    key !== "PUN"
+                    key !== "PUN" &&
+                    key !== "prescription_id"
                   ) {
                     return (
                       <div key={key}>

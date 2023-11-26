@@ -148,10 +148,6 @@ const getAppointments = async (req, res) => {
         appointment.familyMember_nationalId === null ||
         appointment.familyMember_nationalId === ""
       ) {
-        // if (patient.username === "unnw") {
-        //   console.log("This pat is booking for himself");
-        //   console.log(patient.name);
-        // }
         patientName = patient.name;
         healthRecords = patient.healthRecords;
       } else {
@@ -165,7 +161,6 @@ const getAppointments = async (req, res) => {
       }
 
       i++;
-      //const appointmentDate = new Date(appointment.date).toLocaleDateString();
       const appointmentDate = new Date(appointment.date).toLocaleDateString(
         "en-GB",
         {
@@ -189,6 +184,7 @@ const getAppointments = async (req, res) => {
         type: appointment.type,
         mobileNumber: patient.mobileNumber,
         healthRecords: healthRecords,
+        prescription_id: appointment.prescription_id,
       };
       result.push(appointmentInfo);
     }
@@ -855,6 +851,73 @@ const cancelAppointment = async (req, res) => {
   }
 };
 
+const addToPrescription = async (req, res) => {
+  try {
+    const { appID, medicineName, dose } = req.body;
+    var message = "";
+    var appointment = await Appointments.findById({ _id: appID });
+    var id = appointment.prescription_id;
+    if (id === null || id === "" || id === undefined) {
+      const prescription = await Prescription.create({
+        PharmacySubmitStatus: false,
+        isFilled: false,
+        medicines: [
+          {
+            medicineName,
+            dose,
+          },
+        ],
+      });
+      id = prescription._id;
+      appointment = await Appointments.findByIdAndUpdate(
+        { _id: appID },
+        {
+          prescription_id: id,
+        },
+        { new: true }
+      );
+      const send = {
+        success: true,
+        data: appointment,
+        message: `Prescription created successfully and ${medicineName} added`,
+      };
+      res.status(200).json(send);
+      return;
+    } else {
+      const prescription = await Prescription.findById({ _id: id });
+      const medicine = {
+        medicineName,
+        dose,
+      };
+      prescription.medicines.forEach((med) => {
+        if (med.medicineName === medicineName) {
+          message = `${medicineName} dose updated successfully`;
+          med.dose = dose;
+        }
+      });
+      if (message === "") {
+        message = `${medicineName} added successfully`;
+        prescription.medicines.push(medicine);
+      }
+      prescription.save();
+      const send = {
+        success: true,
+        data: prescription,
+        message,
+      };
+      res.status(200).json(send);
+      return;
+    }
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    res.status(500).json(send);
+  }
+};
+
 module.exports = {
   getDoctor,
   createDoctor,
@@ -873,4 +936,5 @@ module.exports = {
   addAppointment,
   getMarkup,
   cancelAppointment,
+  addToPrescription,
 };

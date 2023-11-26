@@ -40,6 +40,7 @@ const {
   addAppointment,
   getMarkup,
   cancelAppointment,
+  addToPrescription,
 } = require("../controllers/DoctorController");
 router.get("/:username", getDoctor);
 router.post("/create", createDoctor);
@@ -58,5 +59,6 @@ router.post("/schedule/:username", getSchedule);
 router.post("/addAppointment/:username", addAppointment);
 router.get("/contract/getMarkup/:username", getMarkup);
 router.post("/cancelAppointment/:username", cancelAppointment);
+router.post("/addToPrescription/", addToPrescription);
 
 module.exports = router;
