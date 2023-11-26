@@ -43,6 +43,7 @@ const {
   AddHealthRecord,
   getAllHealthRecords,
   removeHealthRecord,
+  sendEmail,
 } = require("../controllers/PatientController");
 
 const { create } = require("../models/Patient");
@@ -87,5 +88,12 @@ router.patch("/:username/subscriptions/subscribe", tempSub);
 
 //cancel health package subscription route
 router.patch("/:username/subscriptions/cancel", cancelHealthPackage);
+
+//add family member route
+router.patch("/:username/addFamMember", addFamMember);
+
+//send email
+router.patch("/:sendEmail", sendEmail);
+
 
 module.exports = router;

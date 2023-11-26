@@ -4,6 +4,54 @@ const Appointments = require("../models/Appointments");
 const Prescription = require("../models/Prescription");
 const Clinic = require("../models/Clinic");
 const mongoose = require("mongoose");
+const nodeMailer=require("nodemailer");
+
+
+/*
+//message has to be in html like this 
+const html= `<h1>Hello World</h1>
+            <p>SkillIssue Message</p>`
+            
+            */
+
+const sendEmail = async (req, res) => {
+  //try{
+
+
+  const { email,message,subject } = req.body;
+
+  const transporter = nodeMailer.createTransport({
+    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true, 
+    auth: {
+      user: 'el7a2ni.virtual@gmail.com',
+      pass: 'zijy ztiz drcn ioxq'
+    }
+  });
+
+
+  
+  const info = await transporter.sendMail({
+
+    from : 'SkillIssue <el7a2ni.virtual@gmail.com>',
+    to: email,
+    subject: subject,
+    text: message
+  },(err)=>{
+    if(err){
+      console.log('it has an error', err)
+    }
+    else{
+      console.log('email sent')
+    }
+  })
+  //}
+  //catch{
+  //console.log("Message sent: "+ info.messageId)
+  //}
+};
 
 const getPatientAPI = async (req, res) => {
   const { username } = req.params;
@@ -1366,6 +1414,7 @@ const removeHealthRecord = async (req, res) => {
   }
 };
 
+
 module.exports = {
   AddHealthRecord,
   removeHealthRecord,
@@ -1394,4 +1443,5 @@ module.exports = {
   AddHealthRecord,
   getAllHealthRecords,
   removeHealthRecord,
+  sendEmail,
 };
