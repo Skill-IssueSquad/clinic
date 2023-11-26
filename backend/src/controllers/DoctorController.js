@@ -144,7 +144,14 @@ const getAppointments = async (req, res) => {
       const patient = await Patient.findById({ _id: patientId });
       var healthRecords = null;
       var patientName = "";
-      if (appointment.familyMember_nationalId === null) {
+      if (
+        appointment.familyMember_nationalId === null ||
+        appointment.familyMember_nationalId === ""
+      ) {
+        // if (patient.username === "unnw") {
+        //   console.log("This pat is booking for himself");
+        //   console.log(patient.name);
+        // }
         patientName = patient.name;
         healthRecords = patient.healthRecords;
       } else {
@@ -651,7 +658,7 @@ const addAppointment = async (req, res) => {
       );
     }
     const familyMember_nationalId = appointment.familyMember_nationalId;
-    if (familyMember_nationalId === null) {
+    if (familyMember_nationalId === null || familyMember_nationalId === "") {
       patientName = patient.name;
     } else {
       const family = patient.extfamilyMembers;
@@ -662,17 +669,11 @@ const addAppointment = async (req, res) => {
       });
     }
     const prescriptionId = appointment.prescription_id;
-    const followUp = await Appointments.create({
-      doctor_id: doctorId,
-      type,
-      date: startTime,
-      day,
-      slot: timeSlot,
-      patient_id: patientId,
-      prescription_id: prescriptionId,
-      familyMember_nationalId,
-      status: "upcoming",
-    });
+    var price = {
+      doctor: appointment.price.doctor,
+      patient: appointment.price.patient,
+    };
+
     doctor = await Doctor.findByIdAndUpdate(
       { _id: doctorId },
       {
@@ -712,8 +713,21 @@ const addAppointment = async (req, res) => {
         },
         { new: true }
       );
+      price.doctor = 0;
+      price.patient = sessionPrice;
     }
-
+    const followUp = await Appointments.create({
+      doctor_id: doctorId,
+      type,
+      date: startTime,
+      day,
+      slot: timeSlot,
+      patient_id: patientId,
+      prescription_id: prescriptionId,
+      familyMember_nationalId,
+      status: "upcoming",
+      price,
+    });
     const data = {
       name: patientName,
       followUp,
@@ -769,6 +783,78 @@ const getMarkup = async (req, res) => {
   }
 };
 
+const cancelAppointment = async (req, res) => {
+  try {
+    const { username } = req.params;
+    const { appID } = req.body;
+    console.log(appID);
+    var appointment = await Appointments.findByIdAndUpdate(
+      { _id: appID },
+      {
+        status: "cancelled",
+      },
+      { new: true }
+    );
+    const priceDoc = appointment.price.doctor;
+    const pricePat = appointment.price.patient;
+    var doctor = await Doctor.findOne({ username });
+    const doctorId = doctor._id;
+    var slots = doctor.availableSlots;
+    slots.forEach((slot) => {
+      if (slot.day === appointment.day && slot.timeSlot === appointment.slot) {
+        slot.isBooked = false;
+        slot.patientName = "";
+        slot.appointmentType = "";
+      }
+    });
+    doctor = await Doctor.findByIdAndUpdate(
+      { _id: doctorId },
+      {
+        $set: {
+          "availableSlots.$[elem].isBooked": false,
+          "availableSlots.$[elem].patientName": "",
+          "availableSlots.$[elem].appointmentType": "",
+        },
+      },
+      {
+        arrayFilters: [
+          { "elem.day": appointment.day, "elem.timeSlot": appointment.slot },
+        ],
+        new: true,
+      }
+    );
+    doctor = await Doctor.findByIdAndUpdate(
+      { _id: doctorId },
+      {
+        $dec: { walletBalance: priceDoc },
+      },
+      { new: true }
+    );
+    const patientId = appointment.patient_id;
+    var patient = await Patient.findByIdAndUpdate(
+      { _id: patientId },
+      {
+        $dec: { amountDue: pricePat },
+      },
+      { new: true }
+    );
+
+    const send = {
+      success: true,
+      data: appointment,
+      message: "Appointment cancelled successfully",
+    };
+    res.status(200).json(send);
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    res.status(500).json(send);
+  }
+};
+
 module.exports = {
   getDoctor,
   createDoctor,
@@ -786,4 +872,5 @@ module.exports = {
   getSchedule,
   addAppointment,
   getMarkup,
+  cancelAppointment,
 };

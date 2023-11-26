@@ -243,6 +243,36 @@ const MultiLevelFilterTable = ({ username }) => {
     return cond1 && cond2 && cond3;
   });
 
+  const handleCancelAppointment = async (row) => {
+    console.log("The row is : ", row.appID);
+    const res = await fetch(`/doctor/cancelAppointment/${username}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        appID: row.appID,
+      }),
+    });
+    const data = await res.json();
+    console.log("The response from cancelling is : ", data);
+    if (res.ok) {
+      // const newRows = [...rows];
+      // const index = newRows.findIndex((r) => r.appID === row.appID);
+      // newRows[index].status = "cancelled";
+      rows.forEach((element) => {
+        if (element.appID === row.appID) {
+          element.status = "cancelled";
+        }
+      });
+      setRows(rows);
+      const newSelectedRow = { ...selectedRow };
+      newSelectedRow.status = "cancelled";
+      //setRows(newRows);
+      setSelectedRow(newSelectedRow);
+    }
+  };
+
   return (
     <div>
       <h2 style={{ textAlign: "center" }}>My Patients</h2>
@@ -421,24 +451,33 @@ const MultiLevelFilterTable = ({ username }) => {
             <Dialog open={openDialog} onClose={handleCloseDialog}>
               <DialogTitle>{selectedRow.name}</DialogTitle>
               <DialogContent>
-                <button
-                  onClick={() =>
-                    navigate(
-                      `/Doctor_FollowUp/?patientId=${selectedRow._id}&appID=${selectedRow.appID}&type=followUp&A=F`
-                    )
-                  }
-                >
-                  Schedule a follow up
-                </button>
-                <button
-                  onClick={() =>
-                    navigate(
-                      `/Doctor_FollowUp/?patientId=${selectedRow._id}&appID=${selectedRow.appID}&type=${selectedRow.type}&A=R`
-                    )
-                  }
-                >
-                  Reschedule
-                </button>
+                {selectedRow.status === "upcoming" && (
+                  <div>
+                    <button
+                      onClick={() =>
+                        navigate(
+                          `/Doctor_FollowUp/?patientId=${selectedRow._id}&appID=${selectedRow.appID}&type=followUp&A=F`
+                        )
+                      }
+                    >
+                      Schedule a follow up
+                    </button>
+                    <button
+                      onClick={() =>
+                        navigate(
+                          `/Doctor_FollowUp/?patientId=${selectedRow._id}&appID=${selectedRow.appID}&type=${selectedRow.type}&A=R`
+                        )
+                      }
+                    >
+                      Reschedule
+                    </button>
+                    <button
+                      onClick={() => handleCancelAppointment(selectedRow)}
+                    >
+                      Cancel appointment
+                    </button>
+                  </div>
+                )}
 
                 <button
                   onClick={() =>

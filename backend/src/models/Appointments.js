@@ -51,6 +51,16 @@ const appointmentSchema = new Schema({
     // required: true,
     default: null,
   },
+  price: {
+    doctor: {
+      type: Number,
+      default: 0,
+    },
+    patient: {
+      type: Number,
+      default: 0,
+    },
+  },
 });
 
 const Appointments = mongoose.model("Appointments", appointmentSchema);
