@@ -856,7 +856,7 @@ const cancelAppointment = async (req, res) => {
 
 const addToPrescription = async (req, res) => {
   try {
-    const { appID, medicineName, dose } = req.body;
+    const { appID, medicineName, dose, medicineID } = req.body;
     var message = "";
     var appointment = await Appointments.findById({ _id: appID });
     var id = appointment.prescription_id;
@@ -868,6 +868,7 @@ const addToPrescription = async (req, res) => {
           {
             medicineName,
             dose,
+            medicineID,
           },
         ],
       });
@@ -891,9 +892,10 @@ const addToPrescription = async (req, res) => {
       const medicine = {
         medicineName,
         dose,
+        medicineID,
       };
       prescription.medicines.forEach((med) => {
-        if (med.medicineName === medicineName) {
+        if (med.medicineID === medicineID) {
           message = `${medicineName} dose updated successfully`;
           med.dose = dose;
         }
@@ -960,15 +962,18 @@ const getMedicinesStatus = async (req, res) => {
 
 const removeFromPrescription = async (req, res) => {
   try {
-    const { appID, medicineName } = req.body;
+    const { appID, medicineID } = req.body;
     var appointment = await Appointments.findById({ _id: appID });
     const prescriptionId = appointment.prescription_id;
     const prescription = await Prescription.findById({ _id: prescriptionId });
     const medicines = prescription.medicines;
     var newMedicines = [];
+    var medicineName = "";
     medicines.forEach((medicine) => {
-      if (medicine.medicineName !== medicineName) {
+      if (medicine.medicineID !== medicineID) {
         newMedicines.push(medicine);
+      } else {
+        medicineName = medicine.medicineName;
       }
     });
     prescription.medicines = newMedicines;
