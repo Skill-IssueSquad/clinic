@@ -140,6 +140,9 @@ const getAppointments = async (req, res) => {
     const appointments = await Appointments.find({ doctor_id: doctorId });
     var i = 0;
     for (const appointment of appointments) {
+      if (appointment.status === "requested") {
+        continue;
+      }
       const patientId = appointment.patient_id;
       const patient = await Patient.findById({ _id: patientId });
       var healthRecords = null;
@@ -977,6 +980,54 @@ const removeFromPrescription = async (req, res) => {
     };
     res.status(200).json(send);
     return;
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    res.status(500).json(send);
+  }
+};
+
+const getRequestedAppointments = async (req, res) => {
+  try {
+    const { username } = req.params;
+    const appointments = await Appointments.find({ status: "requested" });
+    const result = [];
+    for (const appointment of appointments) {
+      if (appointment.status === "requested") {
+        const patientId = appointment.patient_id;
+        const patient = await Patient.findById({ _id: patientId });
+        var patientName = "";
+        if (
+          appointment.familyMember_nationalId === null ||
+          appointment.familyMember_nationalId === ""
+        ) {
+          patientName = patient.name;
+        } else {
+          const family = patient.extfamilyMembers;
+
+          family.forEach((member) => {
+            if (member.national_id === appointment.familyMember_nationalId) {
+              patientName = member.name;
+            }
+          });
+        }
+        const appointmentInfo = {
+          patientName,
+          day: appointment.day,
+          slot: appointment.slot,
+          type: appointment.type,
+          appID: appointment._id,
+        };
+        const send = {
+          success: true,
+          data: appointmentInfo,
+          message: "Appointments found successfully",
+        };
+      }
+    }
   } catch (error) {
     const send = {
       success: false,
