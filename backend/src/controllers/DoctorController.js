@@ -943,6 +943,7 @@ const getMedicinesStatus = async (req, res) => {
     }
     const prescription = await Prescription.findById({ _id: prescriptionId });
     const medicines = prescription.medicines;
+    console.log(medicines);
     const send = {
       success: true,
       data: medicines,
@@ -1142,9 +1143,23 @@ const getPatient = async (req, res) => {
     const appointment = await Appointments.findById({ _id: appID });
     const patientId = appointment.patient_id;
     const patient = await Patient.findById({ _id: patientId });
+
+    const healthPackageType = patient.healthPackageType;
+    var discount = 0;
+    if (patient.healthPackageType.status === "subscribed") {
+      discount = (
+        await Packages.findOne({
+          packageType: patient.healthPackageType.type,
+        })
+      ).discountOnMedicinePurchase;
+    }
+    var data = {
+      patient,
+      discount,
+    };
     const send = {
       success: true,
-      data: patient,
+      data,
       message: "Patient found successfully",
     };
 
