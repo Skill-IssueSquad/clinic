@@ -20,6 +20,10 @@ const prescriptionSchema = new mongoose.Schema({
           type: String,
           required: true,
         },
+        medicineID: {
+          type: String,
+          required: true,
+        },
       },
     ],
     default: [],
