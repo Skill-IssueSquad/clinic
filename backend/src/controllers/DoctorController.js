@@ -918,6 +918,43 @@ const addToPrescription = async (req, res) => {
   }
 };
 
+const getMedicinesStatus = async (req, res) => {
+  try {
+    const { appID } = req.body;
+    const appointment = await Appointments.findById({ _id: appID });
+    const prescriptionId = appointment.prescription_id;
+    if (
+      prescriptionId === null ||
+      prescriptionId === "" ||
+      prescriptionId === undefined
+    ) {
+      const send = {
+        success: true,
+        data: null,
+        message: "No prescription found",
+      };
+      res.status(200).json(send);
+      return;
+    }
+    const prescription = await Prescription.findById({ _id: prescriptionId });
+    const medicines = prescription.medicines;
+    const send = {
+      success: true,
+      data: medicines,
+      message: "Medicines status retrieved successfully",
+    };
+    res.status(200).json(send);
+    return;
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    res.status(500).json(send);
+  }
+};
+
 module.exports = {
   getDoctor,
   createDoctor,
@@ -937,4 +974,5 @@ module.exports = {
   getMarkup,
   cancelAppointment,
   addToPrescription,
+  getMedicinesStatus,
 };
