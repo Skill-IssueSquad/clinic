@@ -22,8 +22,8 @@ export default function AppointmentSplitButton({
   const options = none
     ? ["No Actions"]
     : appointment
-    ? [old ? "Request Follow-up" : "Reschedule Appointment", "Cancel"]
-    : ["Cancel"];
+    ? ["Select Action" , old ? "Request Follow-up" : "Reschedule Appointment", "Cancel"]
+    : ["Select Action", "Cancel"];
   let clr = "";
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
