@@ -9,12 +9,24 @@ import PatientDetails from "../../components/Patient/PatientDetails";
 import LinkFamilyMemberForm from "../../components/Patient/linkFamilyMemberform";
 import { auth } from "../Protected/AuthProvider";
 
+
+
 const Patient = () => {
   let show = false;
 
   if (auth() && localStorage.getItem("role") === "Patient") {
     show = true;
   }
+
+  const [notification, setNotification] = useState(null);
+
+  const showNotification = (message, isError = false) => {
+    setNotification({ message, isError });
+    // Automatically hide the notification after a certain duration (e.g., 5 seconds)
+    /*setTimeout(() => {
+      setNotification(null);
+    }, 5000);*/
+  };
 
   const [patient, setPatient] = useState(null);
   //const [prescriptions, setPrescriptions] = useState(null);
@@ -54,6 +66,8 @@ const Patient = () => {
 
         
       );
+     // showNotification("Subscription canceled successfully");
+
     } catch (error) {
       console.log(error);
     }
@@ -65,6 +79,8 @@ const Patient = () => {
       await axios.get(`http://localhost:8000/patient/${localStorage.getItem("username")}`).then((res) => {
         setPatient(res.data.data);
       });
+      //showNotification("Page loaded successfully");
+
     } catch (error) {
         console.log(error);
       }
@@ -79,6 +95,11 @@ const Patient = () => {
 
   return (
     <div>
+       {notification && (
+        <div style={{ padding: '10px', backgroundColor: notification.isError ? 'red' : 'green', color: 'white' }}>
+          {notification.message}
+        </div>
+      )}
       {show ? (
         <div className="patient">
           <NavBar name={"Patient Dashboard"} username={"bahyone"} />
