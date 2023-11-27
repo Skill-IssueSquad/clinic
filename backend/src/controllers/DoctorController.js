@@ -1086,6 +1086,32 @@ const acceptAppointment = async (req, res) => {
   }
 };
 
+const revokeAppointment = async (req, res) => {
+  try {
+    const { appID } = req.body;
+    const appointment = await Appointments.findByIdAndUpdate(
+      { _id: appID },
+      {
+        status: "cancelled",
+      },
+      { new: true }
+    );
+    const send = {
+      success: true,
+      data: appointment,
+      message: "Appointment revoked successfully",
+    };
+    res.status(200).json(send);
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    res.status(500).json(send);
+  }
+};
+
 module.exports = {
   getDoctor,
   createDoctor,
@@ -1109,4 +1135,5 @@ module.exports = {
   removeFromPrescription,
   getRequestedAppointments,
   acceptAppointment,
+  revokeAppointment,
 };
