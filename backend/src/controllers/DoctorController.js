@@ -863,7 +863,7 @@ const addToPrescription = async (req, res) => {
     if (id === null || id === "" || id === undefined) {
       const prescription = await Prescription.create({
         PharmacySubmitStatus: false,
-        isFilled: false,
+        isFilled: true,
         medicines: [
           {
             medicineName,
@@ -1046,7 +1046,8 @@ const getRequestedAppointments = async (req, res) => {
 const acceptAppointment = async (req, res) => {
   try {
     const { username } = req.params;
-    const { appID, patientName, type, day, timeSlot } = req.body;
+
+    const { appID, patientName, type, day, slot } = req.body;
     const appointment = await Appointments.findByIdAndUpdate(
       { _id: appID },
       {
@@ -1066,7 +1067,7 @@ const acceptAppointment = async (req, res) => {
         },
       },
       {
-        arrayFilters: [{ "elem.day": day, "elem.timeSlot": timeSlot }],
+        arrayFilters: [{ "elem.day": day, "elem.timeSlot": slot }],
         new: true,
       }
     );

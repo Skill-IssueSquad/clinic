@@ -16,6 +16,7 @@ import AppBar from "../../components/appBar";
 import Loading from "../../components/Loading";
 import Contract from "../../components/Doctor/employmentContract";
 import Slots from "../../components/Doctor/mySlots";
+import Requests from "../../components/Doctor/AppointmentsRequests";
 const validator = require("validator");
 
 const UserProfile = () => {
@@ -24,7 +25,7 @@ const UserProfile = () => {
   const [oldDoctor, setOldDoctor] = useState(null);
   const [walletBalance, setWalletBalance] = useState(0);
   const [contractAccepted, setContractAccepted] = useState(false);
-  const username = localStorage.getItem("username");;
+  const username = localStorage.getItem("username");
   useEffect(() => {
     const f = async () => {
       try {
@@ -194,7 +195,7 @@ const UserProfile = () => {
           <br />
           {error && <Typography variant="h6">{error}</Typography>}
           {contractAccepted && <Slots username={username} />}
-
+          {contractAccepted && <Requests username={username} />}
           <Contract
             setContractAccepted={setContractAccepted}
             contractAccepted={contractAccepted}

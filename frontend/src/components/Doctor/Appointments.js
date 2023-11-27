@@ -528,26 +528,6 @@ const MultiLevelFilterTable = ({ username }) => {
                       </div>
                     );
                   }
-
-                  // else {
-                  //   if (key === "healthRecords" && value !== null) {
-                  //     return (
-                  //       <div key="healthRecords">
-                  //         <span>healthRecords: </span>
-                  //         {selectedRow.healthRecords.map((record, index) => {
-                  //           return (
-                  //             <div key={`record-${index}`}>
-                  //               <span>Name: {record.documentName}</span>
-                  //               <PDFViewer pdfUrl={record.documentUrl} />
-                  //             </div>
-                  //           );
-                  //         })}
-                  //       </div>
-                  //     );
-                  //   } else {
-                  //     return null;
-                  //   }
-                  // }
                 })}
               </DialogContent>
             </Dialog>
