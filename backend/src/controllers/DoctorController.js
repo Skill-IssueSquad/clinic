@@ -1026,8 +1026,35 @@ const getRequestedAppointments = async (req, res) => {
           data: appointmentInfo,
           message: "Appointments found successfully",
         };
+        res.status(200).json(send);
       }
     }
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    res.status(500).json(send);
+  }
+};
+
+const acceptAppointment = async (req, res) => {
+  try {
+    const { appID } = req.body;
+    const appointment = await Appointments.findByIdAndUpdate(
+      { _id: appID },
+      {
+        status: "upcoming",
+      },
+      { new: true }
+    );
+    const send = {
+      success: true,
+      data: appointment,
+      message: "Appointment accepted successfully",
+    };
+    res.status(200).json(send);
   } catch (error) {
     const send = {
       success: false,
