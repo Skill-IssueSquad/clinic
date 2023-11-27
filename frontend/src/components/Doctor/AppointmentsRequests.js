@@ -64,7 +64,7 @@ const Requests = ({ username }) => {
   return (
     <div>
       <h1>Appointments requests</h1>
-      <div style={{ maxWidth: 430 }}>
+      <div style={{ maxWidth: 550 }}>
         <TableContainer component={Paper}>
           <Table sx={{ maxWidth: 350 }} aria-label="simple table">
             <TableHead>
