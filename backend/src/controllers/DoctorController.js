@@ -993,42 +993,46 @@ const removeFromPrescription = async (req, res) => {
 const getRequestedAppointments = async (req, res) => {
   try {
     const { username } = req.params;
-    const appointments = await Appointments.find({ status: "requested" });
+    var doctor = await Doctor.findOne({ username });
+    const doctorId = doctor._id;
+    const appointments = await Appointments.find({
+      status: "requested",
+      doctor_id: doctorId,
+    });
     const result = [];
     for (const appointment of appointments) {
-      if (appointment.status === "requested") {
-        const patientId = appointment.patient_id;
-        const patient = await Patient.findById({ _id: patientId });
-        var patientName = "";
-        if (
-          appointment.familyMember_nationalId === null ||
-          appointment.familyMember_nationalId === ""
-        ) {
-          patientName = patient.name;
-        } else {
-          const family = patient.extfamilyMembers;
+      const patientId = appointment.patient_id;
+      const patient = await Patient.findById({ _id: patientId });
+      var patientName = "";
+      if (
+        appointment.familyMember_nationalId === null ||
+        appointment.familyMember_nationalId === ""
+      ) {
+        patientName = patient.name;
+      } else {
+        const family = patient.extfamilyMembers;
 
-          family.forEach((member) => {
-            if (member.national_id === appointment.familyMember_nationalId) {
-              patientName = member.name;
-            }
-          });
-        }
-        const appointmentInfo = {
-          patientName,
-          day: appointment.day,
-          slot: appointment.slot,
-          type: appointment.type,
-          appID: appointment._id,
-        };
-        const send = {
-          success: true,
-          data: appointmentInfo,
-          message: "Appointments found successfully",
-        };
-        res.status(200).json(send);
+        family.forEach((member) => {
+          if (member.national_id === appointment.familyMember_nationalId) {
+            patientName = member.name;
+          }
+        });
       }
+      const appointmentInfo = {
+        patientName,
+        day: appointment.day,
+        slot: appointment.slot,
+        type: appointment.type,
+        appID: appointment._id,
+      };
+      result.push(appointmentInfo);
     }
+    const send = {
+      success: true,
+      data: result,
+      message: "Requested appointments found successfully",
+    };
+    res.status(200).json(send);
   } catch (error) {
     const send = {
       success: false,
@@ -1041,13 +1045,30 @@ const getRequestedAppointments = async (req, res) => {
 
 const acceptAppointment = async (req, res) => {
   try {
-    const { appID } = req.body;
+    const { username } = req.params;
+    const { appID, patientName, type, day, timeSlot } = req.body;
     const appointment = await Appointments.findByIdAndUpdate(
       { _id: appID },
       {
         status: "upcoming",
       },
       { new: true }
+    );
+    var doctor = await Doctor.findOne({ username });
+    const doctorId = doctor._id;
+    doctor = await Doctor.findByIdAndUpdate(
+      { _id: doctorId },
+      {
+        $set: {
+          "availableSlots.$[elem].isBooked": true,
+          "availableSlots.$[elem].patientName": patientName,
+          "availableSlots.$[elem].appointmentType": type,
+        },
+      },
+      {
+        arrayFilters: [{ "elem.day": day, "elem.timeSlot": timeSlot }],
+        new: true,
+      }
     );
     const send = {
       success: true,
@@ -1086,4 +1107,6 @@ module.exports = {
   addToPrescription,
   getMedicinesStatus,
   removeFromPrescription,
+  getRequestedAppointments,
+  acceptAppointment,
 };
