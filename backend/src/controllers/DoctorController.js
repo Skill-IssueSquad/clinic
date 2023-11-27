@@ -1097,11 +1097,52 @@ const revokeAppointment = async (req, res) => {
       },
       { new: true }
     );
+    const doctorMoney = appointment.price.doctor;
+    const patientMoney = appointment.price.patient;
+    const doctorId = appointment.doctor_id;
+    const patientId = appointment.patient_id;
+    const doctor = await Doctor.findByIdAndUpdate(
+      { _id: doctorId },
+      {
+        $dec: { walletBalance: doctorMoney },
+      },
+      { new: true }
+    );
+    const patient = await Patient.findByIdAndUpdate(
+      { _id: patientId },
+      {
+        $inc: { walletBalance: patientMoney },
+      },
+      { new: true }
+    );
     const send = {
       success: true,
       data: appointment,
       message: "Appointment revoked successfully",
     };
+    res.status(200).json(send);
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    res.status(500).json(send);
+  }
+};
+
+const getPatient = async (req, res) => {
+  try {
+    const { appID } = req.params;
+    const appointment = await Appointments.findById({ _id: appID });
+    const patientId = appointment.patient_id;
+    const patient = await Patient.findById({ _id: patientId });
+    const send = {
+      success: true,
+      data: patient,
+      message: "Patient found successfully",
+    };
+
     res.status(200).json(send);
   } catch (error) {
     const send = {
@@ -1137,4 +1178,5 @@ module.exports = {
   getRequestedAppointments,
   acceptAppointment,
   revokeAppointment,
+  getPatient,
 };

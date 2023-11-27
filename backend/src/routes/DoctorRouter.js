@@ -46,6 +46,7 @@ const {
   getRequestedAppointments,
   acceptAppointment,
   revokeAppointment,
+  getPatient,
 } = require("../controllers/DoctorController");
 router.get("/:username", getDoctor);
 router.post("/create", createDoctor);
@@ -70,5 +71,6 @@ router.post("/removeFromPrescription/", removeFromPrescription);
 router.get("/getRequestedAppointments/:username", getRequestedAppointments);
 router.post("/acceptAppointment/:username", acceptAppointment);
 router.post("/revokeAppointment", revokeAppointment);
+router.get("/getPatient/:appID", getPatient);
 
 module.exports = router;
