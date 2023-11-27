@@ -955,6 +955,38 @@ const getMedicinesStatus = async (req, res) => {
   }
 };
 
+const removeFromPrescription = async (req, res) => {
+  try {
+    const { appID, medicineName } = req.body;
+    var appointment = await Appointments.findById({ _id: appID });
+    const prescriptionId = appointment.prescription_id;
+    const prescription = await Prescription.findById({ _id: prescriptionId });
+    const medicines = prescription.medicines;
+    var newMedicines = [];
+    medicines.forEach((medicine) => {
+      if (medicine.medicineName !== medicineName) {
+        newMedicines.push(medicine);
+      }
+    });
+    prescription.medicines = newMedicines;
+    prescription.save();
+    const send = {
+      success: true,
+      data: prescription,
+      message: `${medicineName} removed successfully`,
+    };
+    res.status(200).json(send);
+    return;
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    res.status(500).json(send);
+  }
+};
+
 module.exports = {
   getDoctor,
   createDoctor,
@@ -975,4 +1007,5 @@ module.exports = {
   cancelAppointment,
   addToPrescription,
   getMedicinesStatus,
+  removeFromPrescription,
 };
