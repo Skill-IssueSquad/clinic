@@ -771,6 +771,23 @@ const bookAppointment = async (req, res) => {
   };
 
   try {
+    // auth check
+    const username = req.params.username;
+    const patient = await getPatient(username);
+    let isLinked = patient.linkedAccounts.find((elem) => {
+      String(elem.patient_id) === String(req.body.patient_id);
+    })
+      ? true
+      : false;
+    if (String(patient._id) !== String(req.body.patient_id) && !isLinked) {
+      return sendResponse(
+        401,
+        false,
+        req.body,
+        "Unauthorized to book appointment for this patient"
+      );
+    }
+
     // edit availableSlots array in doctor
     const doctor = await Doctor.findByIdAndUpdate(
       { _id: req.body.doctor_id },
@@ -871,6 +888,183 @@ const bookAppointment = async (req, res) => {
       false,
       req.body,
       err.message || "Some error occurred while creating appointment."
+    );
+  }
+};
+
+const rescheduleAppointment = async (req, res) => {
+  // ASSUMES JWT AUTHENTICATION
+  // EXPECTED INPUT: param: self_username, { doctor_id: "69fe353h55g3h34hg53h",
+  // appointment_id: "69fe353h55g3h34hg53h", date: "2022-05-01T00:00:00.000+00:00", day: "2023-4-5", slot: "22:00",
+  // slot_id: "69fe353h55g3h34hg53h"}
+
+  let responseSent = false; // Track whether a response has been sent
+
+  const sendResponse = (statusCode, success, data, message) => {
+    if (!responseSent) {
+      responseSent = true;
+      return res.status(statusCode).json({ success: success, data, message });
+    }
+  };
+
+  try {
+    // get the old appointment
+    const editableAppointment = await Appointments.findById(
+      req.body.appointment_id
+    ).catch((err) => {
+      if (err) {
+        return sendResponse(
+          500,
+          false,
+          req.body,
+          err.message || "Some error occurred while retrieving appointment."
+        );
+      }
+    });
+
+    // auth check
+    const username = req.params.username;
+    const patient = await getPatient(username);
+    let isLinked = patient.linkedAccounts.find((elem) => {
+      elem.patient_id === editableAppointment.patient_id;
+    })
+      ? true
+      : false;
+    if (String(patient._id) !== String(editableAppointment.patient_id) && !isLinked) {
+      return sendResponse(
+        401,
+        false,
+        {...req.body, pid: patient._id, app_p_pid:editableAppointment.patient_id},
+        "Unauthorized to reschedule appointment for this patient"
+      );
+    }
+
+    // free up the old slot
+    const doctor = await Doctor.findByIdAndUpdate(
+      { _id: req.body.doctor_id },
+      {
+        $set: {
+          "availableSlots.$[elem].isBooked": false,
+          "availableSlots.$[elem].patientName": null,
+          "availableSlots.$[elem].appointmentType": null
+
+        },
+      },
+      {
+        arrayFilters: [
+          {
+            "elem.day": editableAppointment.day,
+            "elem.timeSlot": editableAppointment.slot,
+          },
+        ],
+        new: true,
+      }
+    ).catch((err) => {
+      if (err) {
+        return sendResponse(
+          500,
+          false,
+          req.body,
+          err.message ||
+            "Some error occurred while updating doctor's free slots."
+        );
+      }
+    });
+
+    if (!doctor) {
+      return sendResponse(
+        500,
+        false,
+        req.body,
+        err.message || "Some error occurred while updating doctor free slots."
+      );
+    }
+
+    const patient_name = doctor.availableSlots.find((elem) => {
+      elem.day === editableAppointment.day &&
+        elem.timeSlot === editableAppointment.slot;
+    })?.patientName;
+
+    // book the new slot
+    const doctorNewSlot = await Doctor.findByIdAndUpdate(
+      { _id: req.body.doctor_id },
+      {
+        $set: {
+          "availableSlots.$[elem].isBooked": true,
+          "availableSlots.$[elem].patientName": patient_name,
+          "availableSlots.$[elem].appointmentType": "appointment",
+        },
+      },
+      {
+        arrayFilters: [
+          { "elem._id": new mongoose.Types.ObjectId(req.body.slot_id) },
+        ],
+        new: true,
+      }
+    ).catch((err) => {
+      if (err) {
+        return sendResponse(
+          500,
+          false,
+          req.body,
+          err.message ||
+            "Some error occurred while updating doctor's new slots."
+        );
+      }
+    });
+
+    if (!doctorNewSlot) {
+      return sendResponse(
+        500,
+        false,
+        req.body,
+        err.message || "Some error occurred while updating doctor new slots."
+      );
+    }
+
+    // update appointment
+    const appointment = await Appointments.findByIdAndUpdate(
+      { _id: req.body.appointment_id },
+      {
+        $set: {
+          date: req.body.date,
+          day: req.body.day,
+          slot: req.body.slot,
+        },
+      },
+      { new: true }
+    ).catch((err) => {
+      if (err) {
+        return sendResponse(
+          500,
+          false,
+          req.body,
+          err.message || "Some error occurred while updating appointment."
+        );
+      }
+    });
+
+    if (!appointment) {
+      return sendResponse(
+        500,
+        false,
+        req.body,
+        err.message || "Some error occurred while creating appointment."
+      );
+    }
+
+    return sendResponse(
+      200,
+      true,
+      appointment,
+      "Appointment rescheduled successfully"
+    );
+  } catch (err) {
+    return sendResponse(
+      500,
+      false,
+      req.body,
+      err.message || "Some error occurred while reschduling appointment."
     );
   }
 };
@@ -1394,4 +1588,5 @@ module.exports = {
   AddHealthRecord,
   getAllHealthRecords,
   removeHealthRecord,
+  rescheduleAppointment,
 };

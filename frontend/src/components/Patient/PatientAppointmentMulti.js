@@ -12,8 +12,10 @@ import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import axios from "axios";
 import CircularProgress from "@mui/joy/CircularProgress";
-import { Select, MenuItem } from "@mui/material";
+import { MenuItem } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import { auth } from "../../pages/Protected/AuthProvider";
+import AppointmentSplitButton from "./PatientAppointmentSplitButton";
 
 function convertDateFormat(originalDateString) {
   // Parse the original date string into a Date object
@@ -65,6 +67,13 @@ function displayDate(date) {
 let docNames = new Set();
 
 const AppointmentsMulti = ({ columns, API_GET_URL }) => {
+  let show = false;
+
+  if (auth() && localStorage.getItem("role") === "Patient") {
+    show = true;
+  }
+
+  const navigate = useNavigate();
   const initFilter = {};
   columns.forEach((key) => {
     initFilter[key] = "";
@@ -85,12 +94,13 @@ const AppointmentsMulti = ({ columns, API_GET_URL }) => {
           columns.forEach((key) => {
             console.log(key);
             resJson[key] = row[key];
-            if (key == "doctor_name") {
+            if (key === "doctor_name") {
               docNames.add(row[key]);
             }
             resJson["familyMember_nationalId"] = row["familyMember_nationalId"];
           });
-
+          resJson["_id"] = row["_id"];
+          resJson["doctor_id"] = row["doctor_id"];
           return resJson;
         });
 
@@ -115,6 +125,10 @@ const AppointmentsMulti = ({ columns, API_GET_URL }) => {
   const handleDropdownChange = (e) => {
     const { name, value } = e.target;
     setFilter((prevFilter) => ({ ...prevFilter, [name]: value }));
+  };
+
+  const handleRescheduleClick = (appointment_id, doctor_id) => {
+    navigate(`/patient/rescheduleSlot/${doctor_id}/${appointment_id}`);
   };
 
   const handleSort = (field) => {
@@ -318,87 +332,102 @@ const AppointmentsMulti = ({ columns, API_GET_URL }) => {
 
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "center" }}>
-        {columns.map((key) =>
-          key !== "doctor_name" ? (
-            <TextField
-              key={key}
-              label={"Filter by " + key}
-              name={key}
-              value={filter[key] || ""}
-              onChange={handleFilterChange}
-              style={{ marginRight: "10px" }} // Add margin to separate elements
-            />
-          ) : (
-            <div key={key}>
-              <TextField
-                select
-                label="Select a doctor"
-                name="doctor_name"
-                value={filter["doctor_name"] || ""}
-                onChange={handleDropdownChange}
-                style={{ width: "200px" }} // Set a fixed width for the select
-              >
-                <MenuItem value="">Select a doctor</MenuItem>
-                {[...docNames].map((doctorName) => (
-                  <MenuItem key={doctorName} value={doctorName}>
-                    {doctorName}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </div>
-          )
-        )}
-      </div>
+      {show ? (
+        <div>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            {columns.map((key) =>
+              key !== "doctor_name" ? (
+                <TextField
+                  key={key}
+                  label={"Filter by " + key}
+                  name={key}
+                  value={filter[key] || ""}
+                  onChange={handleFilterChange}
+                  style={{ marginRight: "10px" }} // Add margin to separate elements
+                />
+              ) : (
+                <div key={key}>
+                  <TextField
+                    select
+                    label="Select a doctor"
+                    name="doctor_name"
+                    value={filter["doctor_name"] || ""}
+                    onChange={handleDropdownChange}
+                    style={{ width: "200px" }} // Set a fixed width for the select
+                  >
+                    <MenuItem value="">Select a doctor</MenuItem>
+                    {[...docNames].map((doctorName) => (
+                      <MenuItem key={doctorName} value={doctorName}>
+                        {doctorName}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </div>
+              )
+            )}
+          </div>
 
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              {columns.map((key) => (
-                <TableCell>
-                  {key.toUpperCase()}{" "}
-                  <Button
-                    size="small"
-                    onClick={() => handleSort(key)}
-                    startIcon={
-                      sorting.field === key ? (
-                        sorting.order === "asc" ? (
-                          <ArrowUpwardIcon />
-                        ) : (
-                          <ArrowDownwardIcon />
-                        )
-                      ) : (
-                        <ArrowDownwardIcon />
-                      )
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  {columns.map((key) => (
+                    <TableCell>
+                      {key.toUpperCase()}{" "}
+                      <Button
+                        size="small"
+                        onClick={() => handleSort(key)}
+                        startIcon={
+                          sorting.field === key ? (
+                            sorting.order === "asc" ? (
+                              <ArrowUpwardIcon />
+                            ) : (
+                              <ArrowDownwardIcon />
+                            )
+                          ) : (
+                            <ArrowDownwardIcon />
+                          )
+                        }
+                      ></Button>
+                    </TableCell>
+                  ))}
+                  <TableCell>RELATION</TableCell>
+                  <TableCell>ACTIONS</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {filteredRows.map((row) => (
+                  <TableRow>
+                    {Object.keys(row).map((key) =>
+                      isMongoDbIsoDate(row[key]) ? (
+                        <TableCell>{displayDate(row[key])}</TableCell>
+                      ) : key !== "familyMember_nationalId" &&
+                        key !== "_id" &&
+                        key !== "doctor_id" ? (
+                        <TableCell>{row[key]}</TableCell>
+                      ) : null
+                    )}
+                    {row["familyMember_nationalId"] ? (
+                      <TableCell>Family Member</TableCell>
+                    ) : (
+                      <TableCell>Self</TableCell>
+                    )}
+                    {
+                      <TableCell>
+                        <AppointmentSplitButton appointment_id={row["_id"]} doctor_id={row["doctor_id"]} appointment={row["type"].toLowerCase() === "appointment"} none={row["status"].toLowerCase() === "cancelled" } old={row["status"].toLowerCase() === "completed"}/>
+                      </TableCell>
                     }
-                  ></Button>
-                </TableCell>
-              ))}
-              <TableCell>RELATION</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredRows.map((row) => (
-              <TableRow>
-                {Object.keys(row).map((key) =>
-                  isMongoDbIsoDate(row[key]) ? (
-                    <TableCell>{displayDate(row[key])}</TableCell>
-                  ) : key !== "familyMember_nationalId" ? (
-                    <TableCell>{row[key]}</TableCell>
-                  ) : null
-                )}
-                {row["familyMember_nationalId"] ? (
-                  <TableCell>Family Member</TableCell>
-                ) : (
-                  <TableCell>Self</TableCell>
-                )}
-                {<TableCell></TableCell>}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </div>
+      ) : (
+        <div>
+          <h1>Access Denied</h1>
+        </div>
+      )}
     </div>
   );
 };

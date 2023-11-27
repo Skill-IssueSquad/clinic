@@ -28,6 +28,7 @@ import MedicalHistory from "./pages/MedicalHistory";
 import Follow from "./pages/Doctor/FollowUp";
 import WalletPayment from "./pages/Patient/WalletPayment";
 import CreditCardPayment from "./pages/Patient/CreditCardPayment";
+import PatientRescheduleSlots from "./pages/Patient/PatientRescheduler";
 import { useState } from "react";
 import ChangePassword from "./pages/ChangePassword";
 
@@ -97,6 +98,12 @@ function App() {
               exact
               path="/patient/bookSlots/:doctor_id"
               element={<PatientBookSlots />}
+            />
+
+            <Route
+              exact
+              path="/patient/rescheduleSlot/:doctor_id/:appointment_id"
+              element={<PatientRescheduleSlots />}
             />
 
             <Route 

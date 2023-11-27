@@ -19,7 +19,7 @@ const storage = multer.diskStorage({
   },
 });
 const upload = multer({ storage: storage });
-const{authPatient} = require("../middleware/Authentication");
+const { authPatient } = require("../middleware/Authentication");
 
 const {
   addFamMember,
@@ -43,6 +43,7 @@ const {
   AddHealthRecord,
   getAllHealthRecords,
   removeHealthRecord,
+  rescheduleAppointment,
 } = require("../controllers/PatientController");
 
 const { create } = require("../models/Patient");
@@ -52,8 +53,8 @@ router.post(
   upload.single("document"),
   AddHealthRecord
 );
-router.delete("/:username/healthrecords/:recordId", removeHealthRecord);
 
+router.delete("/:username/healthrecords/:recordId", removeHealthRecord);
 //router.post('/patients/:username/healthrecords', upload, AddHealthRecord);
 router.get("/:username/healthrecords", getAllHealthRecords);
 
@@ -69,6 +70,7 @@ router.post("/:username/doctors", viewAllDoctors);
 router.post("/:username/doctors/available", viewAllDoctorsAvailable);
 router.post("/createDoc", createDoc); // TESTING PURPOSES ONLY
 router.post("/:username/bookAppointment", bookAppointment);
+router.post("/:username/reschduleAppointment", rescheduleAppointment);
 
 //add family member route
 router.patch("/:username/addFamMember", addFamMember);
