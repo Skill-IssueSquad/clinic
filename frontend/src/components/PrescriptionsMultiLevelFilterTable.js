@@ -64,7 +64,7 @@ const PrescriptionsMultiLevelFilterTable = ({ columns, API_GET_URL }) => {
         fullRows = initialRows;
         fullRows.map((row) => {
           row["View Prescriptions"] = "";
-        })
+        });
 
         testcols = columns.map((col) => {
           return col.toLowerCase();
@@ -81,7 +81,7 @@ const PrescriptionsMultiLevelFilterTable = ({ columns, API_GET_URL }) => {
     };
 
     fetchData();
-  }, []);
+  }, [API_GET_URL]);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;

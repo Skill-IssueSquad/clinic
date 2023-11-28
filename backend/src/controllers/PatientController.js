@@ -35,8 +35,8 @@ const getPatientAPI = async (req, res) => {
 
 const getPatientAPIByID = async (req, res) => {
   const { id } = req.params;
-  console.log("The new acc");
-  console.log(id);
+  // console.log("The new acc");
+  // console.log(id);
 
   try {
     const patient = await Patient.findById(id);

@@ -22,7 +22,9 @@ const Patient = () => {
   const submitFamMember = async (formData) => {
     try {
       const res = await axios.patch(
-        `http://localhost:8000/patient/${localStorage.getItem("username")}/addFamMember`,
+        `http://localhost:8000/patient/${localStorage.getItem(
+          "username"
+        )}/addFamMember`,
         formData
       );
       console.log(res.data);
@@ -36,7 +38,9 @@ const Patient = () => {
   const linkFamMember = async (formData) => {
     try {
       const res = await axios.patch(
-        `http://localhost:8000/patient/${localStorage.getItem("username")}/linkFamMember`,
+        `http://localhost:8000/patient/${localStorage.getItem(
+          "username"
+        )}/linkFamMember`,
 
         formData
       );
@@ -50,9 +54,9 @@ const Patient = () => {
   const handleCancelSubscription = async () => {
     try {
       await axios.patch(
-        `http://localhost:8000/patient/${localStorage.getItem("username")}/subscriptions/cancel`
-
-        
+        `http://localhost:8000/patient/${localStorage.getItem(
+          "username"
+        )}/subscriptions/cancel`
       );
     } catch (error) {
       console.log(error);
@@ -62,10 +66,14 @@ const Patient = () => {
   useEffect(() => {
     const fetchPatient = async () => {
       try {
-      await axios.get(`http://localhost:8000/patient/${localStorage.getItem("username")}`).then((res) => {
-        setPatient(res.data.data);
-      });
-    } catch (error) {
+        await axios
+          .get(
+            `http://localhost:8000/patient/${localStorage.getItem("username")}`
+          )
+          .then((res) => {
+            setPatient(res.data.data);
+          });
+      } catch (error) {
         console.log(error);
       }
     };
@@ -81,7 +89,10 @@ const Patient = () => {
     <div>
       {show ? (
         <div className="patient">
-          <NavBar name={"Patient Dashboard"} username={"bahyone"} />
+          <NavBar
+            name={"Patient Dashboard"}
+            username={localStorage.getItem("username")}
+          />
           <PatientDetails
             patient={patient}
             handleCancelSubscription={handleCancelSubscription}
@@ -109,7 +120,9 @@ const Patient = () => {
           <p></p>
           <PrescriptionsMultiLevelFilterTable
             columns={["doctor_name", "date", "isFilled", "View Prescriptions"]}
-            API_GET_URL={`http://localhost:8000/patient/${localStorage.getItem("username")}/prescriptions`}
+            API_GET_URL={`http://localhost:8000/patient/${localStorage.getItem(
+              "username"
+            )}/prescriptions`}
           />
         </div>
       ) : (
@@ -118,11 +131,5 @@ const Patient = () => {
     </div>
   );
 };
-
-// function getParam() {
-//   let { username } = useParams;
-//   console.log("Here is the username: " + username);
-//   return { username };
-// }
 
 export default Patient;

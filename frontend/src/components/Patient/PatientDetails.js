@@ -69,7 +69,7 @@ const PatientDetails = ({ patient, handleCancelSubscription }) => {
 
   useEffect(() => {
     getLinkedAccounts();
-  }, []);
+  }, [patient, handleCancelSubscription]);
 
   return (
     <Paper elevation={3} style={{ padding: "20px" }}>
