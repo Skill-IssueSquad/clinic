@@ -1358,6 +1358,9 @@ const tempSub = async (req, res) => {
     patient.linkedAccounts = [];
   }
 
+  let famLen = patient.extfamilyMembers.length;
+  let linkedLen = patient.linkedAccounts.length;
+
   //I will redirect to the payment page here after I return something
   //TODO: modify price and quantity so that it is multiplied by number of fam members
 
@@ -1368,17 +1371,24 @@ const tempSub = async (req, res) => {
     return res.status(200).json({
       success: true,
       data: {
-        totalPrice: data.price,
+        totalPrice: data.price * (famLen + linkedLen + 1),
         items: [
           {
-            type: data.healthPackage,
-            quantity: 1,
-            unitPrice: data.price,
-            description: "Health Package Subscription",
-            renewal: data.renewal,
+            name:
+              data.healthPackage +
+              " Health Package Subscription" +
+              " (Renewal: " +
+              data.renewal +
+              ")",
+            quantity: famLen + linkedLen + 1,
+            price: data.price * (famLen + linkedLen + 1),
           },
         ],
-        payload: data,
+        payload: {
+          username: data.username,
+          healthPackage: data.healthPackage,
+          renewal: data.renewal,
+        },
         postUrl: `patient/${username}/subscriptions/subscribe`,
       },
       message: "Data sent successfully",
@@ -1390,60 +1400,77 @@ const tempSub = async (req, res) => {
       message: error.message || "Some error occurred while performing request",
     });
   }
+};
 
-  //halt all subsription logic for now
-  // for (const famMember of patient.extfamilyMembers) {
-  //   //if (data.familyMembers.includes(famMember.name)) {
-  //   famMember.healthPackageType.status = "subscribed";
-  //   famMember.healthPackageType.type = data.healthPackage;
-  //   famMember.healthPackageType.renewal = data.renewal;
-  //   //}
-  // }
+const actualSub = async (req, res) => {
+  const data = req.body;
+  const { username } = req.params;
 
-  // for (const linkedAccount of patient.linkedAccounts) {
-  //   const linkedPatient = await Patient.findById(linkedAccount.patient_id);
-  //   linkedPatient.healthPackageType.status = "subscribed";
-  //   linkedPatient.healthPackageType.type = data.healthPackage;
-  //   linkedPatient.healthPackageType.renewal = data.renewal;
+  const patient = await getPatient(username);
+  patient.healthPackageType.status = "subscribed";
+  patient.healthPackageType.type = data.healthPackage;
+  patient.healthPackageType.renewal = data.renewal;
 
-  //   await Patient.findByIdAndUpdate(linkedPatient._id, {
-  //     healthPackageType: linkedPatient.healthPackageType,
-  //   }).catch((err) => {
-  //     return res.status(500).json({
-  //       success: false,
-  //       data: null,
-  //       message:
-  //         err.message ||
-  //         "Some error occurred while updating linked patient account.",
-  //     });
-  //   });
-  // }
+  if (!patient.extfamilyMembers) {
+    patient.extfamilyMembers = [];
+  }
 
-  // //update the existing patient
-  // await Patient.findByIdAndUpdate(patient._id, {
-  //   healthPackageType: patient.healthPackageType,
-  //   extfamilyMembers: patient.extfamilyMembers,
-  // }).catch((err) => {
-  //   return res.status(500).json({
-  //     success: false,
-  //     data: null,
-  //     message: err.message || "Some error occurred while updating patient.",
-  //   });
-  // });
+  if (!patient.linkedAccounts) {
+    patient.linkedAccounts = [];
+  }
 
-  // const newPatient = await Patient.findById(patient._id).catch((err) => {
-  //   return res.status(500).json({
-  //     success: false,
-  //     data: null,
-  //     message: err.message || "Some error occurred while retrieving patient.",
-  //   });
-  // });
+  for (const famMember of patient.extfamilyMembers) {
+    //if (data.familyMembers.includes(famMember.name)) {
+    famMember.healthPackageType.status = "subscribed";
+    famMember.healthPackageType.type = data.healthPackage;
+    famMember.healthPackageType.renewal = data.renewal;
+    //}
+  }
 
-  // return res.status(200).json({
-  //   success: true,
-  //   data: newPatient,
-  //   message: "Health package subscription successful",
-  // });
+  for (const linkedAccount of patient.linkedAccounts) {
+    const linkedPatient = await Patient.findById(linkedAccount.patient_id);
+    linkedPatient.healthPackageType.status = "subscribed";
+    linkedPatient.healthPackageType.type = data.healthPackage;
+    linkedPatient.healthPackageType.renewal = data.renewal;
+
+    await Patient.findByIdAndUpdate(linkedPatient._id, {
+      healthPackageType: linkedPatient.healthPackageType,
+    }).catch((err) => {
+      return res.status(500).json({
+        success: false,
+        data: null,
+        message:
+          err.message ||
+          "Some error occurred while updating linked patient account.",
+      });
+    });
+  }
+
+  //update the existing patient
+  await Patient.findByIdAndUpdate(patient._id, {
+    healthPackageType: patient.healthPackageType,
+    extfamilyMembers: patient.extfamilyMembers,
+  }).catch((err) => {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: err.message || "Some error occurred while updating patient.",
+    });
+  });
+
+  const newPatient = await Patient.findById(patient._id).catch((err) => {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: err.message || "Some error occurred while retrieving patient.",
+    });
+  });
+
+  return res.status(200).json({
+    success: true,
+    data: newPatient,
+    message: "Health package subscription successful",
+  });
 };
 
 const getPatientemUsername = async (req, res) => {
@@ -1629,4 +1656,5 @@ module.exports = {
   getAllHealthRecords,
   removeHealthRecord,
   rescheduleAppointment,
+  actualSub,
 };

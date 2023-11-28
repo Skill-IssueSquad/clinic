@@ -44,6 +44,7 @@ const {
   getAllHealthRecords,
   removeHealthRecord,
   rescheduleAppointment,
+  actualSub,
 } = require("../controllers/PatientController");
 
 const { create } = require("../models/Patient");
@@ -85,7 +86,8 @@ router.get("/:username/getFamMember", getFamMembers);
 router.get("/:username/prescriptions", getPrescriptions);
 
 //subscribe health package route (temp and will be removed )
-router.patch("/:username/subscriptions/subscribe", tempSub);
+router.post("/:username/subscriptions/transitSub", tempSub);
+router.patch("/:username/subscriptions/subscribe", actualSub);
 
 //cancel health package subscription route
 router.patch("/:username/subscriptions/cancel", cancelHealthPackage);

@@ -126,15 +126,15 @@ const HealthPackages = () => {
 
     switch (selectedPackage) {
       case 0:
-        packageName = "silver";
+        packageName = "Silver";
         price = 3600;
         break;
       case 1:
-        packageName = "gold";
+        packageName = "Gold";
         price = 6000;
         break;
       case 2:
-        packageName = "platinum";
+        packageName = "Platinum";
         price = 9000;
         break;
       default:
@@ -156,10 +156,10 @@ const HealthPackages = () => {
 
     try {
       // Replace with your backend endpoint for purchasing health packages
-      const response = await axios.patch(
+      const response = await axios.post(
         `http://localhost:8000/patient/${localStorage.getItem(
           "username"
-        )}/subscriptions/subscribe`,
+        )}/subscriptions/transitSub`,
         formData
       );
       const data = response.data.data;
