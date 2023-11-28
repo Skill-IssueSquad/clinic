@@ -121,16 +121,21 @@ const HealthPackages = () => {
   const handlePurchase = async () => {
     var oneYearFromNow = new Date();
     let packageName = "";
+    //TODO: multiply times the number of family members
+    let price = 0;
 
     switch (selectedPackage) {
       case 0:
         packageName = "silver";
+        price = 3600;
         break;
       case 1:
         packageName = "gold";
+        price = 6000;
         break;
       case 2:
         packageName = "platinum";
+        price = 9000;
         break;
       default:
         break;
@@ -139,17 +144,22 @@ const HealthPackages = () => {
     oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
     const formData = {
       username: localStorage.getItem("username"),
+      price: price,
       healthPackage: packageName,
       renewal: oneYearFromNow,
+
       //familyMembers: selectedFamilyMembers,
     };
 
+    //TODO: redirection
     //navigate("/patient/payments/");
 
     try {
       // Replace with your backend endpoint for purchasing health packages
       const response = await axios.patch(
-        `http://localhost:8000/patient/${localStorage.getItem("username")}/subscriptions/subscribe`,
+        `http://localhost:8000/patient/${localStorage.getItem(
+          "username"
+        )}/subscriptions/subscribe`,
         formData
       );
       const data = response.data.data;
