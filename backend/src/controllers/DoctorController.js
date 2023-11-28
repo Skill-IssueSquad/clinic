@@ -873,6 +873,9 @@ const addToPrescription = async (req, res) => {
         ],
       });
       id = prescription._id;
+      const patient = await Patient.findById({ _id: appointment.patient_id });
+      patient.perscreption_ids.push({ prescription_id: id });
+      patient.save();
       appointment = await Appointments.findByIdAndUpdate(
         { _id: appID },
         {
