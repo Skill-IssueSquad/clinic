@@ -6,10 +6,17 @@ import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
+import {
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+} from "@mui/material";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Button from "@mui/material/Button";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import axios from "axios";
@@ -55,6 +62,15 @@ const PrescriptionsMultiLevelFilterTable = ({ columns, API_GET_URL }) => {
   const [rows, setRows] = useState([]);
   const [sorting, setSorting] = useState({ field: "", order: "" });
   const [loading, setLoading] = useState(true); // Add a loading state
+  const [open, setOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -338,28 +354,38 @@ const PrescriptionsMultiLevelFilterTable = ({ columns, API_GET_URL }) => {
                   <React.Fragment>
                     {key === "View Prescriptions" ? (
                       <TableCell>
-                        <Popup
-                          trigger={<button className="button">Details</button>}
-                          modal
-                        >
-                          <span>
+                        <Button className="button" onClick={handleClickOpen}>
+                          Details
+                        </Button>
+                        <Dialog open={open} onClose={handleClose}>
+                          <DialogTitle>Details</DialogTitle>
+                          <DialogContent>
                             {Object.keys(row).map((innerKey) =>
                               innerKey === "medicines" ? (
-                                <div>
-                                  <p>Medicines:</p>
-                                  {row[innerKey].map((medicine) => (
-                                    <div>
-                                      <p>
+                                <div key={innerKey}>
+                                  <DialogContentText>
+                                    Medicines:
+                                  </DialogContentText>
+                                  {row[innerKey].map((medicine, index) => (
+                                    <div key={index}>
+                                      <DialogContentText>
                                         Medicine Name: {medicine.medicineName}
-                                      </p>
-                                      <p>dose: {medicine.dose}</p>
+                                      </DialogContentText>
+                                      <DialogContentText>
+                                        Dose: {medicine.dose}
+                                      </DialogContentText>
                                     </div>
                                   ))}
                                 </div>
                               ) : null
                             )}
-                          </span>
-                        </Popup>
+                          </DialogContent>
+                          <DialogActions>
+                            <Button onClick={handleClose} color="primary">
+                              Close
+                            </Button>
+                          </DialogActions>
+                        </Dialog>
                       </TableCell>
                     ) : key === "date" ? (
                       <TableCell>
