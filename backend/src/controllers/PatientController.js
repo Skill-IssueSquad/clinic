@@ -1364,11 +1364,10 @@ const tempSub = async (req, res) => {
   //TODO: redirections
   //res.redirect(307, "/patient/subscribe");
 
-  return res
-    .status(200)
-    .json({
+  try {
+    return res.status(200).json({
       success: true,
-      data: json({
+      data: {
         totalPrice: data.price,
         items: [
           {
@@ -1381,16 +1380,16 @@ const tempSub = async (req, res) => {
         ],
         payload: data,
         postUrl: `patient/${username}/subscriptions/subscribe`,
-      }),
+      },
       message: "Data sent successfully",
-    })
-    .catch((err) => {
-      return res.status(500).json({
-        success: false,
-        data: null,
-        message: err.message || "Some error occurred while performing request",
-      });
     });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: error.message || "Some error occurred while performing request",
+    });
+  }
 
   //halt all subsription logic for now
   // for (const famMember of patient.extfamilyMembers) {
