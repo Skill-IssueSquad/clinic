@@ -833,11 +833,19 @@ const cancelAppointment = async (req, res) => {
     var patient = await Patient.findByIdAndUpdate(
       { _id: patientId },
       {
-        $dec: { amountDue: pricePat },
+        $inc: { walletBalance: pricePat },
       },
       { new: true }
     );
-
+    const Equate = fetch(`http://localhost:8001/balance/${patient.username}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        balance: patient.walletBalance,
+      }),
+    });
     const send = {
       success: true,
       data: appointment,
@@ -1124,6 +1132,15 @@ const revokeAppointment = async (req, res) => {
       },
       { new: true }
     );
+    const Equate = fetch(`http://localhost:8001/balance/${patient.username}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        balance: patient.walletBalance,
+      }),
+    });
     const send = {
       success: true,
       data: appointment,
