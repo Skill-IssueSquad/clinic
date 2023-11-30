@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import TextField from "@mui/material/TextField";
-import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
@@ -72,6 +71,10 @@ const PrescriptionsMultiLevelFilterTable = ({ columns, API_GET_URL }) => {
     setOpen(false);
   };
 
+  const handleDownload = () => {
+    console.log("download");
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -80,15 +83,15 @@ const PrescriptionsMultiLevelFilterTable = ({ columns, API_GET_URL }) => {
         fullRows = initialRows;
         fullRows.map((row) => {
           row["View Prescriptions"] = "";
+          row["Download Prescription"] = "";
         });
 
         testcols = columns.map((col) => {
           return col.toLowerCase();
         });
 
-        console.log(rows);
-
         setRows(initialRows);
+        console.log(rows);
         setLoading(false); // Set loading to false when data is available
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -311,7 +314,7 @@ const PrescriptionsMultiLevelFilterTable = ({ columns, API_GET_URL }) => {
   return (
     <div>
       {columns.map((key) =>
-        key !== "View Prescriptions" ? (
+        !(key === "View Prescriptions" || key === "Download Prescription") ? (
           <TextField
             label={"Filter by " + key}
             name={key}
@@ -354,7 +357,11 @@ const PrescriptionsMultiLevelFilterTable = ({ columns, API_GET_URL }) => {
                   <React.Fragment>
                     {key === "View Prescriptions" ? (
                       <TableCell>
-                        <Button className="button" onClick={handleClickOpen}>
+                        <Button
+                          className="button"
+                          variant="contained"
+                          onClick={handleClickOpen}
+                        >
                           Details
                         </Button>
                         <Dialog open={open} onClose={handleClose}>
@@ -386,6 +393,16 @@ const PrescriptionsMultiLevelFilterTable = ({ columns, API_GET_URL }) => {
                             </Button>
                           </DialogActions>
                         </Dialog>
+                      </TableCell>
+                    ) : key === "Download Prescription" ? (
+                      <TableCell>
+                        <Button
+                          className="button"
+                          onClick={handleDownload}
+                          variant="contained"
+                        >
+                          Download
+                        </Button>
                       </TableCell>
                     ) : key === "date" ? (
                       <TableCell>

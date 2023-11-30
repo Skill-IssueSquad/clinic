@@ -1,6 +1,7 @@
-import React from "react";
+import { useEffect } from "react";
 import { auth } from "../Protected/AuthProvider";
 import PrescriptionsMultiLevelFilterTable from "../../components/PrescriptionsMultiLevelFilterTable";
+import NavBar from "../../components/navBar";
 const PatientPrescriptions = () => {
   let show = false;
 
@@ -8,15 +9,29 @@ const PatientPrescriptions = () => {
     show = true;
   }
 
+  useEffect(() => {}, []);
+
   return (
     <div>
       {show ? (
-        <PrescriptionsMultiLevelFilterTable
-          columns={["doctor_name", "date", "isFilled", "View Prescriptions"]}
-          API_GET_URL={`http://localhost:8000/patient/${localStorage.getItem(
-            "username"
-          )}/prescriptions`}
-        />
+        <div>
+          <NavBar
+            name={"Patient Dashboard"}
+            username={localStorage.getItem("username")}
+          />
+          <PrescriptionsMultiLevelFilterTable
+            columns={[
+              "doctor_name",
+              "date",
+              "isFilled",
+              "View Prescriptions",
+              "Download Prescription",
+            ]}
+            API_GET_URL={`http://localhost:8000/patient/${localStorage.getItem(
+              "username"
+            )}/prescriptions`}
+          />
+        </div>
       ) : (
         <h1>Not Authorized</h1>
       )}
