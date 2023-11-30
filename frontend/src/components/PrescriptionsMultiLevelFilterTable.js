@@ -20,6 +20,7 @@ import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import axios from "axios";
 import CircularProgress from "@mui/joy/CircularProgress";
+import jsPDF from "jspdf";
 
 let fullRows = [];
 let testcols = [];
@@ -71,8 +72,26 @@ const PrescriptionsMultiLevelFilterTable = ({ columns, API_GET_URL }) => {
     setOpen(false);
   };
 
-  const handleDownload = () => {
-    console.log("download");
+  const handleDownload = (doctor_name, medicines) => {
+    var doc = new jsPDF("portrait", "px", "a4", false);
+    doc.setFontSize(20);
+    doc.text("Prescription", 40, 30);
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("Doctor Name: ", 40, 50);
+    doc.setFont("helvetica", "normal");
+    doc.text(doctor_name, 100, 50);
+    doc.setFont("helvetica", "bold");
+    doc.text("Medicines: ", 40, 70);
+    doc.setFont("helvetica", "normal");
+    var y = 90;
+    medicines.map((medicine) => {
+      doc.text("Medicine Name: " + medicine.medicineName, 40, y);
+      doc.text("Dose: " + medicine.dose, 40, y + 20);
+      y += 40;
+    });
+
+    doc.save("prescription.pdf");
   };
 
   useEffect(() => {
@@ -398,7 +417,10 @@ const PrescriptionsMultiLevelFilterTable = ({ columns, API_GET_URL }) => {
                       <TableCell>
                         <Button
                           className="button"
-                          onClick={handleDownload}
+                          //pass the doctor name and medicines to the handleDownload function
+                          onClick={() =>
+                            handleDownload(row["doctor_name"], row["medicines"])
+                          }
                           variant="contained"
                         >
                           Download
