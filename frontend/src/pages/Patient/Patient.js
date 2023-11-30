@@ -1,8 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
-import { Typography } from "@mui/material";
+import { Typography, Slide, Paper, Divider } from "@mui/material";
 import NavBar from "../../components/navBar";
-import PrescriptionsMultiLevelFilterTable from "../../components/PrescriptionsMultiLevelFilterTable";
 import AddFamilyMember from "../../components/Patient/addFamilyMember";
 import PatientDetails from "../../components/Patient/PatientDetails";
 import LinkFamilyMemberForm from "../../components/Patient/linkFamilyMemberform";
@@ -16,7 +15,8 @@ const Patient = () => {
   }
 
   const [patient, setPatient] = useState(null);
-  //const [prescriptions, setPrescriptions] = useState(null);
+  const [addFamilyMemberVisible, setAddFamilyMemberVisible] = useState(false);
+  const [linkFamilyMemberVisible, setLinkFamilyMemberVisible] = useState(false);
 
   const submitFamMember = async (formData) => {
     try {
@@ -96,27 +96,49 @@ const Patient = () => {
             patient={patient}
             handleCancelSubscription={handleCancelSubscription}
           />
-          <p></p>
+          <Divider />
           <Typography
             variant="h6"
             gutterBottom
             borderLeft={15}
             borderColor={"white"}
+            onClick={() => setAddFamilyMemberVisible(!addFamilyMemberVisible)}
+            style={{ cursor: "pointer" }}
           >
             Add Family Member
           </Typography>
-          <AddFamilyMember onSubmit={submitFamMember} />
-          <p></p>
+          <Slide
+            direction="down"
+            in={addFamilyMemberVisible}
+            mountOnEnter
+            unmountOnExit
+          >
+            <Paper>
+              <AddFamilyMember onSubmit={submitFamMember} />
+            </Paper>
+          </Slide>
+          <Divider />
           <Typography
             variant="h6"
             gutterBottom
             borderLeft={15}
             borderColor={"white"}
+            onClick={() => setLinkFamilyMemberVisible(!linkFamilyMemberVisible)}
+            style={{ cursor: "pointer" }}
           >
             Link Family Member account
           </Typography>
-          <LinkFamilyMemberForm onSubmit={linkFamMember} />
-          <p></p>
+          <Slide
+            direction="down"
+            in={linkFamilyMemberVisible}
+            mountOnEnter
+            unmountOnExit
+          >
+            <Paper>
+              <LinkFamilyMemberForm onSubmit={linkFamMember} />
+            </Paper>
+          </Slide>
+          <Divider />
         </div>
       ) : (
         <h2>No access</h2>
