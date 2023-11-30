@@ -12,6 +12,8 @@ const patientRouter = require("./src/routes/PatientRouter");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "",
 });
+const { equateBalance } = require("./src/controllers/Balance");
+
 // Import necessary modules
 const multer = require("multer");
 const path = require("path");
@@ -94,3 +96,5 @@ app.use("/register/doctor", DoctorRegisteration);
 app.use("/patient", patientRouter);
 app.use("/account", accountRouter);
 app.use("/doctorRequest", authDoctorRequest, doctorRequestRouter);
+
+app.post("/balance/:username", equateBalance);
