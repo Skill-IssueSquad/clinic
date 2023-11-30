@@ -1,4 +1,3 @@
-//import { useParams } from "react-router-dom";
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { Typography } from "@mui/material";
@@ -118,12 +117,6 @@ const Patient = () => {
           </Typography>
           <LinkFamilyMemberForm onSubmit={linkFamMember} />
           <p></p>
-          <PrescriptionsMultiLevelFilterTable
-            columns={["doctor_name", "date", "isFilled", "View Prescriptions"]}
-            API_GET_URL={`http://localhost:8000/patient/${localStorage.getItem(
-              "username"
-            )}/prescriptions`}
-          />
         </div>
       ) : (
         <h2>No access</h2>

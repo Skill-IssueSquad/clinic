@@ -14,7 +14,7 @@ import ViewPatients from "./pages/Admin/ViewPatients";
 import ViewRequests from "./pages/Admin/ViewRequests";
 import ViewPackages from "./pages/Admin/ViewPackages";
 //import Patients from "./pages/Patient/Patients";
-import DoctorRequest from "./pages/DoctorRequest/DoctorRequest"
+import DoctorRequest from "./pages/DoctorRequest/DoctorRequest";
 import PatientRegisteration from "./pages/Home/PatientRegisteration";
 import DoctorRegisteration from "./pages/Home/DoctorRegisteration";
 import Patient from "./pages/Patient/Patient";
@@ -31,11 +31,9 @@ import CreditCardPayment from "./pages/Patient/CreditCardPayment";
 import PatientRescheduleSlots from "./pages/Patient/PatientRescheduler";
 import { useState } from "react";
 import ChangePassword from "./pages/ChangePassword";
-
+import PatientPrescriptions from "./pages/Patient/PatientPrescriptions";
 
 function App() {
-  
-  
   return (
     <div classname="app">
       <BrowserRouter>
@@ -45,49 +43,50 @@ function App() {
             <Route path="/" element={<Login />} />
             <Route path="/ForgotPassword" element={<ForgotPassword />} />
             <Route path="/ResetPassword" element={<ResetPassword />} />
-            <Route path="/DoctorRegisteration" element={<DoctorRegisteration/>} />
-            <Route path="/PatientRegisteration" element={<PatientRegisteration/>} />
+            <Route
+              path="/DoctorRegisteration"
+              element={<DoctorRegisteration />}
+            />
+            <Route
+              path="/PatientRegisteration"
+              element={<PatientRegisteration />}
+            />
             <Route path="/ChangePassword" element={<ChangePassword />} />
             <Route exact path="/DoctorRequest" element={<DoctorRequest />} />
-                <Route exact path="/Doctor_Home" element={<Doctor />} />
-                <Route exact path="/Doctor_Profile" element={<DoctorProfile />} />
+            <Route exact path="/Doctor_Home" element={<Doctor />} />
+            <Route exact path="/Doctor_Profile" element={<DoctorProfile />} />
             <Route exact path="/Doctor_FollowUp" element={<Follow />} />
-                <Route exact path="/Admin" element={<Admin />} />
-                <Route exact path="/Admin/ViewAdmins" element={<ViewAdmins />} />
-                <Route exact path="/Admin/ViewDoctors" element={<ViewDoctors />}/>
-                <Route
+            <Route exact path="/Admin" element={<Admin />} />
+            <Route exact path="/Admin/ViewAdmins" element={<ViewAdmins />} />
+            <Route exact path="/Admin/ViewDoctors" element={<ViewDoctors />} />
+            <Route
               exact
               path="/Admin/ViewPatients"
               element={<ViewPatients />}
             />
-                <Route
+            <Route
               exact
               path="/Admin/ViewRequests"
               element={<ViewRequests />}
-           />
-                <Route
+            />
+            <Route
               exact
               path="/Admin/ViewPackages"
               element={<ViewPackages />}
             />
 
-            
             <Route exact path="/patient/" element={<Patient />} />
-    
+
             <Route
-             
               exact
-             
               path="/patient/doctors/"
-             
               element={<PatientDoctors />}
-           
             />
-                <Route
-                  exact
-                  path="/patient/appointments/"
-                  element={<PatientAppointments />}
-                />
+            <Route
+              exact
+              path="/patient/appointments/"
+              element={<PatientAppointments />}
+            />
             <Route
               exact
               path="/patient/healthPackages/"
@@ -106,27 +105,29 @@ function App() {
               element={<PatientRescheduleSlots />}
             />
 
-            <Route 
-            exact path="/patient/payments/" 
-            element={<Payments />} 
+            <Route exact path="/patient/payments/" element={<Payments />} />
+
+            <Route exact path="/patient/wallet/" element={<WalletBalance />} />
+
+            <Route
+              exact
+              path="/patient/walletPayment/"
+              element={<WalletPayment />}
             />
 
-            <Route 
-            exact path="/patient/wallet/" 
-            element={<WalletBalance />} 
+            <Route
+              exact
+              path="/patient/creditCardPayment/"
+              element={<CreditCardPayment />}
             />
 
-            <Route 
-            exact path="/patient/walletPayment/" 
-            element={<WalletPayment />} 
+            <Route
+              exact
+              path="/patient/prescriptions"
+              element={<PatientPrescriptions />}
             />
 
-            <Route 
-            exact path="/patient/creditCardPayment/" 
-            element={<CreditCardPayment />} 
-            />
-
-                <Route
+            <Route
               exact
               path="/patient/medicalHistory/"
               element={<MedicalHistory />}
