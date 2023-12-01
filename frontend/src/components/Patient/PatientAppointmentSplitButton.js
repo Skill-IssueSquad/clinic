@@ -34,6 +34,8 @@ export default function AppointmentSplitButton({
       navigate(`/patient/rescheduleSlot/${doctor_id}/${appointment_id}`);
     } else if (options[selectedIndex] === "Request Follow-up") {
     } else if (options[selectedIndex] === "Cancel") {
+    } else if (options[selectedIndex] === "Select Action") {
+      openOptions();
     }
   };
 
@@ -44,6 +46,10 @@ export default function AppointmentSplitButton({
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
+  };
+
+  const openOptions = () => {
+    setOpen(true);
   };
 
   const handleClose = (event) => {

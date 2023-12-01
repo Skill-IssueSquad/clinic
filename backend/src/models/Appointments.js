@@ -24,10 +24,6 @@ const appointmentSchema = new Schema({
     type: String,
     required: true,
   },
-  slot: {
-    type: String,
-    required: true,
-  },
   patient_id: {
     type: mongoose.Schema.Types.ObjectId,
     //ref: "Patient",

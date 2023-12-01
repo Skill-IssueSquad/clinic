@@ -254,8 +254,16 @@ const SlotBooker = ({ doctor_id }) => {
             </Grid>
           </Grid>
           <br />
-          {!loading && <p>{message}</p>}
-          {loading && <CircularProgress variant="solid" />}
+          {!loading && <br /> && <p>{message}</p>}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {loading && <CircularProgress variant="solid" />}
+          </div>
           <div style={{ maxWidth: 400 }}>
             {!loading && slots.length > 0 && (
               <TableContainer component={Paper}>

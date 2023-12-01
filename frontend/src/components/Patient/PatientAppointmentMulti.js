@@ -99,7 +99,7 @@ const AppointmentsMulti = ({ columns, API_GET_URL }) => {
             }
             resJson["familyMember_nationalId"] = row["familyMember_nationalId"];
           });
-          resJson["_id"] = row["_id"];
+          resJson["_id"] = row["_id"]; // slot id
           resJson["doctor_id"] = row["doctor_id"];
           return resJson;
         });

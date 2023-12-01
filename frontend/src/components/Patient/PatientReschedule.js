@@ -200,19 +200,23 @@ const RescheduleSlot = ({ doctor_id, appointment_id }) => {
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
       {show ? (
         <div>
           <p></p>
           {slots.length > 0 ? (
             <h2>Dr. {slots[0].doctor_name}'s Slots</h2>
-          ) :
-          (
+          ) : (
             <h2>Loading Slots</h2>
-          )
-          }
+          )}
           <div>
-            <p> Choose a suitable date to res your appointment. </p>  
+            <p> Choose a suitable date to reschedule your appointment. </p>
           </div>
           <Grid container spacing={2}>
             <Grid item xs={4.5}>
@@ -243,8 +247,18 @@ const RescheduleSlot = ({ doctor_id, appointment_id }) => {
               </Button>
             </Grid>
           </Grid>
+          <p></p>
           {!loading && <p>{message}</p>}
-          {loading && <CircularProgress variant="solid" />}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {loading && <CircularProgress variant="solid" />}
+          </div>
+
           <div style={{ maxWidth: 400 }}>
             {!loading && slots.length > 0 && (
               <TableContainer component={Paper}>
