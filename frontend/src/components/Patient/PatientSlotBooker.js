@@ -210,16 +210,22 @@ const SlotBooker = ({ doctor_id }) => {
   };
 
   return (
-    <div>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       {show ? (
         <div>
-          <p>{message}</p>
-          {loading && <CircularProgress variant="solid" />}
-          {!loading && slots.length > 0 && (
+          <p></p>
+          {slots.length > 0 ? (
             <h2>Dr. {slots[0].doctor_name}'s Slots</h2>
-          )}
+          ) :
+          (
+            <h2>Loading Slots</h2>
+          )
+          }
+          <div>
+            <p> Choose a suitable date to book your appointment. </p>  
+          </div>
           <Grid container spacing={2}>
-            <Grid item xs={12}>
+            <Grid item xs={4.5}>
               <TextField
                 type="date"
                 label="Select Day"
@@ -228,7 +234,7 @@ const SlotBooker = ({ doctor_id }) => {
                 value={selectedDay}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={4}>
               <TextField
                 type="time"
                 label="Select TimeSlot"
@@ -237,7 +243,7 @@ const SlotBooker = ({ doctor_id }) => {
                 value={selectedTimeSlot}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={4}>
               <Button
                 variant="contained"
                 color="secondary"
@@ -248,6 +254,8 @@ const SlotBooker = ({ doctor_id }) => {
             </Grid>
           </Grid>
           <br />
+          {!loading && <p>{message}</p>}
+          {loading && <CircularProgress variant="solid" />}
           <div style={{ maxWidth: 400 }}>
             {!loading && slots.length > 0 && (
               <TableContainer component={Paper}>

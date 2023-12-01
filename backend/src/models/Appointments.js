@@ -26,8 +26,8 @@ const appointmentSchema = new Schema({
   },
   slot: {
     type: String,
-    required: true,
-  },
+    required: true,
+  },
   patient_id: {
     type: mongoose.Schema.Types.ObjectId,
     //ref: "Patient",
@@ -46,13 +46,23 @@ const appointmentSchema = new Schema({
   },
   status: {
     type: String,
-    enum: ["upcoming", "completed", "cancelled", "rescheduled","requested"],
+    enum: ["upcoming", "completed", "cancelled", "rescheduled", "requested"],
     required: true,
   },
   familyMember_nationalId: {
     type: String,
     // required: true,
     default: null,
+  },
+  price: {
+    doctor: {
+      type: Number,
+      required: true,
+    },
+    patient: {
+      type: Number,
+      required: true,
+    },
   },
 });
 
