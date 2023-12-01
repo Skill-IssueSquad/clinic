@@ -2,8 +2,10 @@ const Patient = require("../models/Patient");
 const Doctor = require("../models/Doctor");
 const Appointments = require("../models/Appointments");
 const Prescription = require("../models/Prescription");
+const Packages = require("../models/Packages");
 const Clinic = require("../models/Clinic");
 const mongoose = require("mongoose");
+const axios = require("axios");
 
 const getPatientAPI = async (req, res) => {
   const { username } = req.params;
@@ -490,22 +492,16 @@ const viewAllDoctors = async (req, res) => {
 
       // check on health package type for discount
       let discount = 0;
-      if (patient.healthPackageType) {
-        if (patient.healthPackageType.status === "subscribed") {
-          if (patient.healthPackageType.type === "silver") {
-            discount = 0.4;
-          } else if (patient.healthPackageType.type === "platinum") {
-            discount = 0.8;
-          } else if (patient.healthPackageType.type === "gold") {
-            discount = 0.6;
-          }
-        }
-      }
+
+      const package =
+        patient.healthPackageType.status === "subscribed"
+          ? Package.findOne({ type: patient.healthPackageType.type })
+          : null;
 
       const sessionPrice = (
         (doctor.hourlyRate / 2) *
         (1 + markup / 100) *
-        (1 - discount)
+        (1 - (package ? package.discountOnSession / 100.0 : 0))
       ).toFixed(2);
 
       // Return a new object with the modified properties
@@ -586,22 +582,15 @@ const viewAllDoctorsAvailable = async (req, res) => {
 
       // check on health package type for discount
       let discount = 0;
-      if (patient.healthPackageType) {
-        if (patient.healthPackageType.status === "subscribed") {
-          if (patient.healthPackageType.type === "silver") {
-            discount = 0.4;
-          } else if (patient.healthPackageType.type === "platinum") {
-            discount = 0.8;
-          } else if (patient.healthPackageType.type === "gold") {
-            discount = 0.6;
-          }
-        }
-      }
+      const package =
+        patient.healthPackageType.status === "subscribed"
+          ? Package.findOne({ type: patient.healthPackageType.type })
+          : null;
 
       const sessionPrice = (
         (doctor.hourlyRate / 2) *
         (1 + markup / 100) *
-        (1 - discount)
+        (1 - (package ? package.discountOnSession / 100.0 : 0))
       ).toFixed(2);
 
       // Return a new object with the modified properties
@@ -823,6 +812,18 @@ const bookAppointment = async (req, res) => {
         err.message || "Some error occurred while updating doctor."
       );
     }
+    const markup = (await Clinic.findOne({})).markupPercentage;
+
+    const package =
+        patient.healthPackageType.status === "subscribed"
+          ? Package.findOne({ type: patient.healthPackageType.type })
+          : null;
+
+    const sessionPrice = (
+        (doctor.hourlyRate / 2) *
+        (1 + markup / 100) *
+        (1 - (package ? package.discountOnSession / 100.0 : 0))
+    ).toFixed(2);
 
     // create new appointment
     const appointment = await Appointments.create({
@@ -835,6 +836,10 @@ const bookAppointment = async (req, res) => {
       prescription_id: null,
       familyMember_nationalId: req.body.national_id,
       status: "upcoming",
+      price: {
+        doctor: sessionPrice,
+        patient: sessionPrice,
+      },
     }).catch((err) => {
       if (err) {
         return sendResponse(
@@ -1071,6 +1076,176 @@ const rescheduleAppointment = async (req, res) => {
       false,
       req.body,
       err.message || "Some error occurred while reschduling appointment."
+    );
+  }
+};
+
+const cancelAppointment = async (req, res) => {
+  // ASSUMES JWT AUTHENTICATION
+  // EXPECTED INPUT: param: username, doctor_id: "69fe353h55g3h34hg53h",
+  // appointment_id: "69fe353h55g3h34hg53h"
+
+  let responseSent = false; // Track whether a response has been sent
+
+  const sendResponse = (statusCode, success, data, message) => {
+    if (!responseSent) {
+      responseSent = true;
+      return res.status(statusCode).json({ success: success, data, message });
+    }
+  };
+
+  /* Steps:
+    1- auth for cancel
+    2- free the slot
+    3- cancel the appointment
+    4- refund by session price from appointment price if (more than 24 hrs between slot and now)
+      add to patient wallet and remove from doc's wallet
+  */
+
+  try {
+    // AUTH SECTION
+    // get the old appointment
+    const selectedAppointment = await Appointments.findById(
+      req.params.appointment_id
+    ).catch((err) => {
+      if (err) {
+        return sendResponse(
+          500,
+          false,
+          req.body,
+          err.message || "Some error occurred while retrieving appointment."
+        );
+      }
+    });
+
+    // auth check
+    const username = req.params.username;
+    const patient = await getPatient(username);
+    if (String(patient._id) !== String(selectedAppointment.patient_id)) {
+      return sendResponse(
+        401,
+        false,
+        {
+          ...req.params,
+          pid: patient._id,
+          app_p_pid: selectedAppointment.patient_id,
+        },
+        "Unauthorized to cancel appointment for this patient"
+      );
+    }
+
+    // free up the slot
+    const doctor = await Doctor.findByIdAndUpdate(
+      { _id: req.params.doctor_id },
+      {
+        $set: {
+          "availableSlots.$[elem].isBooked": false,
+          "availableSlots.$[elem].patientName": null,
+          "availableSlots.$[elem].appointmentType": null,
+        },
+      },
+      {
+        arrayFilters: [
+          {
+            "elem.day": selectedAppointment.day,
+            "elem.timeSlot": selectedAppointment.slot,
+          },
+        ],
+        new: true,
+      }
+    ).catch((err) => {
+      if (err) {
+        return sendResponse(
+          500,
+          false,
+          req.params,
+          err.message ||
+            "Some error occurred while updating doctor's free slots."
+        );
+      }
+    });
+
+    // cancel the appointment
+    const appointment = await Appointments.findByIdAndUpdate(
+      { _id: req.params.appointment_id },
+      {
+        $set: {
+          status: "cancelled",
+        },
+      },
+      { new: true }
+    ).catch((err) => {
+      if (err) {
+        return sendResponse(
+          500,
+          false,
+          req.params,
+          err.message || "Some error occurred while cancelling appointment."
+        );
+      }
+    });
+
+    // check if refund applicable
+    const currentDate = new Date();
+    if (
+      Math.abs(
+        currentDate.getTime() - new Date(selectedAppointment.date).getTime()
+      ) >=
+      24 * 60 * 60 * 1000
+    ) {
+      // remove from doc's wallet using API
+      const negBalance = selectedAppointment.price.doctor;
+      const modifyMoney = await Doctor.findByIdAndUpdate(
+        req.params.doctor_id,
+        {
+          walletBalance: doctor.walletBalance - negBalance,
+        },
+        { new: true }
+      ).catch((err) => {
+        if (err) {
+          return sendResponse(
+            500,
+            false,
+            { ...req.params, negBalance, doctorsWallet: doctor.walletBalance },
+            err.message ||
+              "Some error occurred while refunding from doctor's wallet."
+          );
+        }
+      });
+
+      // add to patient's wallet
+      const newBalance =
+        patient.walletBalance + selectedAppointment.price.patient;
+      let updatedPatient = await Patient.findByIdAndUpdate(
+        patient._id,
+        {
+          walletBalance: newBalance,
+        },
+        { new: true }
+      ).catch((err) => {
+        if (err) {
+          return sendResponse(
+            500,
+            false,
+            req.params,
+            err.message || "Some error occurred while refunding to your wallet."
+          );
+        }
+      });
+    }
+
+    return sendResponse(
+      200,
+      true,
+      req.params,
+      "Appointment cancelled successfully."
+    );
+  } catch (err) {
+    return sendResponse(
+      500,
+      false,
+      req.params,
+      err.message || "Cancel Request failed."
     );
   }
 };
@@ -1628,12 +1803,6 @@ const removeHealthRecord = async (req, res) => {
 };
 
 module.exports = {
-  AddHealthRecord,
-  removeHealthRecord,
-  // other functions...
-};
-
-module.exports = {
   addFamMember,
   getFamMembers,
   getPrescriptions,
@@ -1657,4 +1826,5 @@ module.exports = {
   removeHealthRecord,
   rescheduleAppointment,
   actualSub,
+  cancelAppointment,
 };

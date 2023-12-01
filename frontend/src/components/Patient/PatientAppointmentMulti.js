@@ -17,6 +17,8 @@ import { useNavigate } from "react-router-dom";
 import { auth } from "../../pages/Protected/AuthProvider";
 import AppointmentSplitButton from "./PatientAppointmentSplitButton";
 
+
+
 function convertDateFormat(originalDateString) {
   // Parse the original date string into a Date object
   const originalDate = new Date(originalDateString);
@@ -82,10 +84,19 @@ const AppointmentsMulti = ({ columns, API_GET_URL }) => {
   const [rows, setRows] = useState([]);
   const [sorting, setSorting] = useState({ field: "", order: "" });
   const [loading, setLoading] = useState(true); // Add a loading state
+  const [refresh, setRefresh] = useState(false); // Add a loading state
+
+  const refreshPage = (now) => {
+    if (now) {
+      setRefresh(!refresh);
+      console.log("refreshed");
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true); // Set loading to true before request is sent
         const response = await axios.get(API_GET_URL);
         const initialRows = response.data.data;
 
@@ -115,7 +126,7 @@ const AppointmentsMulti = ({ columns, API_GET_URL }) => {
     };
 
     fetchData();
-  }, [API_GET_URL, columns]);
+  }, [API_GET_URL, columns, refresh]);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -414,7 +425,7 @@ const AppointmentsMulti = ({ columns, API_GET_URL }) => {
                     )}
                     {
                       <TableCell>
-                        <AppointmentSplitButton appointment_id={row["_id"]} doctor_id={row["doctor_id"]} appointment={row["type"].toLowerCase() === "appointment"} none={row["status"].toLowerCase() === "cancelled" } old={row["status"].toLowerCase() === "completed"}/>
+                        <AppointmentSplitButton refresh={refreshPage} appointment_id={row["_id"]} doctor_id={row["doctor_id"]} appointment={row["type"].toLowerCase() === "appointment"} none={row["status"].toLowerCase() === "cancelled" } old={row["status"].toLowerCase() === "completed"}/>
                       </TableCell>
                     }
                   </TableRow>

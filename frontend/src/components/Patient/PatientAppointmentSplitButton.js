@@ -9,6 +9,13 @@ import Popper from "@mui/material/Popper";
 import MenuItem from "@mui/material/MenuItem";
 import MenuList from "@mui/material/MenuList";
 import { useNavigate } from "react-router-dom";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import CircularProgress from "@mui/joy/CircularProgress";
+import axios from "axios";
 
 export default function AppointmentSplitButton({
   appointment,
@@ -16,24 +23,34 @@ export default function AppointmentSplitButton({
   doctor_id,
   appointment_id,
   none,
+  refresh
 }) {
   const navigate = useNavigate();
   none = none || (old && !appointment);
   const options = none
     ? ["No Actions"]
     : appointment
-    ? ["Select Action" , old ? "Request Follow-up" : "Reschedule Appointment", "Cancel"]
+    ? [
+        "Select Action",
+        old ? "Request Follow-up" : "Reschedule Appointment",
+        "Cancel",
+      ]
     : ["Select Action", "Cancel"];
   let clr = "";
   const [open, setOpen] = React.useState(false);
+  const [diagOpen, setDiagOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const [diagLoading, setDiagLoading] = React.useState(false);
+  const [cancelMsg, setCancelMsg] = React.useState(null);
+  const [showClose, setShowClose] = React.useState(false);
 
   const handleClick = () => {
     if (options[selectedIndex] === "Reschedule Appointment") {
       navigate(`/patient/rescheduleSlot/${doctor_id}/${appointment_id}`);
     } else if (options[selectedIndex] === "Request Follow-up") {
     } else if (options[selectedIndex] === "Cancel") {
+      handleDiagOpen();
     } else if (options[selectedIndex] === "Select Action") {
       openOptions();
     }
@@ -52,12 +69,47 @@ export default function AppointmentSplitButton({
     setOpen(true);
   };
 
-  const handleClose = (event) => {
-    if (anchorRef.current && anchorRef.current.contains(event.target)) {
-      return;
-    }
+  const handleDiagOpen = () => {
+    setDiagOpen(true);
+  };
 
-    setOpen(false);
+  const handleDiagClose = () => {
+    setDiagOpen(false);
+  };
+
+  const handleClose = (choice) => {
+    if (choice === "yes") {
+      setDiagLoading(true);
+      try {
+        axios
+          .delete(
+            `http://localhost:8000/patient/${localStorage.getItem(
+              "username"
+            )}/appointments/${doctor_id}/${appointment_id}`
+          )
+          .then((res) => {
+            setDiagLoading(false);
+
+            setCancelMsg(res.data.message);
+
+            setShowClose(true);
+          })
+          .catch((err) => {
+            setDiagLoading(false);
+            setCancelMsg(err.message);
+            setShowClose(true);
+            
+          });
+         
+      } catch (error) {
+        console.error("Error fetching data", error);
+      }
+    } else if (choice === "no") {
+      setDiagOpen(false);
+      setShowClose(false);
+      setCancelMsg(null);
+      refresh(true);
+    }
   };
 
   return (
@@ -66,7 +118,6 @@ export default function AppointmentSplitButton({
         variant="contained"
         ref={anchorRef}
         aria-label="split button"
-        
       >
         {options[selectedIndex] === "Cancel"
           ? (clr = "error")
@@ -124,6 +175,44 @@ export default function AppointmentSplitButton({
           </Grow>
         )}
       </Popper>
+      <Dialog
+        open={diagOpen}
+        onClose={handleDiagClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Appointment Cancellation"}
+        </DialogTitle>
+        <DialogContent>
+          {!diagLoading && cancelMsg == null ? (
+            <DialogContentText id="alert-dialog-description">
+              Are you sure you want to cancel this appointment?
+            </DialogContentText>
+          ) : cancelMsg !== null ? (
+            <DialogContentText id="alert-dialog-description">
+              {cancelMsg}
+            </DialogContentText>
+          ) : (
+            <DialogContentText id="alert-dialog-description">
+              cancelling...
+            </DialogContentText>
+          )}
+          {diagLoading && <CircularProgress variant="solid" />}
+        </DialogContent>
+        <DialogActions>
+          {!showClose ? (
+            <div>
+              <Button onClick={() => handleClose("no")}>No</Button>
+              <Button onClick={() => handleClose("yes")} autoFocus>
+                Yes
+              </Button>
+            </div>
+          ) : (
+            <Button onClick={() => handleClose("no")}>Close</Button>
+          )}
+        </DialogActions>
+      </Dialog>
     </React.Fragment>
   );
 }

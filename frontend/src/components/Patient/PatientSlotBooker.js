@@ -210,49 +210,66 @@ const SlotBooker = ({ doctor_id }) => {
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
       {show ? (
         <div>
           <p></p>
-          {slots.length > 0 ? (
-            <h2>Dr. {slots[0].doctor_name}'s Slots</h2>
-          ) :
-          (
-            <h2>Loading Slots</h2>
-          )
-          }
-          <div>
-            <p> Choose a suitable date to book your appointment. </p>  
+          <div
+            
+          >
+            {slots.length > 0 ? (
+              <h2>Dr. {slots[0].doctor_name}'s Slots</h2>
+            ) : (
+              <h2>Loading Slots</h2>
+            )}
           </div>
-          <Grid container spacing={2}>
-            <Grid item xs={4.5}>
-              <TextField
-                type="date"
-                label="Select Day"
-                InputLabelProps={{ shrink: true }}
-                onChange={handleDayChange}
-                value={selectedDay}
-              />
-            </Grid>
-            <Grid item xs={4}>
-              <TextField
-                type="time"
-                label="Select TimeSlot"
-                InputLabelProps={{ shrink: true }}
-                onChange={handleTimeSlotChange}
-                value={selectedTimeSlot}
-              />
-            </Grid>
-            <Grid item xs={4}>
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={clearFilters}
-              >
-                Clear Filters
-              </Button>
-            </Grid>
-          </Grid>
+
+          <div
+            
+          >
+            <div>
+              <p> Choose a suitable date to book your appointment. </p>
+            </div>
+            
+            
+            <div>
+              <Grid container spacing={2}>
+                <Grid item xs={4.5}>
+                  <TextField
+                    type="date"
+                    label="Select Day"
+                    InputLabelProps={{ shrink: true }}
+                    onChange={handleDayChange}
+                    value={selectedDay}
+                  />
+                </Grid>
+                <Grid item xs={4}>
+                  <TextField
+                    type="time"
+                    label="Select TimeSlot"
+                    InputLabelProps={{ shrink: true }}
+                    onChange={handleTimeSlotChange}
+                    value={selectedTimeSlot}
+                  />
+                </Grid>
+                <Grid item xs={4}>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={clearFilters}
+                  >
+                    Clear Filters
+                  </Button>
+                </Grid>
+              </Grid>
+            </div>
+          </div>
           <br />
           {!loading && <br /> && <p>{message}</p>}
           <div
