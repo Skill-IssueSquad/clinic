@@ -23,19 +23,16 @@ export default function AppointmentSplitButton({
   doctor_id,
   appointment_id,
   none,
-  refresh
+  refresh,
 }) {
   const navigate = useNavigate();
   none = none || (old && !appointment);
   const options = none
-    ? ["No Actions"]
-    : appointment
-    ? [
-        "Select Action",
-        old ? "Request Follow-up" : "Reschedule Appointment",
-        "Cancel",
-      ]
-    : ["Select Action", "Cancel"];
+  ? ["No Actions"]
+  : appointment
+  ? ["Select Action", old ? "Request Follow-up" : "Reschedule Appointment", ...(old ? [] : ["Cancel"])]
+  : ["Select Action", ...(old ? ["Cancel"] : [])];
+
   let clr = "";
   const [open, setOpen] = React.useState(false);
   const [diagOpen, setDiagOpen] = React.useState(false);
@@ -98,17 +95,17 @@ export default function AppointmentSplitButton({
             setDiagLoading(false);
             setCancelMsg(err.message);
             setShowClose(true);
-            
           });
-         
       } catch (error) {
         console.error("Error fetching data", error);
       }
-    } else if (choice === "no") {
+    } else {
       setDiagOpen(false);
       setShowClose(false);
       setCancelMsg(null);
-      refresh(true);
+      if (choice === "close") {
+        refresh(true);
+      }
     }
   };
 
@@ -209,7 +206,7 @@ export default function AppointmentSplitButton({
               </Button>
             </div>
           ) : (
-            <Button onClick={() => handleClose("no")}>Close</Button>
+            <Button onClick={() => handleClose("close")}>Close</Button>
           )}
         </DialogActions>
       </Dialog>
