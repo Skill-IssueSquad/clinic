@@ -689,7 +689,6 @@ const addAppointment = async (req, res) => {
     );
     if (isFollowUp) {
       const markup = (await Clinic.findOne({})).markupPercentage;
-      // console.log("The markup is :", markup);
       var discount = 0;
       if (patient.healthPackageType.status === "subscribed") {
         discount = (
@@ -698,13 +697,11 @@ const addAppointment = async (req, res) => {
           })
         ).discountOnSession;
       }
-      // console.log("The discount is :", discount);
       const sessionPrice = (
         (doctor.hourlyRate / 2) *
         (1 + markup / 100) *
         (1 - discount)
       ).toFixed(2);
-      // console.log("The session price is :", sessionPrice);
       patient = await Patient.findByIdAndUpdate(
         { _id: patientId },
         {
