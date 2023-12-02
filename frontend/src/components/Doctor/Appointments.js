@@ -19,7 +19,13 @@ import { Container } from "@mui/material";
 import PDFViewer from "../pdf";
 import { useNavigate } from "react-router-dom";
 
-const statusOptions = ["upcoming", "completed", "cancelled", "rescheduled"];
+const statusOptions = [
+  "upcoming",
+  "completed",
+  "cancelled",
+  "rescheduled",
+  "pending",
+];
 const dateOperators = [">", "<", ">=", "<=", "="];
 
 const MultiLevelFilterTable = ({ username }) => {

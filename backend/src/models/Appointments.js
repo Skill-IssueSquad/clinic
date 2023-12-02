@@ -43,7 +43,14 @@ const appointmentSchema = new Schema({
   },
   status: {
     type: String,
-    enum: ["upcoming", "completed", "cancelled", "rescheduled", "requested"],
+    enum: [
+      "upcoming",
+      "completed",
+      "cancelled",
+      "rescheduled",
+      "requested",
+      "pending",
+    ],
     required: true,
   },
   familyMember_nationalId: {

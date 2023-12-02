@@ -709,9 +709,11 @@ const addAppointment = async (req, res) => {
         },
         { new: true }
       );
-      price.doctor = 0;
+      price.doctor = sessionPrice;
       price.patient = sessionPrice;
     }
+    var statusAppointment = isFollowUp ? "pending" : "upcoming";
+
     const followUp = await Appointments.create({
       doctor_id: doctorId,
       type,
@@ -721,7 +723,7 @@ const addAppointment = async (req, res) => {
       patient_id: patientId,
       prescription_id: prescriptionId,
       familyMember_nationalId,
-      status: "upcoming",
+      status: statusAppointment,
       price,
     });
     const data = {
@@ -1071,20 +1073,6 @@ const acceptAppointment = async (req, res) => {
     );
     var doctor = await Doctor.findOne({ username });
     const doctorId = doctor._id;
-    doctor = await Doctor.findByIdAndUpdate(
-      { _id: doctorId },
-      {
-        $set: {
-          "availableSlots.$[elem].isBooked": true,
-          "availableSlots.$[elem].patientName": patientName,
-          "availableSlots.$[elem].appointmentType": type,
-        },
-      },
-      {
-        arrayFilters: [{ "elem.day": day, "elem.timeSlot": slot }],
-        new: true,
-      }
-    );
     const send = {
       success: true,
       data: appointment,
@@ -1128,6 +1116,22 @@ const revokeAppointment = async (req, res) => {
         $inc: { walletBalance: patientMoney },
       },
       { new: true }
+    );
+    doctor = await Doctor.findByIdAndUpdate(
+      { _id: doctorId },
+      {
+        $set: {
+          "availableSlots.$[elem].isBooked": false,
+          "availableSlots.$[elem].patientName": "",
+          "availableSlots.$[elem].appointmentType": "",
+        },
+      },
+      {
+        arrayFilters: [
+          { "elem.day": appointment.day, "elem.timeSlot": appointment.slot },
+        ],
+        new: true,
+      }
     );
     const Equate = fetch(`http://localhost:8001/balance/${patient.username}`, {
       method: "POST",
