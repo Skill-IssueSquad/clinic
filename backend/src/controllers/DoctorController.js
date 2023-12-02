@@ -1195,6 +1195,17 @@ const getPatient = async (req, res) => {
   }
 };
 
+const completeAppointments = async (req, res) => {
+  const appointments = await Appointments.find({ status: "upcoming" });
+  const currentDate = new Date();
+  for (var appointment of appointments) {
+    if (appointment.endTime < currentDate) {
+      appointment.status = "completed";
+      await appointment.save();
+    }
+  }
+};
+
 module.exports = {
   getDoctor,
   createDoctor,
@@ -1220,4 +1231,5 @@ module.exports = {
   acceptAppointment,
   revokeAppointment,
   getPatient,
+  completeAppointments,
 };

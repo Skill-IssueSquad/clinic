@@ -13,7 +13,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "",
 });
 const { equateBalance } = require("./src/controllers/Balance");
-
+const { completeAppointments } = require("./src/controllers/DoctorController");
 // Import necessary modules
 const multer = require("multer");
 const path = require("path");
@@ -98,3 +98,6 @@ app.use("/account", accountRouter);
 app.use("/doctorRequest", authDoctorRequest, doctorRequestRouter);
 
 app.post("/balance/:username", equateBalance);
+
+// Schedule the task to run at 00:00 (midnight) every day
+cron.schedule("0 0 * * *", completeAppointments);
