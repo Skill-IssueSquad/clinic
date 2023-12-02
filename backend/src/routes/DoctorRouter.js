@@ -39,6 +39,10 @@ const {
   getSchedule,
   addAppointment,
   getMarkup,
+  sendEmailD,
+  markNotificationAsSeenD,
+  getAllUnseenNotificationsD,
+  AddNotificationD,
 } = require("../controllers/DoctorController");
 router.get("/:username",  getDoctor);
 router.post("/create", createDoctor);
@@ -56,5 +60,10 @@ router.post("/addSlot/:username", addSlot);
 router.post("/schedule/:username", getSchedule);
 router.post("/addAppointment/:username", addAppointment);
 router.get("/contract/getMarkup/:username", getMarkup);
+
+router.patch("/:sendEmail", sendEmailD);
+router.post("/:addNotification",AddNotificationD);
+router.get("/getAllUnseenNotifications/:username",getAllUnseenNotificationsD);
+router.patch("/markNotificationAsSeen/:username/:notificationId",markNotificationAsSeenD);
 
 module.exports = router;

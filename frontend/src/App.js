@@ -29,6 +29,8 @@ import Follow from "./pages/Doctor/FollowUp";
 import WalletPayment from "./pages/Patient/WalletPayment";
 import CreditCardPayment from "./pages/Patient/CreditCardPayment";
 import NotificationP from "./pages/Patient/NotificationP";
+import NotificationD from "./pages/Doctor/NotificationD";
+
 
 import { useState } from "react";
 import ChangePassword from "./pages/ChangePassword";
@@ -130,6 +132,11 @@ function App() {
               exact
               path="/patient/notifications/"
               element={<NotificationP />}
+            />
+            <Route
+              exact
+              path="/Doctor_Home/notifications/"
+              element={<NotificationD />}
             />
           </Routes>
         </div>
