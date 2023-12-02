@@ -1,5 +1,5 @@
 const Patient = require("../models/Patient");
-const Doctor = require("../models/Doctor");
+const Doctor = require("../models/Doctor"); 
 const Appointments = require("../models/Appointments");
 const Prescription = require("../models/Prescription");
 const Clinic = require("../models/Clinic");
@@ -1348,6 +1348,131 @@ const AddHealthRecord = async (req, res) => {
   }
 };
 
+
+
+
+
+const AddNotification = async (req, res) => {
+  // Extract other health record properties from the request body
+
+  const username = req.body.username;
+  const title = req.body.title;
+  const notification = req.body.notification;
+
+
+  console.log(username);
+  console.log(title);
+  console.log(notification);
+
+
+  try {
+    // Fetch existing health records
+    const patient = await Patient.findOne({username});
+
+    if (!patient) {
+      console.log("Patient not found:", req.params.username);
+
+      return res.status(404).json({
+        success: false,
+        message: "Patient not found",
+        data: null,
+      });
+    }
+    let isSeen=false;
+    patient.notifications.push({ isSeen, title, notification });
+
+    const updatedPatient = await patient.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Notification added successfully",
+      data: updatedPatient,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message,
+      data: null,
+    });
+  }
+};
+
+
+const markNotificationAsSeen = async (req, res) => {
+  try {
+    const { username, notificationId } = req.params;
+
+    console.log("HEREEE")
+    // Find the patient by username
+    const patient = await Patient.findOne({ username });
+
+    // Check if the patient exists
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    // Find the notification by ID within the patient's notifications
+    const notification = patient.notifications.id(notificationId);
+
+    // Check if the notification exists
+    if (!notification) {
+      return res.status(404).json({ message: "Notification not found" });
+    }
+
+    // Mark the notification as seen
+    notification.isSeen = true;
+
+    // Save the updated patient (which includes the updated notification)
+    await patient.save();
+
+    // Respond with a success message
+    res.json({ message: "Notification marked as seen successfully" });
+  } catch (error) {
+    console.error("Error marking notification as seen:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+
+
+const getAllUnseenNotifications = async (req, res) => {
+  const { username } = req.params;
+
+  try {
+    const patient = await Patient.findOne({ username });
+
+    if (!patient) {
+      return res.status(404).json({
+        success: false,
+        message: "Patient not found",
+        data: null,
+      });
+    }
+
+    // Filter out the unseen notifications
+    const unseenNotifications = patient.notifications.filter(
+      (notification) => !notification.isSeen
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Unseen notifications retrieved successfully",
+      data: unseenNotifications,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      data: null,
+    });
+  }
+};
+
+
+
+
+
+
 const getAllHealthRecords = async (req, res) => {
   const { username } = req.params;
 
@@ -1444,4 +1569,7 @@ module.exports = {
   getAllHealthRecords,
   removeHealthRecord,
   sendEmail,
+  AddNotification,
+  getAllUnseenNotifications,
+  markNotificationAsSeen,
 };

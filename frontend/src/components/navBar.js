@@ -11,6 +11,7 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 import AdbIcon from '@mui/icons-material/Adb';
 import { useNavigate } from 'react-router-dom';
 
@@ -18,7 +19,7 @@ const pages = ['Home', 'Doctors', 'Appointments', 'Medical History', 'Health Pac
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 const ResponsiveAppBar = ({ username }) => {
-let navigate = useNavigate();
+  let navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -36,12 +37,15 @@ let navigate = useNavigate();
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+  const handleBellIconClick = () => {
+    // Navigate to the notifications page or any other desired page
+    navigate('/patient/notifications');
+  };
 
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          
           <Typography
             variant="h6"
             noWrap
@@ -96,52 +100,47 @@ let navigate = useNavigate();
               ))}
             </Menu>
           </Box>
-          <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: 'flex', md: 'none' },
-              flexGrow: 1,
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            Patient Dashboard
-          </Typography>
+
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => {
-                let url = "/patient/"
-                if (page === "Home") {
-                    url = "/patient/"
-                } else if (page === "Doctors") {
-                    url = "/patient/doctors"
-                } else if (page === "Appointments") {   
-                    url = "/patient/appointments"
-                } else if (page === "Medical History") {
-                    url =  
-                      `/patient/medicalHistory/?PUN=${
-                        username
-                      }&IP=${true}`
-                    
-                } else if (page == "Health Packages") {
-                  url = "/patient/healthPackages/"
-                }
-                return(
-              <Button
-                key={page}
-                onClick={() => navigate(url)}
-                sx={{ my: 2, color: 'white', display: 'block' }}
+              let url = "/patient/"
+              if (page === "Home") {
+                url = "/patient/"
+              } else if (page === "Doctors") {
+                url = "/patient/doctors"
+              } else if (page === "Appointments") {
+                url = "/patient/appointments"
+              } else if (page === "Medical History") {
+                url =
+                  `/patient/medicalHistory/?PUN=${
+                    username
+                  }&IP=${true}`
+              } else if (page == "Health Packages") {
+                url = "/patient/healthPackages/"
+              }
+              return (
+                <Button
+                  key={page}
+                  onClick={() => navigate(url)}
+                  sx={{ my: 2, color: 'white', display: 'block' }}
+                >
+                  {page}
+                </Button>)
+            })}
+          </Box>
+
+          <Box sx={{ flexGrow: 1 }} />
+
+          <Box sx={{ flexGrow: 0 }}>
+            <Tooltip title="Notifications">
+              <IconButton
+                aria-label="notifications"
+                color="inherit"
+                onClick={handleBellIconClick} 
               >
-                {page}
-              </Button>)
-})}
+                <NotificationsIcon />
+              </IconButton>
+            </Tooltip>
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
@@ -178,4 +177,5 @@ let navigate = useNavigate();
     </AppBar>
   );
 }
+
 export default ResponsiveAppBar;

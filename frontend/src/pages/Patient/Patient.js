@@ -1,20 +1,19 @@
-//import { useParams } from "react-router-dom";
-import { useState, useEffect, useCallback } from "react";
-import axios from "axios";
-import { Typography } from "@mui/material";
+// Import necessary components and libraries
+import React, { useState, useEffect } from 'react';
+import { Typography, IconButton } from '@mui/material';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import axios from 'axios';
 import NavBar from "../../components/navBar";
-import PrescriptionsMultiLevelFilterTable from "../../components/PrescriptionsMultiLevelFilterTable";
-import AddFamilyMember from "../../components/Patient/addFamilyMember";
-import PatientDetails from "../../components/Patient/PatientDetails";
-import LinkFamilyMemberForm from "../../components/Patient/linkFamilyMemberform";
-import { auth } from "../Protected/AuthProvider";
-
-
+import PrescriptionsMultiLevelFilterTable from '../../components/PrescriptionsMultiLevelFilterTable';
+import AddFamilyMember from '../../components/Patient/addFamilyMember';
+import PatientDetails from '../../components/Patient/PatientDetails';
+import LinkFamilyMemberForm from '../../components/Patient/linkFamilyMemberform';
+import { auth } from '../Protected/AuthProvider';
 
 const Patient = () => {
   let show = false;
 
-  if (auth() && localStorage.getItem("role") === "Patient") {
+  if (auth() && localStorage.getItem('role') === 'Patient') {
     show = true;
   }
 
@@ -22,34 +21,14 @@ const Patient = () => {
 
   const showNotification = (message, isError = false) => {
     setNotification({ message, isError });
-    // Automatically hide the notification after a certain duration (e.g., 5 seconds)
-    /*setTimeout(() => {
-      setNotification(null);
-    }, 5000);*/
   };
 
   const [patient, setPatient] = useState(null);
-  //const [prescriptions, setPrescriptions] = useState(null);
 
   const submitFamMember = async (formData) => {
     try {
       const res = await axios.patch(
-        `http://localhost:8000/patient/${localStorage.getItem("username")}/addFamMember`,
-        formData
-      );
-      console.log(res.data);
-      return { message: res.data.message };
-    } catch (error) {
-      console.log(error);
-      return { message: error.message };
-    }
-  }; // Empty dependency array since this function doesn't depend on any changing variables
-
-  const linkFamMember = async (formData) => {
-    try {
-      const res = await axios.patch(
-        `http://localhost:8000/patient/${localStorage.getItem("username")}/linkFamMember`,
-
+        `http://localhost:8000/patient/${localStorage.getItem('username')}/addFamMember`,
         formData
       );
       console.log(res.data);
@@ -59,15 +38,26 @@ const Patient = () => {
       return { message: error.message };
     }
   };
+
+  const linkFamMember = async (formData) => {
+    try {
+      const res = await axios.patch(
+        `http://localhost:8000/patient/${localStorage.getItem('username')}/linkFamMember`,
+        formData
+      );
+      console.log(res.data);
+      return { message: res.data.message };
+    } catch (error) {
+      console.log(error);
+      return { message: error.message };
+    }
+  };
+
   const handleCancelSubscription = async () => {
     try {
       await axios.patch(
-        `http://localhost:8000/patient/${localStorage.getItem("username")}/subscriptions/cancel`
-
-        
+        `http://localhost:8000/patient/${localStorage.getItem('username')}/subscriptions/cancel`
       );
-     // showNotification("Subscription canceled successfully");
-
     } catch (error) {
       console.log(error);
     }
@@ -76,26 +66,21 @@ const Patient = () => {
   useEffect(() => {
     const fetchPatient = async () => {
       try {
-      await axios.get(`http://localhost:8000/patient/${localStorage.getItem("username")}`).then((res) => {
+        const res = await axios.get(`http://localhost:8000/patient/${localStorage.getItem('username')}`);
         setPatient(res.data.data);
-      });
-      //showNotification("Page loaded successfully");
-
-    } catch (error) {
+      } catch (error) {
         console.log(error);
       }
     };
 
     fetchPatient();
-  }, [submitFamMember, linkFamMember, handleCancelSubscription]); // Empty dependency array to run once on component mount
+  }, []); 
 
   if (!patient) return null;
 
-  //if (!prescriptions) return null;
-
   return (
     <div>
-       {notification && (
+      {notification && (
         <div style={{ padding: '10px', backgroundColor: notification.isError ? 'red' : 'green', color: 'white' }}>
           {notification.message}
         </div>
@@ -108,29 +93,19 @@ const Patient = () => {
             handleCancelSubscription={handleCancelSubscription}
           />
           <p></p>
-          <Typography
-            variant="h6"
-            gutterBottom
-            borderLeft={15}
-            borderColor={"white"}
-          >
+          <Typography variant="h6" gutterBottom borderLeft={15} borderColor={"white"}>
             Add Family Member
           </Typography>
           <AddFamilyMember onSubmit={submitFamMember} />
           <p></p>
-          <Typography
-            variant="h6"
-            gutterBottom
-            borderLeft={15}
-            borderColor={"white"}
-          >
+          <Typography variant="h6" gutterBottom borderLeft={15} borderColor={"white"}>
             Link Family Member account
           </Typography>
           <LinkFamilyMemberForm onSubmit={linkFamMember} />
           <p></p>
           <PrescriptionsMultiLevelFilterTable
             columns={["doctor_name", "date", "isFilled", "View Prescriptions"]}
-            API_GET_URL={`http://localhost:8000/patient/${localStorage.getItem("username")}/prescriptions`}
+            API_GET_URL={`http://localhost:8000/patient/${localStorage.getItem('username')}/prescriptions`}
           />
         </div>
       ) : (
@@ -139,11 +114,5 @@ const Patient = () => {
     </div>
   );
 };
-
-// function getParam() {
-//   let { username } = useParams;
-//   console.log("Here is the username: " + username);
-//   return { username };
-// }
 
 export default Patient;
