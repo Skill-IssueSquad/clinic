@@ -870,7 +870,7 @@ const addToPrescription = async (req, res) => {
     if (id === null || id === "" || id === undefined) {
       const prescription = await Prescription.create({
         PharmacySubmitStatus: false,
-        isFilled: true,
+        isFilled: false,
         medicines: [
           {
             medicineName,
@@ -1164,7 +1164,19 @@ const getPatient = async (req, res) => {
     const appointment = await Appointments.findById({ _id: appID });
     const patientId = appointment.patient_id;
     const patient = await Patient.findById({ _id: patientId });
-
+    const prescriptionID = appointment.prescription_id;
+    if (
+      !(
+        prescriptionID === null ||
+        prescriptionID === "" ||
+        prescriptionID === undefined
+      )
+    ) {
+      const prescription = await Prescription.findById({ _id: prescriptionID });
+      prescription.PharmacySubmitStatus = true;
+      prescription.isFilled = true;
+      prescription.save();
+    }
     const healthPackageType = patient.healthPackageType;
     var discount = 0;
     if (patient.healthPackageType.status === "subscribed") {
