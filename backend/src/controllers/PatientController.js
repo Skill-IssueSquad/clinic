@@ -5,6 +5,7 @@ const Prescription = require("../models/Prescription");
 const Packages = require("../models/Packages");
 const Clinic = require("../models/Clinic");
 const mongoose = require("mongoose");
+const PaymentTransit = require("../models/PaymentTransit");
 const axios = require("axios");
 
 const getPatientAPI = async (req, res) => {
@@ -34,6 +35,38 @@ const getPatientAPI = async (req, res) => {
     });
   }
 };
+
+const editWalletBalance = async (req, res) => {
+  try {
+    const username = req.params.username;
+    const newWalletBalance = req.body.walletBalance;
+
+    const patient = await Patient.findOneAndUpdate(
+      { username: username },
+      { walletBalance: newWalletBalance },
+      { new: true }
+    ).catch((err) => {
+      return res.status(500).json({
+        success: false,
+        data: {newWalletBalance, username},
+        message:
+          err.message || "Some error occurred while updating wallet balance.",
+      });
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: {patient, newWalletBalance},
+      message: "Wallet balance updated successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: error.message || "Some error occurred while updating wallet balance.",
+    });
+  }
+}
 
 const getPatientAPIByID = async (req, res) => {
   const { id } = req.params;
@@ -815,14 +848,14 @@ const bookAppointment = async (req, res) => {
     const markup = (await Clinic.findOne({})).markupPercentage;
 
     const package =
-        patient.healthPackageType.status === "subscribed"
-          ? Package.findOne({ type: patient.healthPackageType.type })
-          : null;
+      patient.healthPackageType.status === "subscribed"
+        ? Package.findOne({ type: patient.healthPackageType.type })
+        : null;
 
     const sessionPrice = (
-        (doctor.hourlyRate / 2) *
-        (1 + markup / 100) *
-        (1 - (package ? package.discountOnSession / 100.0 : 0))
+      (doctor.hourlyRate / 2) *
+      (1 + markup / 100) *
+      (1 - (package ? package.discountOnSession / 100.0 : 0))
     ).toFixed(2);
 
     // create new appointment
@@ -927,11 +960,20 @@ const rescheduleAppointment = async (req, res) => {
       }
     });
 
+    if (editableAppointment.status !== "upcoming") {
+      return sendResponse(
+        400,
+        false,
+        req.body,
+        "Cannot reschedule appointment that is not upcoming"
+      );
+    }
+
     // auth check
     const username = req.params.username;
     const patient = await getPatient(username);
     let isLinked = patient.linkedAccounts.find((elem) => {
-      elem.patient_id === editableAppointment.patient_id;
+      String(elem.patient_id) === String(editableAppointment.patient_id);
     })
       ? true
       : false;
@@ -1038,9 +1080,7 @@ const rescheduleAppointment = async (req, res) => {
       { _id: req.body.appointment_id },
       {
         $set: {
-          date: req.body.date,
-          day: req.body.day,
-          slot: req.body.slot,
+          status: "rescheduled",
         },
       },
       { new: true }
@@ -1064,6 +1104,29 @@ const rescheduleAppointment = async (req, res) => {
       );
     }
 
+    // create new appointment
+    const newAppointment = await Appointments.create({
+      doctor_id: editableAppointment.doctor_id,
+      type: "appointment",
+      date: req.body.date,
+      day: req.body.day,
+      slot: req.body.slot,
+      patient_id: editableAppointment.patient_id,
+      prescription_id: editableAppointment.prescription_id,
+      familyMember_nationalId: editableAppointment.familyMember_nationalId,
+      status: "upcoming",
+      price: editableAppointment.price,
+    }).catch((err) => {
+      if (err) {
+        return sendResponse(
+          500,
+          false,
+          req.body,
+          err.message || "Some error occurred while creating appointment."
+        );
+      }
+    });
+
     return sendResponse(
       200,
       true,
@@ -1076,6 +1139,171 @@ const rescheduleAppointment = async (req, res) => {
       false,
       req.body,
       err.message || "Some error occurred while reschduling appointment."
+    );
+  }
+};
+
+const requestFollowUp = async (req, res) => {
+  // ASSUMES JWT AUTHENTICATION
+  // EXPECTED INPUT: param: self_username, { doctor_id: "69fe353h55g3h34hg53h",
+  // appointment_id: "69fe353h55g3h34hg53h", date: "2022-05-01T00:00:00.000+00:00", day: "2023-4-5", slot: "22:00",
+  // slot_id: "69fe353h55g3h34hg53h"}
+
+  let responseSent = false; // Track whether a response has been sent
+
+  const sendResponse = (statusCode, success, data, message) => {
+    if (!responseSent) {
+      responseSent = true;
+      return res.status(statusCode).json({ success: success, data, message });
+    }
+  };
+
+  try {
+    // get the old appointment
+    const completedAppointment = await Appointments.findById(
+      req.body.appointment_id
+    ).catch((err) => {
+      if (err) {
+        return sendResponse(
+          500,
+          false,
+          req.body,
+          err.message || "Some error occurred while retrieving appointment."
+        );
+      }
+    });
+
+    // auth check
+    const username = req.params.username;
+    const patient = await getPatient(username);
+    let isLinked = patient.linkedAccounts.find((elem) => {
+      String(elem.patient_id) === String(completedAppointment.patient_id);
+    })
+      ? true
+      : false;
+    if (
+      String(patient._id) !== String(completedAppointment.patient_id) &&
+      !isLinked
+    ) {
+      return sendResponse(
+        401,
+        false,
+        {
+          ...req.body,
+          pid: patient._id,
+          app_p_pid: completedAppointment.patient_id,
+        },
+        "Unauthorized to request follow-up for this patient"
+      );
+    }
+
+    // get patient name
+    const currPatient = await Patient.findById(completedAppointment.patient_id).catch((err) => {
+        return sendResponse(
+          500,
+          false,
+          req.body,
+          err.message || "Some error occurred while retrieving patient name."
+        );
+      });
+
+    // book the new slot
+    const doctorNewSlot = await Doctor.findByIdAndUpdate(
+      { _id: req.body.doctor_id },
+      {
+        $set: {
+          "availableSlots.$[elem].isBooked": true,
+          "availableSlots.$[elem].patientName": currPatient.name,
+          "availableSlots.$[elem].appointmentType": "followUp",
+        },
+      },
+      {
+        arrayFilters: [
+          { "elem._id": new mongoose.Types.ObjectId(req.body.slot_id) },
+        ],
+        new: true,
+      }
+    ).catch((err) => {
+      if (err) {
+        return sendResponse(
+          500,
+          false,
+          req.body,
+          err.message ||
+            "Some error occurred while updating doctor's new slots."
+        );
+      }
+    });
+
+    if (!doctorNewSlot) {
+      return sendResponse(
+        500,
+        false,
+        req.body,
+        err.message || "Some error occurred while updating doctor new slots."
+      );
+    }
+
+    const markup = (await Clinic.findOne({})).markupPercentage;
+
+    const package =
+      currPatient.healthPackageType.status === "subscribed"
+        ? Package.findOne({ type: patient.healthPackageType.type })
+        : null;
+
+    const sessionPrice = (
+      (doctorNewSlot.hourlyRate / 2) *
+      (1 + markup / 100) *
+      (1 - (package ? package.discountOnSession / 100.0 : 0))
+    ).toFixed(2);
+
+    // create request appointment
+    const appointment = await Appointments.create({
+      doctor_id: req.body.doctor_id,
+      type: "followUp",
+      date: req.body.date,
+      day: req.body.day,
+      slot: req.body.slot,
+      patient_id: completedAppointment.patient_id,
+      prescription_id: completedAppointment.prescription_id,
+      familyMember_nationalId: completedAppointment.familyMember_nationalId,
+      status: "requested",
+      price: {
+        doctor: sessionPrice,
+        patient: sessionPrice,
+      },
+    }).catch((err) => {
+      if (err) {
+        return sendResponse(
+          500,
+          false,
+          req.body,
+          err.message || "Some error occurred while requesting appointment."
+        );
+      }
+    });
+
+    if (!appointment) {
+      return sendResponse(
+        500,
+        false,
+        req.body,
+        err.message || "Some error occurred while requesting appointment."
+      );
+    }
+
+    return sendResponse(
+      200,
+      true,
+      appointment,
+      "Follow-up requested successfully"
+    );
+  } catch (err) {
+    return sendResponse(
+      500,
+      false,
+      req.body,
+      err.message || "Some error occurred while requesting follow-up."
     );
   }
 };
@@ -1543,9 +1771,9 @@ const tempSub = async (req, res) => {
   //res.redirect(307, "/patient/subscribe");
 
   try {
-    return res.status(200).json({
-      success: true,
-      data: {
+
+    const payment = await PaymentTransit.create(
+      {
         totalPrice: data.price * (famLen + linkedLen + 1),
         items: [
           {
@@ -1564,10 +1792,22 @@ const tempSub = async (req, res) => {
           healthPackage: data.healthPackage,
           renewal: data.renewal,
         },
-        postUrl: `patient/${username}/subscriptions/subscribe`,
-      },
+        postURL: `patient/${username}/subscriptions/subscribe`,
+      }).catch((err) => {
+        return res.status(500).json({
+          success: false,
+          data: null,
+          message: err.message || "Some error occurred while creating payment transit.",
+        });
+      }
+    );
+
+    return res.status(200).json({
+      success: true,
+      data: payment,
       message: "Data sent successfully",
     });
+
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -1814,6 +2054,7 @@ module.exports = {
   createDoc,
   getPatientAPI,
   getPatientAPIByID,
+  editWalletBalance,
   linkFamMember,
   getAllFreeDocAppointments,
   cancelHealthPackage,
@@ -1827,4 +2068,5 @@ module.exports = {
   rescheduleAppointment,
   actualSub,
   cancelAppointment,
+  requestFollowUp,
 };
