@@ -72,11 +72,15 @@ const PrescriptionsMultiLevelFilterTable = ({ columns, API_GET_URL }) => {
     setOpen(false);
   };
 
-  const handleDownload = (doctor_name, medicines) => {
+  const handleDownload = (doctor_name, medicines, date) => {
     var doc = new jsPDF("portrait", "px", "a4", false);
     doc.setFontSize(20);
     doc.text("Prescription", 40, 30);
     doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("Date: ", 40, 40);
+    doc.setFont("helvetica", "normal");
+    doc.text(new Date(date).toLocaleDateString("fr-FR"), 100, 40);
     doc.setFont("helvetica", "bold");
     doc.text("Doctor Name: ", 40, 50);
     doc.setFont("helvetica", "normal");
@@ -419,7 +423,11 @@ const PrescriptionsMultiLevelFilterTable = ({ columns, API_GET_URL }) => {
                           className="button"
                           //pass the doctor name and medicines to the handleDownload function
                           onClick={() =>
-                            handleDownload(row["doctor_name"], row["medicines"])
+                            handleDownload(
+                              row["doctor_name"],
+                              row["medicines"],
+                              row["date"]
+                            )
                           }
                           variant="contained"
                         >
