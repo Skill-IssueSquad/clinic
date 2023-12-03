@@ -1206,6 +1206,120 @@ const completeAppointments = async (req, res) => {
   }
 };
 
+const getPrescriptions = async (req, res) => {
+  const { username } = req.params;
+
+  try {
+    const doctor = await Doctor.findOne({ username });
+    if (doctor) {
+      const doctorId = doctor._id;
+      var appointments = await Appointments.find({ doctor_id: doctorId });
+      var prescriptionIDs = [];
+      for (const appointment of appointments) {
+        prescriptionIDs.push(appointment.prescription_id);
+      }
+
+      var prescriptions = [];
+
+      for (const prescription_id of prescriptionIDs) {
+        if (
+          prescription_id === null ||
+          prescription_id === "" ||
+          prescription_id === undefined
+        ) {
+          continue;
+        }
+        // const prescription_id = prescription.prescription_id;
+
+        const prescriptionObj = await Prescription.findById(
+          prescription_id
+        ).catch((err) => {
+          return res.status(500).json({
+            success: false,
+            data: null,
+            message:
+              err.message ||
+              "Some error occurred while retrieving prescriptions.",
+          });
+        });
+
+        let finalObj = {
+          prescription_id: prescription_id,
+          patient_name: null,
+          date: null,
+          PharmacySubmitStatus: prescriptionObj.PharmacySubmitStatus,
+          isFilled: prescriptionObj.isFilled.toString(),
+          medicines: prescriptionObj.medicines,
+        };
+
+        const appointObj = await Appointments.findOne({
+          prescription_id: prescription_id,
+          doctor_id: doctorId,
+        }).catch((err) => {
+          return res.status(500).json({
+            success: false,
+            data: null,
+            message:
+              err.message ||
+              "Some error occurred while retrieving appointments.",
+          });
+        });
+
+        if (appointObj) {
+          //search for doctor name
+          finalObj.date = appointObj.date;
+          const patient = await Patient.findById(appointObj.patient_id);
+          // const doctorObj = await Doctor.findById(appointObj.doctor_id).catch(
+          //   (err) => {
+          //     return res.status(500).json({
+          //       success: false,
+          //       data: null,
+          //       message:
+          //         err.message ||
+          //         "Some error occurred while retrieving doctors.",
+          //     });
+          //   }
+          // );
+
+          if (patient) {
+            finalObj.patient_name = patient.name;
+          }
+        }
+        //print the prescription object
+        //console.log(finalObj);
+
+        //add the prescription object to the prescriptions array
+        prescriptions.push(finalObj);
+
+        //print the prescriptions array
+        //console.log("Here is the prescriptions array (in):");
+        //console.log(prescriptions);
+      }
+
+      //console.log("Here is the prescriptions array (out):");
+      //console.log(prescriptions);
+
+      return res.status(200).json({
+        success: true,
+        data: prescriptions,
+        message: "Prescriptions retrieved successfully",
+      });
+    } else {
+      return res.status(404).json({
+        success: false,
+        data: null,
+        message: "Doctor not found",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   getDoctor,
   createDoctor,
@@ -1232,4 +1346,5 @@ module.exports = {
   revokeAppointment,
   getPatient,
   completeAppointments,
+  getPrescriptions,
 };

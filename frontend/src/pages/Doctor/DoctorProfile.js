@@ -17,9 +17,11 @@ import Loading from "../../components/Loading";
 import Contract from "../../components/Doctor/employmentContract";
 import Slots from "../../components/Doctor/mySlots";
 import Requests from "../../components/Doctor/AppointmentsRequests";
+import { useNavigate } from "react-router-dom";
 const validator = require("validator");
 
 const UserProfile = () => {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
   const [oldDoctor, setOldDoctor] = useState(null);
@@ -128,7 +130,9 @@ const UserProfile = () => {
             />
             <div style={{ display: "flex", alignItems: "center" }}>
               <AccountBalanceWalletIcon style={{ fontSize: 30 }} />
-              <span style={{ marginLeft: "10px" }}>{walletBalance}</span>
+              <span style={{ marginLeft: "10px", color: "green" }}>
+                {walletBalance}
+              </span>
             </div>
           </div>
           <br />
@@ -192,6 +196,24 @@ const UserProfile = () => {
               </IconButton>
             )}
           </div>
+          <button
+            onClick={() =>
+              navigate("/doctor/prescriptions", {
+                state: {
+                  columns: [
+                    "patient_name",
+                    "date",
+                    "isFilled",
+                    "View Prescriptions",
+                    "Download Prescription",
+                  ],
+                  API_GET_URL: `http://localhost:8000/doctor/getPrescriptions/${username}`,
+                },
+              })
+            }
+          >
+            View/Download prescriptions
+          </button>
           <br />
           {error && <Typography variant="h6">{error}</Typography>}
           {contractAccepted && <Slots username={username} />}

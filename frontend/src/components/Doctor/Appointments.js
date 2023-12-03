@@ -17,7 +17,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { Container } from "@mui/material";
 import PDFViewer from "../pdf";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const statusOptions = [
   "upcoming",
@@ -470,15 +470,6 @@ const MultiLevelFilterTable = ({ username }) => {
                     <button
                       onClick={() =>
                         navigate(
-                          `/Doctor_FollowUp/?patientId=${selectedRow._id}&appID=${selectedRow.appID}&type=followUp&A=F`
-                        )
-                      }
-                    >
-                      Schedule a follow up
-                    </button>
-                    <button
-                      onClick={() =>
-                        navigate(
                           `/Doctor_FollowUp/?patientId=${selectedRow._id}&appID=${selectedRow.appID}&type=${selectedRow.type}&A=R`
                         )
                       }
@@ -496,14 +487,35 @@ const MultiLevelFilterTable = ({ username }) => {
                   (selectedRow.prescription_id === null ||
                   selectedRow.prescription_id === undefined ||
                   selectedRow.prescription_id === "" ? (
-                    <button onClick={() => handelAddPrescription()}>
-                      Prescription
-                    </button>
+                    <div>
+                      <button onClick={() => handelAddPrescription()}>
+                        Add prescription
+                      </button>
+                      <button
+                        onClick={() =>
+                          navigate(
+                            `/Doctor_FollowUp/?patientId=${selectedRow._id}&appID=${selectedRow.appID}&type=followUp&A=F`
+                          )
+                        }
+                      >
+                        Schedule a follow up
+                      </button>
+                    </div>
                   ) : (
-                    // Code to be executed if the condition is false
-                    <button onClick={() => handleEditPrescription()}>
-                      Prescription
-                    </button>
+                    <div>
+                      <button onClick={() => handleEditPrescription()}>
+                        Edit prescription
+                      </button>
+                      <button
+                        onClick={() =>
+                          navigate(
+                            `/Doctor_FollowUp/?patientId=${selectedRow._id}&appID=${selectedRow.appID}&type=followUp&A=F`
+                          )
+                        }
+                      >
+                        Schedule a follow up
+                      </button>
+                    </div>
                   ))}
                 <button
                   onClick={() =>
