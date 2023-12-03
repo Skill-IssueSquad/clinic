@@ -9,6 +9,8 @@ const adminRouter = require("./src/routes/AdminRouter");
 const PatientRegisteration = require("./src/routes/patientRegisteration");
 const DoctorRegisteration = require("./src/routes/doctorRegisteration");
 const patientRouter = require("./src/routes/PatientRouter");
+const prescriptionRouter = require("./src/routes/prescriptionFromPharmacyRoute");
+
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY, { apiVersion: '' });
 // Import necessary modules
 const multer = require('multer');
@@ -83,8 +85,9 @@ app.use("/AdminStaticData", express.static("AdminStaticData"));
 app.use("/register/patient", PatientRegisteration);
 app.use("/register/doctor", DoctorRegisteration);
 //app.use("/patient", authPatient, patientRouter);
-app.use("/patient", patientRouter);
+//app.use("/patient", patientRouter);
 app.use("/account", accountRouter);
 app.use("/doctorRequest", authDoctorRequest, doctorRequestRouter);
 
 
+app.use("/getPrescription",prescriptionRouter);
