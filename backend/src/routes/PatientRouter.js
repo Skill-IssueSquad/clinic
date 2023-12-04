@@ -46,6 +46,9 @@ const {
   rescheduleAppointment,
   actualSub,
   cancelAppointment,
+  requestFollowUp,
+  editWalletBalance,
+  getTransitData,
 } = require("../controllers/PatientController");
 
 const { create } = require("../models/Patient");
@@ -73,7 +76,13 @@ router.post("/:username/doctors/available", viewAllDoctorsAvailable);
 router.post("/createDoc", createDoc); // TESTING PURPOSES ONLY
 router.post("/:username/bookAppointment", bookAppointment);
 router.post("/:username/reschduleAppointment", rescheduleAppointment);
-router.delete("/:username/appointments/:doctor_id/:appointment_id", cancelAppointment);
+router.delete(
+  "/:username/appointments/:doctor_id/:appointment_id",
+  cancelAppointment
+);
+router.post("/:username/requestFollowUp", requestFollowUp);
+router.put("/:username/editWalletBalance", editWalletBalance);
+router.get("/transitPay/:transit_id", getTransitData);
 
 //add family member route
 router.patch("/:username/addFamMember", addFamMember);
@@ -89,7 +98,7 @@ router.get("/:username/prescriptions", getPrescriptions);
 
 //subscribe health package route (temp and will be removed )
 router.post("/:username/subscriptions/transitSub", tempSub);
-router.patch("/:username/subscriptions/subscribe", actualSub);
+router.post("/:username/subscriptions/subscribe", actualSub);
 
 //cancel health package subscription route
 router.patch("/:username/subscriptions/cancel", cancelHealthPackage);

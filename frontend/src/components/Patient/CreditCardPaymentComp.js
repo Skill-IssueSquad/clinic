@@ -1,12 +1,12 @@
 // import React, { useState, useEffect } from "react";
 // import axios from "axios";
-// import { loadStripe } from "@stripe/stripe-js";
+// //import { loadStripe } from "@stripe/stripe-js";
 // import { CardElement, Elements, useElements, useStripe } from "@stripe/react-stripe-js";
 
-// const stripePromise = loadStripe("pk_live_51OBk7zH1dbdsVwcoUNkmTMS6p8vzPrqcCCNdfQVU4sDYCjmSL1VX4V3fIUvFvGhaU0oXz7gz1GGOSoXqIxRRkeaU00DUmqVadI"); // Replace with your actual Stripe public key
+// //const stripePromise = loadStripe("pk_live_51OBk7zH1dbdsVwcoUNkmTMS6p8vzPrqcCCNdfQVU4sDYCjmSL1VX4V3fIUvFvGhaU0oXz7gz1GGOSoXqIxRRkeaU00DUmqVadI"); // Replace with your actual Stripe public key
 
 // const CreditCardPaymentForm = ({ onSuccess }) => {
-//   const stripe = useStripe();
+//   //const stripe = useStripe();
 //   const elements = useElements();
 
 //   const handleSubmit = async (event) => {

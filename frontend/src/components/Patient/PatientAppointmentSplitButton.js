@@ -46,6 +46,7 @@ export default function AppointmentSplitButton({
     if (options[selectedIndex] === "Reschedule Appointment") {
       navigate(`/patient/rescheduleSlot/${doctor_id}/${appointment_id}`);
     } else if (options[selectedIndex] === "Request Follow-up") {
+      navigate(`/patient/requestFollowUp/${doctor_id}/${appointment_id}`);
     } else if (options[selectedIndex] === "Cancel") {
       handleDiagOpen();
     } else if (options[selectedIndex] === "Select Action") {

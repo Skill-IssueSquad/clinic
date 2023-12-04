@@ -3,8 +3,9 @@ import NavBar from "../../components/navBar";
 import { useParams } from "react-router-dom";
 import { auth } from "../Protected/AuthProvider";
 import RescheduleSlot from "../../components/Patient/PatientReschedule";
+import RequestFollowUp from "../../components/Patient/PatientFollowUpRequester";
 
-function PatientRescheduleSlots() {
+function PatientRequestFollowUp() {
   const { doctor_id, appointment_id } = useParams(); // Always call the hook
 
   let show = false;
@@ -14,7 +15,7 @@ function PatientRescheduleSlots() {
   }
 
   return (
-    <div className="RescheduleSlots">
+    <div className="RequestFollowUp">
       {show ? (
         <div>
           <NavBar
@@ -22,7 +23,7 @@ function PatientRescheduleSlots() {
             username={localStorage.getItem("username")}
           />
 
-          <RescheduleSlot doctor_id={doctor_id}  appointment_id={appointment_id} />
+          <RequestFollowUp doctor_id={doctor_id}  appointment_id={appointment_id} />
         </div>
       ) : (
         <h2>No access</h2>
@@ -31,4 +32,4 @@ function PatientRescheduleSlots() {
   );
 }
 
-export default PatientRescheduleSlots;
+export default PatientRequestFollowUp;

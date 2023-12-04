@@ -82,7 +82,7 @@ const AppointmentsMulti = ({ columns, API_GET_URL }) => {
   });
   const [filter, setFilter] = useState(initFilter);
   const [rows, setRows] = useState([]);
-  const [sorting, setSorting] = useState({ field: "", order: "" });
+  const [sorting, setSorting] = useState({ field: "status", order: "desc" });
   const [loading, setLoading] = useState(true); // Add a loading state
   const [refresh, setRefresh] = useState(false); // Add a loading state
 
@@ -115,9 +115,23 @@ const AppointmentsMulti = ({ columns, API_GET_URL }) => {
           return resJson;
         });
 
+        // Sort the rows based on the field and order
+        const sortedRows = [...rows].sort((a, b) => {
+          const aValue = a[sorting.field];
+          const bValue = b[sorting.field];
+
+          if (sorting.order === "asc") {
+            return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+          } else {
+            return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
+          }
+        });
+
+        setRows(sortedRows);
+
         console.log(rows);
 
-        setRows(rows);
+        
         setLoading(false); // Set loading to false when data is available
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -425,7 +439,7 @@ const AppointmentsMulti = ({ columns, API_GET_URL }) => {
                     )}
                     {
                       <TableCell>
-                        <AppointmentSplitButton refresh={refreshPage} appointment_id={row["_id"]} doctor_id={row["doctor_id"]} appointment={row["type"].toLowerCase() === "appointment"} none={row["status"].toLowerCase() === "cancelled" } old={row["status"].toLowerCase() === "completed"}/>
+                        <AppointmentSplitButton refresh={refreshPage} appointment_id={row["_id"]} doctor_id={row["doctor_id"]} appointment={row["type"].toLowerCase() === "appointment"} none={row["status"].toLowerCase() === "cancelled" || row["status"].toLowerCase() === "rescheduled"} old={row["status"].toLowerCase() === "completed"}/>
                       </TableCell>
                     }
                   </TableRow>

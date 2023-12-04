@@ -2042,6 +2042,32 @@ const removeHealthRecord = async (req, res) => {
   }
 };
 
+const getTransitData = async (req, res) => {
+  try {
+    const tid = req.params.transit_id;
+    const payment = await PaymentTransit.findById(tid).catch((err) => {
+      return res.status(500).json({
+        success: false,
+        data: null,
+        message:
+          err.message || "Some error occurred while retrieving payments.",
+      });
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: payment,
+      message: "ata sent successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: error.message || "Some error occurred while performing request",
+    });
+  } 
+}
+
 module.exports = {
   addFamMember,
   getFamMembers,
@@ -2069,4 +2095,5 @@ module.exports = {
   actualSub,
   cancelAppointment,
   requestFollowUp,
+  getTransitData,
 };

@@ -26,12 +26,13 @@ import Payments from "./pages/Patient/Payments";
 import WalletBalance from "./pages/Patient/WalletBalance";
 import MedicalHistory from "./pages/MedicalHistory";
 import Follow from "./pages/Doctor/FollowUp";
-import WalletPayment from "./pages/Patient/WalletPayment";
+import Payment from "./pages/Patient/Payment";
 import CreditCardPayment from "./pages/Patient/CreditCardPayment";
 import PatientRescheduleSlots from "./pages/Patient/PatientRescheduler";
 import { useState } from "react";
 import ChangePassword from "./pages/ChangePassword";
 import PatientPrescriptions from "./pages/Patient/PatientPrescriptions";
+import PatientRequestFollowUp from "./pages/Patient/PatientRequestFollowUp";
 
 function App() {
   return (
@@ -105,14 +106,20 @@ function App() {
               element={<PatientRescheduleSlots />}
             />
 
+            <Route
+              exact
+              path="/patient/requestFollowUp/:doctor_id/:appointment_id"
+              element={<PatientRequestFollowUp />}
+            />
+
             <Route exact path="/patient/payments/" element={<Payments />} />
 
             <Route exact path="/patient/wallet/" element={<WalletBalance />} />
 
             <Route
               exact
-              path="/patient/walletPayment/"
-              element={<WalletPayment />}
+              path="/patient/payment/:transit_id"
+              element={<Payment />}
             />
 
             <Route
