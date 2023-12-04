@@ -2,13 +2,19 @@ require("dotenv").config();
 
 const express = require("express");
 const app = express();
+const cors = require("cors");
 
 //socket for video server
 //server is only used to set up the rooms
 const socketVideoServer = require("http").createServer(app);
-const videoIo = require("socket.io")(socketVideoServer);
+const videoIo = require("socket.io")(socketVideoServer, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
+const { v4: uuidV4 } = require("uuid");
 
-const cors = require("cors");
 const mongoose = require("mongoose");
 const doctorRouter = require("./src/routes/DoctorRouter");
 const adminRouter = require("./src/routes/AdminRouter");
@@ -102,3 +108,19 @@ app.use("/register/doctor", DoctorRegisteration);
 app.use("/patient", patientRouter);
 app.use("/account", accountRouter);
 app.use("/doctorRequest", authDoctorRequest, doctorRequestRouter);
+
+//get requests for video server
+app.get("/video", (req, res) => {
+  res.redirect(`http://localhost:${3000}/videoCall/${uuidV4()}`);
+});
+
+videoIo.on("connection", (socket) => {
+  socket.on("join-room", (roomId, userId) => {
+    console.log("joined room", roomId, "as user", userId);
+    socket.join(roomId);
+    socket.to(roomId).broadcast.emit("user-connected", userId);
+    socket.on("disconnect", () => {
+      socket.to(roomId).broadcast.emit("user-disconnected", userId);
+    });
+  });
+});

@@ -1,11 +1,10 @@
 import React from "react";
 import VideoCall from "../components/Patient/VideoCallGrid";
-import ResponsiveAppBar from "../components/navBar";
 
 const CallDoctor = () => {
   return (
     <div>
-      <ResponsiveAppBar> </ResponsiveAppBar>
+      <h1>Call Doctor</h1>
       <VideoCall> </VideoCall>
     </div>
   );

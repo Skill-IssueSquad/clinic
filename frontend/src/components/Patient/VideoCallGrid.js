@@ -1,11 +1,31 @@
 import React, { useEffect, useRef } from "react";
 import { Grid, Card, CardContent, Typography } from "@mui/material";
+import io from "socket.io-client";
+import Peer from "peerjs";
 
 const VideoCall = () => {
   const gridContainerRef = useRef(null);
 
   useEffect(() => {
     // Your socket and peerJS logic here
+    const roomId = window.location.pathname.split("/")[2];
+    const socket = io("http://localhost:8001");
+    const myPeer = new Peer(undefined, {
+      host: "/",
+      port: "3001",
+    });
+
+    myPeer.on("open", (id) => {
+      console.log("peer id", id);
+      socket.emit("join-room", roomId, id);
+    });
+
+    const userId = 10;
+
+    socket.on("user-connected", (userId) => {
+      console.log("user connected", userId);
+      addVideoFeed(userId, "John Doe", "Doctor");
+    });
 
     // Dummy function to simulate adding video feeds
     const addVideoFeed = (userId, name, role) => {

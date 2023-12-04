@@ -130,7 +130,7 @@ function App() {
               path="/patient/medicalHistory/"
               element={<MedicalHistory />}
             />
-            <Route exact path="/videoCall/" element={<CallDoctor />} />
+            <Route exact path="/videoCall/:room_id" element={<CallDoctor />} />
           </Routes>
         </div>
       </BrowserRouter>
