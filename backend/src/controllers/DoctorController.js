@@ -700,7 +700,7 @@ const addAppointment = async (req, res) => {
       const sessionPrice = (
         (doctor.hourlyRate / 2) *
         (1 + markup / 100) *
-        (1 - discount)
+        (1 - discount / 100)
       ).toFixed(2);
       patient = await Patient.findByIdAndUpdate(
         { _id: patientId },
