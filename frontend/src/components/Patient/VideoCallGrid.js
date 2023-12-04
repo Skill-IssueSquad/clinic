@@ -20,11 +20,9 @@ const VideoCall = () => {
       socket.emit("join-room", roomId, id);
     });
 
-    const userId = 10;
-
     socket.on("user-connected", (userId) => {
       console.log("user connected", userId);
-      addVideoFeed(userId, "John Doe", "Doctor");
+      addVideoFeed(userId, "nagnoog", "Patient");
     });
 
     // Dummy function to simulate adding video feeds

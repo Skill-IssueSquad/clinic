@@ -118,9 +118,9 @@ videoIo.on("connection", (socket) => {
   socket.on("join-room", (roomId, userId) => {
     console.log("joined room", roomId, "as user", userId);
     socket.join(roomId);
-    socket.to(roomId).broadcast.emit("user-connected", userId);
+    socket.to(roomId).emit("user-connected", userId); //el mafrood to.broadcast.emit bass feeh error
     socket.on("disconnect", () => {
-      socket.to(roomId).broadcast.emit("user-disconnected", userId);
+      socket.to(roomId).emit("user-disconnected", userId); //el mafrood to.broadcast.emit bass feeh error
     });
   });
 });
