@@ -4,6 +4,8 @@ import PatientDoctorAvailibityDatePicker from "../../components/Patient/PatientD
 import PatientMultiLevel from "../../components/Patient/PatientDoctorsMultiLevelGrid";
 import NavBar from "../../components/navBar";
 import { auth } from "../../pages/Protected/AuthProvider";
+import { Card, Typography } from "@mui/joy";
+import { Box } from "@mui/material";
 
 function PatientDoctors() {
   let show = false;
@@ -17,6 +19,7 @@ function PatientDoctors() {
   );
   const [jsonBody, setJsonBody] = useState({});
   const [openDialog, setOpenDialog] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleApiUrlChange = (newUrl) => {
     setApiUrl(newUrl);
@@ -44,16 +47,47 @@ function PatientDoctors() {
     <div>
       {show ? (
         <div className="PatientDoctors">
-          <NavBar name={"Patient Dashboard"} username={localStorage.getItem("username")} />
-          <h2>Doctors</h2>
-          <PatientDoctorAvailibityDatePicker
-            onChange={handleApiAndBodyChange}
+          <NavBar
+            name={"Patient Dashboard"}
+            username={localStorage.getItem("username")}
           />
-          <PatientMultiLevel
-            columns={["name", "email", "sessionPrice", "educationalBackground"]}
-            API_GET_URL={apiUrl}
-            reqBody={jsonBody}
-          />
+          <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            minHeight="90vh"
+          >
+            <br></br>
+            <Typography level="h2">Doctors</Typography>
+            {!loading && <p></p>}
+            {!loading && (
+              
+              <Card
+                sx={{
+                  width: "100ch",
+                }}
+              >
+                <PatientDoctorAvailibityDatePicker
+                  onChange={handleApiAndBodyChange}
+                />
+              </Card>
+            )}
+
+            <p></p>
+
+            <PatientMultiLevel
+              columns={[
+                "name",
+                "email",
+                "sessionPrice",
+                "educationalBackground",
+              ]}
+              API_GET_URL={apiUrl}
+              reqBody={jsonBody}
+              loadng={setLoading}
+            />
+          </Box>
         </div>
       ) : (
         <h2>No access</h2>

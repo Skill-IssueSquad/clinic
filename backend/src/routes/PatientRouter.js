@@ -49,6 +49,7 @@ const {
   requestFollowUp,
   editWalletBalance,
   getTransitData,
+  payDoctorScheduledFollowUp,
 } = require("../controllers/PatientController");
 
 const { create } = require("../models/Patient");
@@ -83,6 +84,7 @@ router.delete(
 router.post("/:username/requestFollowUp", requestFollowUp);
 router.put("/:username/editWalletBalance", editWalletBalance);
 router.get("/transitPay/:transit_id", getTransitData);
+router.post("/:username/docFollowUpPay", payDoctorScheduledFollowUp); 
 
 //add family member route
 router.patch("/:username/addFamMember", addFamMember);

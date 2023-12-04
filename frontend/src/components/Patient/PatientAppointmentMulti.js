@@ -16,8 +16,11 @@ import { MenuItem } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../pages/Protected/AuthProvider";
 import AppointmentSplitButton from "./PatientAppointmentSplitButton";
-
-
+import PendingFollowupsAlert from "./PendingFollowUpsAlert";
+import Typography from "@mui/joy/Typography";
+import Card from "@mui/joy/Card";
+import Stack from "@mui/joy/Stack";
+import { Box } from "@mui/material";
 
 function convertDateFormat(originalDateString) {
   // Parse the original date string into a Date object
@@ -85,6 +88,7 @@ const AppointmentsMulti = ({ columns, API_GET_URL }) => {
   const [sorting, setSorting] = useState({ field: "status", order: "desc" });
   const [loading, setLoading] = useState(true); // Add a loading state
   const [refresh, setRefresh] = useState(false); // Add a loading state
+  const [canBook, setCanBook] = useState(false); // Add a loading state
 
   const refreshPage = (now) => {
     if (now) {
@@ -98,7 +102,9 @@ const AppointmentsMulti = ({ columns, API_GET_URL }) => {
       try {
         setLoading(true); // Set loading to true before request is sent
         const response = await axios.get(API_GET_URL);
-        const initialRows = response.data.data;
+        const initialRows = response.data.data.appointments;
+
+        setCanBook(response.data.data.amountDue === 0);
 
         const rows = initialRows.map((row) => {
           let resJson = {};
@@ -131,7 +137,6 @@ const AppointmentsMulti = ({ columns, API_GET_URL }) => {
 
         console.log(rows);
 
-        
         setLoading(false); // Set loading to false when data is available
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -359,94 +364,137 @@ const AppointmentsMulti = ({ columns, API_GET_URL }) => {
     <div>
       {show ? (
         <div>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            {columns.map((key) =>
-              key !== "doctor_name" ? (
-                <TextField
-                  key={key}
-                  label={"Filter by " + key}
-                  name={key}
-                  value={filter[key] || ""}
-                  onChange={handleFilterChange}
-                  style={{ marginRight: "10px" }} // Add margin to separate elements
-                />
-              ) : (
-                <div key={key}>
-                  <TextField
-                    select
-                    label="Select a doctor"
-                    name="doctor_name"
-                    value={filter["doctor_name"] || ""}
-                    onChange={handleDropdownChange}
-                    style={{ width: "200px" }} // Set a fixed width for the select
-                  >
-                    <MenuItem value="">Select a doctor</MenuItem>
-                    {[...docNames].map((doctorName) => (
-                      <MenuItem key={doctorName} value={doctorName}>
-                        {doctorName}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </div>
-              )
-            )}
-          </div>
+          <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            
+            
+          >
+            
+              {!canBook && <PendingFollowupsAlert  />}
+            
+          </Box>
+          <p></p>
 
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  {columns.map((key) => (
-                    <TableCell>
-                      {key.toUpperCase()}{" "}
-                      <Button
-                        size="small"
-                        onClick={() => handleSort(key)}
-                        startIcon={
-                          sorting.field === key ? (
-                            sorting.order === "asc" ? (
-                              <ArrowUpwardIcon />
-                            ) : (
-                              <ArrowDownwardIcon />
-                            )
-                          ) : (
-                            <ArrowDownwardIcon />
-                          )
+          <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            minHeight="90vh"
+          >
+            <Card
+              sx={{
+                width: "113ch",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center" }}>
+                {columns.map((key) =>
+                  key !== "doctor_name" ? (
+                    <TextField
+                      key={key}
+                      label={"Filter by " + key}
+                      name={key}
+                      value={filter[key] || ""}
+                      onChange={handleFilterChange}
+                      style={{ marginRight: "10px" }} // Add margin to separate elements
+                    />
+                  ) : (
+                    <div key={key}>
+                      <TextField
+                        select
+                        label="Select a doctor"
+                        name="doctor_name"
+                        value={filter["doctor_name"] || ""}
+                        onChange={handleDropdownChange}
+                        style={{ width: "200px" }} // Set a fixed width for the select
+                      >
+                        <MenuItem value="">Select a doctor</MenuItem>
+                        {[...docNames].map((doctorName) => (
+                          <MenuItem key={doctorName} value={doctorName}>
+                            {doctorName}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                    </div>
+                  )
+                )}
+              </div>
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      {columns.map((key) => (
+                        <TableCell>
+                          {key.toUpperCase()}{" "}
+                          <Button
+                            size="small"
+                            onClick={() => handleSort(key)}
+                            startIcon={
+                              sorting.field === key ? (
+                                sorting.order === "asc" ? (
+                                  <ArrowUpwardIcon />
+                                ) : (
+                                  <ArrowDownwardIcon />
+                                )
+                              ) : (
+                                <ArrowDownwardIcon />
+                              )
+                            }
+                          ></Button>
+                        </TableCell>
+                      ))}
+                      <TableCell>RELATION</TableCell>
+                      <TableCell>ACTIONS</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {filteredRows.map((row) => (
+                      <TableRow>
+                        {Object.keys(row).map((key) =>
+                          isMongoDbIsoDate(row[key]) ? (
+                            <TableCell>{displayDate(row[key])}</TableCell>
+                          ) : key !== "familyMember_nationalId" &&
+                            key !== "_id" &&
+                            key !== "doctor_id" ? (
+                            <TableCell>{row[key]}</TableCell>
+                          ) : null
+                        )}
+                        {row["familyMember_nationalId"] ? (
+                          <TableCell>Family Member</TableCell>
+                        ) : (
+                          <TableCell>Self</TableCell>
+                        )}
+                        {
+                          <TableCell>
+                            <AppointmentSplitButton
+                              refresh={refreshPage}
+                              appointment_id={row["_id"]}
+                              doctor_id={row["doctor_id"]}
+                              appointment={
+                                row["type"].toLowerCase() === "appointment"
+                              }
+                              none={
+                                row["status"].toLowerCase() === "cancelled" ||
+                                row["status"].toLowerCase() === "rescheduled"
+                              }
+                              old={row["status"].toLowerCase() === "completed"}
+                              canBook={canBook}
+                              pending={
+                                row["status"].toLowerCase() === "pending"
+                              }
+                            />
+                          </TableCell>
                         }
-                      ></Button>
-                    </TableCell>
-                  ))}
-                  <TableCell>RELATION</TableCell>
-                  <TableCell>ACTIONS</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {filteredRows.map((row) => (
-                  <TableRow>
-                    {Object.keys(row).map((key) =>
-                      isMongoDbIsoDate(row[key]) ? (
-                        <TableCell>{displayDate(row[key])}</TableCell>
-                      ) : key !== "familyMember_nationalId" &&
-                        key !== "_id" &&
-                        key !== "doctor_id" ? (
-                        <TableCell>{row[key]}</TableCell>
-                      ) : null
-                    )}
-                    {row["familyMember_nationalId"] ? (
-                      <TableCell>Family Member</TableCell>
-                    ) : (
-                      <TableCell>Self</TableCell>
-                    )}
-                    {
-                      <TableCell>
-                        <AppointmentSplitButton refresh={refreshPage} appointment_id={row["_id"]} doctor_id={row["doctor_id"]} appointment={row["type"].toLowerCase() === "appointment"} none={row["status"].toLowerCase() === "cancelled" || row["status"].toLowerCase() === "rescheduled"} old={row["status"].toLowerCase() === "completed"}/>
-                      </TableCell>
-                    }
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Card>
+          </Box>
         </div>
       ) : (
         <div>
