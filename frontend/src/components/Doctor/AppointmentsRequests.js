@@ -45,7 +45,7 @@ const Requests = ({ username }) => {
     });
     const data = await response.json();
     console.log(data);
-    setRequests(requests.filter((req) => req._id !== request._id));
+    setRequests(requests.filter((req) => req.appID !== request.appID));
   };
   const handelReject = async (request) => {
     const response = await fetch("/doctor/revokeAppointment", {
@@ -59,7 +59,7 @@ const Requests = ({ username }) => {
     });
     const data = await response.json();
     console.log(data);
-    setRequests(requests.filter((req) => req._id !== request._id));
+    setRequests(requests.filter((req) => req.appID !== request.appID));
   };
   return (
     <div>
