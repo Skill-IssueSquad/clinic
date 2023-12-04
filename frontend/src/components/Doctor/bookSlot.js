@@ -15,7 +15,7 @@ import {
   TableRow,
   Paper,
 } from "@mui/material";
-
+import { useNavigate } from "react-router-dom";
 const timeSlots = [
   "8:00",
   "8:30",
@@ -58,6 +58,7 @@ const DayTimeSlotSelector = ({
   type,
   isFollowUp,
 }) => {
+  const navigate = useNavigate();
   const [selectedDay, setSelectedDay] = useState("");
   const [message, setMessage] = useState("");
   const [slots, setSlots] = useState([]);
@@ -119,6 +120,8 @@ const DayTimeSlotSelector = ({
     if (data.success) {
       slots.forEach((s) => {
         if (s._id === slot._id) {
+          console.log("The S is : ", s);
+          console.log("The slot is : ", slot);
           s.isBooked = true;
           s.patientName = data.data.name;
           s.appointmentType = data.data.type;
@@ -135,6 +138,11 @@ const DayTimeSlotSelector = ({
       });
     }
     setMessage(data.message);
+    if (data.success) {
+      setTimeout(() => {
+        navigate("/Doctor_Home");
+      }, 5000); // 30 seconds
+    }
   };
 
   return (

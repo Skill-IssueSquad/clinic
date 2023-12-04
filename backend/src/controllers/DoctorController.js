@@ -738,7 +738,7 @@ const addAppointment = async (req, res) => {
       data,
       message: `${type} ${
         isFollowUp ? "scheduled" : "rescheduled"
-      } successfully for ${patientName}`,
+      } successfully for ${patientName} . Redirecting to appointments page`,
     };
     res.status(200).json(send);
   } catch (error) {
@@ -1332,6 +1332,38 @@ const getPrescriptions = async (req, res) => {
   }
 };
 
+const getChatPatients = async (req, res) => {
+  try {
+    const { username } = req.params;
+    const patientList = await Doctor.findOne({ username }).patientList;
+    const patients = [];
+    for (const patient of patientList) {
+      const patientId = patient.patient_id;
+      const patientObj = await Patient.findById(patientId);
+      const patientName = patientObj.name;
+      const patientUsername = patientObj.username;
+      const patientInfo = {
+        name: patientName,
+        id: patientId,
+      };
+      patients.push(patientInfo);
+    }
+    const send = {
+      success: true,
+      data: patients,
+      message: "Patients found successfully",
+    };
+    res.status(200).json(send);
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: error.message,
+    };
+    res.status(500).json(send);
+  }
+};
+
 module.exports = {
   getDoctor,
   createDoctor,
@@ -1359,4 +1391,5 @@ module.exports = {
   getPatient,
   completeAppointments,
   getPrescriptions,
+  getChatPatients,
 };
