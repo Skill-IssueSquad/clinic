@@ -112,7 +112,7 @@ function App() {
               element={<PatientRequestFollowUp />}
             />
 
-            <Route exact path="/patient/payments/" element={<Payments />} />
+            //<Route exact path="/patient/payments/" element={<Payments />} />
 
             <Route exact path="/patient/wallet/" element={<WalletBalance />} />
 

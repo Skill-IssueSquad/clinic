@@ -163,6 +163,10 @@ const HealthPackages = () => {
         formData
       );
       const data = response.data.data;
+
+      navigate(`/patient/payment/${data._id}`);
+
+
       console.log(data);
     } catch (error) {
       console.error("Error purchasing health package:", error);
