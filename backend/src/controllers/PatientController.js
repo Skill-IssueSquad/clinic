@@ -519,7 +519,7 @@ const viewAllDoctors = async (req, res) => {
 
     const markup = (await Clinic.findOne({})).markupPercentage;
 
-    doctors = doctors.map((doctor) => {
+    doctors = doctors.map(async (doctor) => {
       // get each doctors markup from contract
       // if (doctor.contracts.length > 0) {
 
@@ -528,7 +528,7 @@ const viewAllDoctors = async (req, res) => {
 
       const package =
         patient.healthPackageType.status === "subscribed"
-          ? Package.findOne({ type: patient.healthPackageType.type })
+          ? await Packages.findOne({ type: patient.healthPackageType.type })
           : null;
 
       const sessionPrice = (
@@ -609,7 +609,7 @@ const viewAllDoctorsAvailable = async (req, res) => {
 
     const markup = (await Clinic.findOne({})).markupPercentage;
 
-    doctors = doctors.map((doctor) => {
+    doctors = doctors.map(async (doctor) => {
       // get each doctors markup from contract
       // if (doctor.contracts.length > 0) {
 
@@ -617,7 +617,7 @@ const viewAllDoctorsAvailable = async (req, res) => {
       let discount = 0;
       const package =
         patient.healthPackageType.status === "subscribed"
-          ? Package.findOne({ type: patient.healthPackageType.type })
+          ? await Packages.findOne({ type: patient.healthPackageType.type })
           : null;
 
       const sessionPrice = (
@@ -849,7 +849,7 @@ const bookAppointment = async (req, res) => {
 
     const package =
       patient.healthPackageType.status === "subscribed"
-        ? Package.findOne({ type: patient.healthPackageType.type })
+        ? await Packages.findOne({ type: patient.healthPackageType.type })
         : null;
 
     const sessionPrice = (
@@ -1248,7 +1248,7 @@ const requestFollowUp = async (req, res) => {
 
     const package =
       currPatient.healthPackageType.status === "subscribed"
-        ? Package.findOne({ type: patient.healthPackageType.type })
+        ? await Packages.findOne({ type: patient.healthPackageType.type })
         : null;
 
     const sessionPrice = (
@@ -1277,7 +1277,7 @@ const requestFollowUp = async (req, res) => {
         return sendResponse(
           500,
           false,
-          req.body,
+          {...req.body, sessionPrice:sessionPrice},
           err.message || "Some error occurred while requesting appointment."
         );
       }
@@ -1287,7 +1287,7 @@ const requestFollowUp = async (req, res) => {
       return sendResponse(
         500,
         false,
-        req.body,
+        {...req.body, sessionPrice:sessionPrice, doctor: doctorNewSlot},
         err.message || "Some error occurred while requesting appointment."
       );
     }
@@ -1302,7 +1302,7 @@ const requestFollowUp = async (req, res) => {
     return sendResponse(
       500,
       false,
-      req.body,
+      {...req.body, sessionPrice:sessionPrice, doctor: doctorNewSlot},
       err.message || "Some error occurred while requesting follow-up."
     );
   }
