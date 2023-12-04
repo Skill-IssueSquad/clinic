@@ -89,7 +89,64 @@ async function getPatient(username) {
   }
 
 
+
+// const setIsFilledForPrescription = async (req, res) => {
+//   try {
+//     const {id}= req.body;  
+//     console.log(id);
+//     const Pres = await Prescription.findOne({ _id: id }).catch((err) => {
+//       return null;
+//     });
+
+//     if (!Pres) {
+//       return null;
+//     }
+//     console.log(Pres);
+//     Pres.isFilled = true;
+//     return Pres.toJSON();
+//   } catch (err) {
+//     return null;
+//   }
+// }
+
+const setIsFilledForPrescription = async (req, res) => {
+
+  const {id}= req.body;
+ // console.log("I reached here: "+username);
+  // find if there is patient with this username
+  try {
+   const Pres = await Prescription.findOne({ _id: id })
+    
+         if(Pres){
+          Pres.isFilled = true;
+         return res.status(200).json({
+           success: true,
+           data: Pres,
+           message: "IsFilled updated successfully",
+         });
+      } else {
+        return res.status(404).json({
+          success: false,
+          data: null,
+          message: "Prescription not found",
+        });
+      }
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        data: null,
+        message:
+          error.message || "Some error occurred while retrieving Prescription.",
+      });
+    }
+
+
+    
+
+}
+
+
   module.exports = {
-    sendPrescriptionMedicinesToPharmacy
+    sendPrescriptionMedicinesToPharmacy,setIsFilledForPrescription
   };
   

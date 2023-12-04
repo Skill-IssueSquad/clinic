@@ -86,6 +86,7 @@ app.use("/register/patient", PatientRegisteration);
 app.use("/register/doctor", DoctorRegisteration);
 //app.use("/patient", authPatient, patientRouter);
 //app.use("/patient", patientRouter);
+
 app.use("/account", accountRouter);
 app.use("/doctorRequest", authDoctorRequest, doctorRequestRouter);
 
