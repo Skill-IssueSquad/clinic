@@ -5,17 +5,16 @@ import Peer from "peerjs";
 
 const VideoCall = () => {
   const videoGridRef = useRef(null);
-  let myPeer;
-  let peers = {};
+  const roomId = window.location.pathname.split("/")[2];
+  const socket = io("http://localhost:8001");
+  const myPeer = new Peer(undefined, {
+    host: "/",
+    port: "3001",
+  });
+
+  const peers = {};
 
   useEffect(() => {
-    const roomId = window.location.pathname.split("/")[2];
-    const socket = io("http://localhost:8001");
-    myPeer = new Peer(undefined, {
-      host: "/",
-      port: "3001",
-    });
-
     const myVideo = document.createElement("video");
     myVideo.muted = true;
 
@@ -66,9 +65,7 @@ const VideoCall = () => {
       video.play();
     });
 
-    if (videoGridRef.current) {
-      videoGridRef.current.appendChild(video);
-    }
+    videoGridRef.current.append(video);
   };
 
   const connectToNewUser = (userId, stream) => {
@@ -89,28 +86,9 @@ const VideoCall = () => {
     peers[userId] = call;
   };
 
-  // Dummy data, replace with actual user data
-  const users = [
-    { id: 1, name: "John Doe", role: "Doctor" },
-    { id: 2, name: "Jane Smith", role: "Patient" },
-    // Add more users as needed
-  ];
-
   return (
     <Grid container spacing={2} ref={videoGridRef}>
       <video autoPlay playsInline muted />
-      {users.map((user) => (
-        <Grid item xs={12} sm={6} md={4} lg={3} key={user.id}>
-          {/* <Card>
-            <CardContent>
-              <Typography variant="h6">{user.name}</Typography>
-              <Typography variant="body2" color="textSecondary">
-                {user.role}
-              </Typography> 
-            </CardContent>
-          </Card> */}
-        </Grid>
-      ))}
     </Grid>
   );
 };
