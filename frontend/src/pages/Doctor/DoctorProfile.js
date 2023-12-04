@@ -17,10 +17,18 @@ import Loading from "../../components/Loading";
 import Contract from "../../components/Doctor/employmentContract";
 import Slots from "../../components/Doctor/mySlots";
 import Requests from "../../components/Doctor/AppointmentsRequests";
+import PatientList from "../../components/Doctor/PatientList";
 import { useNavigate } from "react-router-dom";
 const validator = require("validator");
-
+const { auth } = require("../Protected/AuthProvider");
 const UserProfile = () => {
+  let show = false;
+
+  if (auth() && localStorage.getItem("role") === "Doctor") {
+    show = true;
+  }
+  console.log(show);
+
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
@@ -112,124 +120,135 @@ const UserProfile = () => {
 
   return (
     <div>
-      {/* <AppBar /> */}
-      {user ? (
-        <Container maxWidth="md">
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              marginTop: "20px",
-            }}
-          >
-            <Avatar
-              alt={user.name}
-              src={"/static/images/doc2.png"}
-              sx={{ width: 150, height: 150, marginRight: "10px" }}
-            />
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <AccountBalanceWalletIcon style={{ fontSize: 30 }} />
-              <span style={{ marginLeft: "10px", color: "green" }}>
-                {walletBalance}
-              </span>
-            </div>
-          </div>
-          <br />
-          <Typography variant="h4" align="center" gutterBottom>
-            {user.name}
-          </Typography>
-          <Typography variant="body1" align="center" gutterBottom>
-            {isEditing ? (
-              <TextField
-                name="email"
-                label="Email"
-                value={user.email}
-                onChange={handleInputChange}
-                fullWidth
-              />
-            ) : (
-              `Email: ${user.email}`
-            )}
-          </Typography>
-
-          <Typography variant="body1" align="center" gutterBottom>
-            {isEditing ? (
-              <TextField
-                name="hourlyRate"
-                label="hourlyRate"
-                value={user.hourlyRate}
-                onChange={handleInputChange}
-                fullWidth
-              />
-            ) : (
-              `Hourly rate: ${user.hourlyRate}`
-            )}
-          </Typography>
-          <Typography variant="body1" align="center" gutterBottom>
-            {isEditing ? (
-              <TextField
-                name="affiliatedHospital"
-                label="affiliatedHospital"
-                value={user.affiliatedHospital}
-                onChange={handleInputChange}
-                fullWidth
-              />
-            ) : (
-              `Hospital: ${user.affiliatedHospital}`
-            )}
-          </Typography>
-
-          <div style={{ textAlign: "center" }}>
-            {isEditing ? (
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSaveClick}
-                startIcon={<SaveIcon />}
+      {show ? (
+        <div>
+          {/* <AppBar /> */}
+          {user ? (
+            <Container maxWidth="md">
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginTop: "20px",
+                }}
               >
-                Save
-              </Button>
-            ) : (
-              <IconButton color="primary" onClick={handleEditClick}>
-                <EditIcon />
-              </IconButton>
-            )}
-          </div>
-          <button
-            onClick={() =>
-              navigate("/doctor/prescriptions", {
-                state: {
-                  columns: [
-                    "patient_name",
-                    "date",
-                    "isFilled",
-                    "View Prescriptions",
-                    "Download Prescription",
-                  ],
-                  API_GET_URL: `http://localhost:8000/doctor/getPrescriptions/${username}`,
-                },
-              })
-            }
-          >
-            View/Download prescriptions
-          </button>
-          <br />
-          {error && <Typography variant="h6">{error}</Typography>}
-          {contractAccepted && <Slots username={username} />}
-          {contractAccepted && <Requests username={username} />}
-          <Contract
-            setContractAccepted={setContractAccepted}
-            contractAccepted={contractAccepted}
-            username={username}
-          />
-        </Container>
+                <Avatar
+                  alt={user.name}
+                  src={"/static/images/doc2.png"}
+                  sx={{ width: 150, height: 150, marginRight: "10px" }}
+                />
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <AccountBalanceWalletIcon style={{ fontSize: 30 }} />
+                  <span style={{ marginLeft: "10px", color: "green" }}>
+                    {walletBalance}
+                  </span>
+                </div>
+              </div>
+              <br />
+              <Typography variant="h4" align="center" gutterBottom>
+                {user.name}
+              </Typography>
+              <Typography variant="body1" align="center" gutterBottom>
+                {isEditing ? (
+                  <TextField
+                    name="email"
+                    label="Email"
+                    value={user.email}
+                    onChange={handleInputChange}
+                    fullWidth
+                  />
+                ) : (
+                  `Email: ${user.email}`
+                )}
+              </Typography>
+
+              <Typography variant="body1" align="center" gutterBottom>
+                {isEditing ? (
+                  <TextField
+                    name="hourlyRate"
+                    label="hourlyRate"
+                    value={user.hourlyRate}
+                    onChange={handleInputChange}
+                    fullWidth
+                  />
+                ) : (
+                  `Hourly rate: ${user.hourlyRate}`
+                )}
+              </Typography>
+              <Typography variant="body1" align="center" gutterBottom>
+                {isEditing ? (
+                  <TextField
+                    name="affiliatedHospital"
+                    label="affiliatedHospital"
+                    value={user.affiliatedHospital}
+                    onChange={handleInputChange}
+                    fullWidth
+                  />
+                ) : (
+                  `Hospital: ${user.affiliatedHospital}`
+                )}
+              </Typography>
+
+              <div style={{ textAlign: "center" }}>
+                {isEditing ? (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSaveClick}
+                    startIcon={<SaveIcon />}
+                  >
+                    Save
+                  </Button>
+                ) : (
+                  <IconButton color="primary" onClick={handleEditClick}>
+                    <EditIcon />
+                  </IconButton>
+                )}
+              </div>
+              <button
+                onClick={() =>
+                  navigate("/doctor/prescriptions", {
+                    state: {
+                      columns: [
+                        "patient_name",
+                        "date",
+                        "isFilled",
+                        "View Prescriptions",
+                        "Download Prescription",
+                      ],
+                      API_GET_URL: `http://localhost:8000/doctor/getPrescriptions/${username}`,
+                    },
+                  })
+                }
+              >
+                View/Download prescriptions
+              </button>
+              <br />
+              {contractAccepted && <PatientList username={username} />}
+              {error && <Typography variant="h6">{error}</Typography>}
+              {contractAccepted && <Slots username={username} />}
+              {contractAccepted && <Requests username={username} />}
+              <Contract
+                setContractAccepted={setContractAccepted}
+                contractAccepted={contractAccepted}
+                username={username}
+              />
+            </Container>
+          ) : (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                marginTop: "20%",
+              }}
+            >
+              <Loading />
+            </Box>
+          )}
+        </div>
       ) : (
-        <Box
-          sx={{ display: "flex", justifyContent: "center", marginTop: "20%" }}
-        >
-          <Loading />
-        </Box>
+        <h2>No access</h2>
       )}
     </div>
   );

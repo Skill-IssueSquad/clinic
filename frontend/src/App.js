@@ -29,6 +29,7 @@ import Follow from "./pages/Doctor/FollowUp";
 import WalletPayment from "./pages/Patient/WalletPayment";
 import CreditCardPayment from "./pages/Patient/CreditCardPayment";
 import DoctorPrescriptions from "./pages/Doctor/Prescriptions";
+import DoctorChat from "./pages/Doctor/DoctorChat";
 import { useState } from "react";
 import ChangePassword from "./pages/ChangePassword";
 
@@ -124,6 +125,7 @@ function App() {
               path="/doctor/prescriptions"
               element={<DoctorPrescriptions />}
             />
+            <Route exact path="/Doctor_Chat" element={<DoctorChat />} />
           </Routes>
         </div>
       </BrowserRouter>

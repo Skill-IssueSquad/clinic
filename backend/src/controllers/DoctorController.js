@@ -1350,18 +1350,26 @@ const getPrescriptions = async (req, res) => {
 const getChatPatients = async (req, res) => {
   try {
     const { username } = req.params;
-    const patientList = await Doctor.findOne({ username }).patientList;
+    const doctor = await Doctor.findOne({ username });
+    var patientList = doctor.patientList;
     const patients = [];
-    for (const patient of patientList) {
-      const patientId = patient.patient_id;
+    const usernames = [];
+    for (var i = 0; i < patientList.length; i++) {
+      const patientId = patientList[i].patient_id;
       const patientObj = await Patient.findById(patientId);
+      if (!patientObj) {
+        continue;
+      }
       const patientName = patientObj.name;
       const patientUsername = patientObj.username;
       const patientInfo = {
-        name: patientName,
+        name: `${patientName}(${patientUsername})`,
         id: patientId,
       };
-      patients.push(patientInfo);
+      if (!usernames.includes(patientUsername)) {
+        patients.push(patientInfo);
+        usernames.push(patientUsername);
+      }
     }
     const send = {
       success: true,

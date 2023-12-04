@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   FormControl,
   InputLabel,
@@ -16,6 +17,7 @@ import {
   Paper,
 } from "@mui/material";
 const PatientList = ({ username }) => {
+  const navigate = useNavigate();
   const [patients, setPatients] = useState([]);
   useEffect(() => {
     const f = async () => {
@@ -26,14 +28,16 @@ const PatientList = ({ username }) => {
     };
     f();
   }, []);
-  const handelAccept = async (patient) => {};
+  const chat = (patient) => {
+    navigate("/Doctor_Chat", { state: { patientID: patient.id } });
+  };
 
   return (
     <div>
       <h1>Chat with patients</h1>
-      <div style={{ maxWidth: 550 }}>
+      <div style={{ maxWidth: 300 }}>
         <TableContainer component={Paper}>
-          <Table sx={{ maxWidth: 350 }} aria-label="simple table">
+          <Table sx={{ maxWidth: 300 }} aria-label="simple table">
             <TableHead>
               <TableRow>
                 <TableCell>Patient Name</TableCell>
@@ -41,9 +45,9 @@ const PatientList = ({ username }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {requests.map((patient) => (
+              {patients.map((patient) => (
                 <TableRow
-                  key={request._id}
+                  key={patient._id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell>{patient.name}</TableCell>
@@ -51,7 +55,7 @@ const PatientList = ({ username }) => {
                     <Button
                       variant="contained"
                       color="primary"
-                      onClick={() => handelAccept(patient)}
+                      onClick={() => chat(patient)}
                     >
                       Chat
                     </Button>
