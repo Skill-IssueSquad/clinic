@@ -8,7 +8,7 @@ const mongoose = require("mongoose");
 const sendPrescriptionMedicinesToPharmacy = async (req, res) => {
 
     const {username}= req.body;
-
+    console.log("I reached here: "+username);
     // find if there is patient with this username
     try {
         const patient = await getPatient(username);
@@ -23,7 +23,12 @@ const sendPrescriptionMedicinesToPharmacy = async (req, res) => {
                 
                 let prescription = await Prescription.findOne({ _id: prescriptionIDs[i].prescription_id });
 
-                prescriptions.push(prescription);
+                console.log(prescription);
+              //  if(prescription.isFilled === false){
+                if(prescription.isFilled == false){
+                  prescriptions.push(prescription);
+                }
+              //  }
             }
 
 
@@ -35,7 +40,7 @@ const sendPrescriptionMedicinesToPharmacy = async (req, res) => {
                }
                
             }
-            console.log(medicinesArray);
+          //  console.log(medicinesArray);
 
 
 
