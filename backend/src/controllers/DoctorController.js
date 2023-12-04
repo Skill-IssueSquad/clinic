@@ -1227,10 +1227,25 @@ const getPrescriptions = async (req, res) => {
       const doctorId = doctor._id;
       var appointments = await Appointments.find({ doctor_id: doctorId });
       var prescriptionIDs = [];
+      var valid = true;
       for (const appointment of appointments) {
-        prescriptionIDs.push(appointment.prescription_id);
+        valid = true;
+        if (
+          appointment.prescription_id !== undefined &&
+          appointment.prescription_id !== null &&
+          appointment.prescription_id !== ""
+        ) {
+          for (var id of prescriptionIDs) {
+            if (id.toString() === appointment.prescription_id.toString()) {
+              valid = false;
+            }
+          }
+          if (valid) {
+            prescriptionIDs.push(appointment.prescription_id);
+          }
+        }
       }
-
+      console.log(prescriptionIDs);
       var prescriptions = [];
 
       for (const prescription_id of prescriptionIDs) {
