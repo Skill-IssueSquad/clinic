@@ -2,6 +2,12 @@ require("dotenv").config();
 
 const express = require("express");
 const app = express();
+
+//socket for video server
+//server is only used to set up the rooms
+const socketVideoServer = require("http").createServer(app);
+const videoIo = require("socket.io")(socketVideoServer);
+
 const cors = require("cors");
 const mongoose = require("mongoose");
 const doctorRouter = require("./src/routes/DoctorRouter");
@@ -9,11 +15,13 @@ const adminRouter = require("./src/routes/AdminRouter");
 const PatientRegisteration = require("./src/routes/patientRegisteration");
 const DoctorRegisteration = require("./src/routes/doctorRegisteration");
 const patientRouter = require("./src/routes/PatientRouter");
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY, { apiVersion: '' });
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: "",
+});
 // Import necessary modules
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
 
 // ... (previous imports and functions)
 
@@ -21,7 +29,7 @@ const fs = require('fs');
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     // Specify the directory where the files will be stored
-    const uploadDir = './uploads/';
+    const uploadDir = "./uploads/";
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir);
     }
@@ -29,24 +37,32 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     // Generate a unique filename for the uploaded file
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     const fileExtension = path.extname(file.originalname);
-    cb(null, file.fieldname + '-' + uniqueSuffix + fileExtension);
+    cb(null, file.fieldname + "-" + uniqueSuffix + fileExtension);
   },
 });
 
-const upload = multer({ storage: storage });const doctorRequestRouter = require("./src/routes/DoctorRequestRouter");
+const upload = multer({ storage: storage });
+const doctorRequestRouter = require("./src/routes/DoctorRequestRouter");
 const accountRouter = require("./src/routes/AccountRouter");
-const cookieParser = require('cookie-parser');
-const {authAdmin, authDoctor, authDoctorRequest ,authPatient} = require("./src/middleware/Authentication");
+const cookieParser = require("cookie-parser");
+const {
+  authAdmin,
+  authDoctor,
+  authDoctorRequest,
+  authPatient,
+} = require("./src/middleware/Authentication");
 const doctorRequest = require("./src/models/DoctorRequest");
-
 
 mongoose
   .connect(process.env.DATABASE_URL, { useNewUrlParser: true })
   .then(() => {
     app.listen(process.env.PORT, () =>
       console.log("Server Started on port ", process.env.PORT)
+    );
+    socketVideoServer.listen(process.env.VIDEO_PORT, () =>
+      console.log("Video Server Started on port ", process.env.VIDEO_PORT)
     );
   })
   .catch((err) => console.log(err));
@@ -74,7 +90,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use("/DoctorStaticData", express.static("DoctorStaticData"));
 app.use("/documents", express.static("documents"));
-app.use("/Documents", express.static("Documents"))
+app.use("/Documents", express.static("Documents"));
 
 app.use(cookieParser());
 app.use("/doctor", authDoctor, doctorRouter);
@@ -86,5 +102,3 @@ app.use("/register/doctor", DoctorRegisteration);
 app.use("/patient", patientRouter);
 app.use("/account", accountRouter);
 app.use("/doctorRequest", authDoctorRequest, doctorRequestRouter);
-
-

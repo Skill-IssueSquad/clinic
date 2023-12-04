@@ -33,6 +33,7 @@ import { useState } from "react";
 import ChangePassword from "./pages/ChangePassword";
 import PatientPrescriptions from "./pages/Patient/PatientPrescriptions";
 import PatientRequestFollowUp from "./pages/Patient/PatientRequestFollowUp";
+import CallDoctor from "./pages/CallDoctor";
 
 function App() {
   return (
@@ -75,9 +76,7 @@ function App() {
               path="/Admin/ViewPackages"
               element={<ViewPackages />}
             />
-
             <Route exact path="/patient/" element={<Patient />} />
-
             <Route
               exact
               path="/patient/doctors/"
@@ -93,52 +92,45 @@ function App() {
               path="/patient/healthPackages/"
               element={<HealthPackageShop />}
             />
-
             <Route
               exact
               path="/patient/bookSlots/:doctor_id"
               element={<PatientBookSlots />}
             />
-
             <Route
               exact
               path="/patient/rescheduleSlot/:doctor_id/:appointment_id"
               element={<PatientRescheduleSlots />}
             />
-
             <Route
               exact
               path="/patient/requestFollowUp/:doctor_id/:appointment_id"
               element={<PatientRequestFollowUp />}
             />
-
-            //<Route exact path="/patient/payments/" element={<Payments />} />
-
+            //
+            <Route exact path="/patient/payments/" element={<Payments />} />
             <Route exact path="/patient/wallet/" element={<WalletBalance />} />
-
             <Route
               exact
               path="/patient/payment/:transit_id"
               element={<Payment />}
             />
-
             <Route
               exact
               path="/patient/creditCardPayment/"
               element={<CreditCardPayment />}
             />
-
             <Route
               exact
               path="/patient/prescriptions"
               element={<PatientPrescriptions />}
             />
-
             <Route
               exact
               path="/patient/medicalHistory/"
               element={<MedicalHistory />}
             />
+            <Route exact path="/videoCall/" element={<CallDoctor />} />
           </Routes>
         </div>
       </BrowserRouter>
