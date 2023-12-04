@@ -17,8 +17,12 @@ import CircularProgress from "@mui/joy/CircularProgress";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import { auth } from "../../pages/Protected/AuthProvider";
+import Typography from "@mui/joy/Typography";
+import Card from "@mui/joy/Card";
+import Stack from "@mui/joy/Stack";
+import { Box } from "@mui/material";
 
 let fullRows = [];
 
@@ -36,9 +40,9 @@ function displayDate(date) {
   return `${year}/${month}/${day} ${hour}:${minute} ${ampm}`;
 }
 
-let testcols = []
+let testcols = [];
 
-const PatientMultiLevel = ({ columns, API_GET_URL, reqBody }) => {
+const PatientMultiLevel = ({ columns, API_GET_URL, reqBody, loadng}) => {
   const navigate = useNavigate();
   const initFilter = {};
   columns.forEach((key) => {
@@ -50,17 +54,23 @@ const PatientMultiLevel = ({ columns, API_GET_URL, reqBody }) => {
   const [loading, setLoading] = useState(true); // Add a loading state
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedRow, setSelectedRow] = useState({});
+  const [canBook, setCanBook] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true); // Set loading to true before fetching data
+        loadng(true);
         const response = await axios.post(API_GET_URL, reqBody);
         setLoading(false); // Set loading to false when data is fetched
-        const initialRows = response.data.data;
+        loadng(false);
+        const initialRows = response.data.data.doctors;
+        setCanBook(response.data.data.amountDue === 0);
         fullRows = initialRows;
 
-        testcols = columns.map((col) => {return col.toLowerCase()})
+        testcols = columns.map((col) => {
+          return col.toLowerCase();
+        });
 
         //const rows = initialRows
 
@@ -68,14 +78,16 @@ const PatientMultiLevel = ({ columns, API_GET_URL, reqBody }) => {
 
         setRows(initialRows);
         setLoading(false); // Set loading to false when data is available
+        loadng(false);
       } catch (error) {
         console.error("Error fetching data:", error);
         setLoading(false); // Set loading to false in case of an error
+        loadng(false);
       }
     };
 
     fetchData();
-  }, [API_GET_URL, columns, reqBody]);
+  }, [API_GET_URL, reqBody]);
 
   // const handleOpenDialog = () => {
   //   setOpenDialog(true);
@@ -203,101 +215,110 @@ const PatientMultiLevel = ({ columns, API_GET_URL, reqBody }) => {
     return <CircularProgress variant="solid" />; // Render a loading message
   }
 
-  
-
-
   const handleBookSlotsClick = (doctorId) => {
     // Use the navigate function to navigate to the specified URL
     navigate(`/patient/bookslots/${doctorId}`);
   };
 
   return (
-    <div>
-      {columns.map((key) => (
-        <TextField
-          label={"Filter by " + key}
-          name={key}
-          value={filter[key] || ""}
-          onChange={handleFilterChange}
-        />
-      ))}
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              {columns.map((key) => (
-                <TableCell>
-                  {key.toUpperCase()}{" "}
-                  <Button
-                    size="small"
-                    onClick={() => handleSort(key)}
-                    startIcon={
-                      sorting.field === key ? (
-                        sorting.order === "asc" ? (
-                          <ArrowUpwardIcon />
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      justifyContent="center"
+      minHeight="90vh"
+    >
+      <Card
+        sx={{
+          maxWidth: "100ch",
+        }}
+      >
+       <div style={{ display: "flex", alignItems: "center" }}>
+        {columns.map((key) => (
+          <TextField
+            label={"Filter by " + key}
+            name={key}
+            value={filter[key] || ""}
+            onChange={handleFilterChange}
+            style={{ marginRight: "10px" }} 
+          />
+        ))}
+        </div>
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                {columns.map((key) => (
+                  <TableCell>
+                    {key.toUpperCase()}{" "}
+                    <Button
+                      size="small"
+                      onClick={() => handleSort(key)}
+                      startIcon={
+                        sorting.field === key ? (
+                          sorting.order === "asc" ? (
+                            <ArrowUpwardIcon />
+                          ) : (
+                            <ArrowDownwardIcon />
+                          )
                         ) : (
                           <ArrowDownwardIcon />
                         )
-                      ) : (
-                        <ArrowDownwardIcon />
-                      )
-                    }
-                  ></Button>
-                </TableCell>
-              ))}
-              <TableCell>Book Slots</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredRows.map((row, i) => (
-              <TableRow>
-                {columns.map((key) => (
-                  <React.Fragment>
-                    {key === "name" ? (
-                      <TableCell>
-                        <button
-                          className="button"
-                          onClick={() => handleOpenDialog(row)}
-                        >
-                          {row[key]}
-                        </button>
-                      </TableCell>
-                    ) : (
-                      <TableCell>{row[key]}</TableCell>
-                    )}
-                  </React.Fragment>
+                      }
+                    ></Button>
+                  </TableCell>
                 ))}
-                <TableCell>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={
-                      () => handleBookSlotsClick(row["_id"])}
-                    
-                  >
-                    View Free Slots
-                  </Button>
-                </TableCell>
+                <TableCell>Book Slots</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      {fullRows.length > 0 ? (
-        <Dialog open={openDialog} onClose={handleCloseDialog}>
-          {selectedRow !== null && (
-            <>
-              <DialogTitle>{selectedRow.name}</DialogTitle>
-              <DialogContent>
-                {console.log("Current Doc Data ", selectedRow)}
-                {Object.keys(selectedRow).map((innerKey) =>
-                  innerKey === "patientList" ? null : innerKey ===
-                    "password" ? null : innerKey === "__v" ? null : innerKey ===
-                    "_id" ? null : innerKey === "availableSlots" ? (
-                    <div key={innerKey}>
-                      <p>Available slots</p>
-                      {selectedRow[innerKey].map(
-                        (slot, index) => (
+            </TableHead>
+            <TableBody>
+              {filteredRows.map((row, i) => (
+                <TableRow>
+                  {columns.map((key) => (
+                    <React.Fragment>
+                      {key === "name" ? (
+                        <TableCell>
+                          <button
+                            className="button"
+                            onClick={() => handleOpenDialog(row)}
+                          >
+                            {row[key]}
+                          </button>
+                        </TableCell>
+                      ) : (
+                        <TableCell>{row[key]}</TableCell>
+                      )}
+                    </React.Fragment>
+                  ))}
+                  <TableCell>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={() => handleBookSlotsClick(row["_id"])}
+                    >
+                      View Free Slots
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        {fullRows.length > 0 ? (
+          <Dialog open={openDialog} onClose={handleCloseDialog}>
+            {selectedRow !== null && (
+              <>
+                <DialogTitle>{selectedRow.name}</DialogTitle>
+                <DialogContent>
+                  {console.log("Current Doc Data ", selectedRow)}
+                  {Object.keys(selectedRow).map((innerKey) =>
+                    innerKey === "patientList" ? null : innerKey ===
+                      "password" ? null : innerKey ===
+                      "__v" ? null : innerKey === "_id" ? null : innerKey ===
+                      "availableSlots" ? (
+                      <div key={innerKey}>
+                        <p>Available slots</p>
+                        {selectedRow[innerKey].map((slot, index) => (
                           <div key={index}>
                             <p>
                               startTime: {displayDate(new Date(slot.startTime))}
@@ -306,21 +327,21 @@ const PatientMultiLevel = ({ columns, API_GET_URL, reqBody }) => {
                               endTime: {displayDate(new Date(slot.endTime))}
                             </p>
                           </div>
-                        )
-                      )}
-                    </div>
-                  ) : (
-                    <p key={innerKey}>
-                      {innerKey}: {selectedRow[innerKey]}
-                    </p>
-                  )
-                )}
-              </DialogContent>
-            </>
-          )}
-        </Dialog>
-      ) : null}
-    </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p key={innerKey}>
+                        {innerKey}: {selectedRow[innerKey]}
+                      </p>
+                    )
+                  )}
+                </DialogContent>
+              </>
+            )}
+          </Dialog>
+        ) : null}
+      </Card>
+    </Box>
   );
 };
 

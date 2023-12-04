@@ -48,7 +48,7 @@ const editWalletBalance = async (req, res) => {
     ).catch((err) => {
       return res.status(500).json({
         success: false,
-        data: {newWalletBalance, username},
+        data: { newWalletBalance, username },
         message:
           err.message || "Some error occurred while updating wallet balance.",
       });
@@ -56,17 +56,18 @@ const editWalletBalance = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data: {patient, newWalletBalance},
+      data: { patient, newWalletBalance },
       message: "Wallet balance updated successfully",
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
       data: null,
-      message: error.message || "Some error occurred while updating wallet balance.",
+      message:
+        error.message || "Some error occurred while updating wallet balance.",
     });
   }
-}
+};
 
 const getPatientAPIByID = async (req, res) => {
   const { id } = req.params;
@@ -365,7 +366,7 @@ const getAllAppointments = async (req, res) => {
 
       return res.status(200).json({
         success: true,
-        data: fullAppointments,
+        data: { appointments: fullAppointments, amountDue: patient.amountDue },
         message: "Successfully retrieved all appointments",
       });
     } else {
@@ -519,7 +520,7 @@ const viewAllDoctors = async (req, res) => {
 
     const markup = (await Clinic.findOne({})).markupPercentage;
 
-    doctors = doctors.map(async (doctor) => {
+    doctors = doctors.map((doctor) => {
       // get each doctors markup from contract
       // if (doctor.contracts.length > 0) {
 
@@ -528,7 +529,7 @@ const viewAllDoctors = async (req, res) => {
 
       const package =
         patient.healthPackageType.status === "subscribed"
-          ? await Packages.findOne({ type: patient.healthPackageType.type })
+          ? Packages.findOne({ type: patient.healthPackageType.type })
           : null;
 
       const sessionPrice = (
@@ -550,7 +551,7 @@ const viewAllDoctors = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data: doctors,
+      data: { doctors: doctors, amountDue: patient.amountDue },
       message: "Successfully retrieved all doctors",
     });
   } catch (err) {
@@ -617,7 +618,7 @@ const viewAllDoctorsAvailable = async (req, res) => {
       let discount = 0;
       const package =
         patient.healthPackageType.status === "subscribed"
-          ? await Packages.findOne({ type: patient.healthPackageType.type })
+          ? Packages.findOne({ type: patient.healthPackageType.type })
           : null;
 
       const sessionPrice = (
@@ -893,7 +894,7 @@ const bookAppointment = async (req, res) => {
       );
     } else {
       // check patient list
-      let found = req.body.patient_id in doctor.patientList;
+      let found = doctor.patientList.includes(req.body.patient_id);
 
       if (!found) {
         doctor.patientList.push({ patient_id: req.body.patient_id });
@@ -1198,14 +1199,16 @@ const requestFollowUp = async (req, res) => {
     }
 
     // get patient name
-    const currPatient = await Patient.findById(completedAppointment.patient_id).catch((err) => {
-        return sendResponse(
-          500,
-          false,
-          req.body,
-          err.message || "Some error occurred while retrieving patient name."
-        );
-      });
+    const currPatient = await Patient.findById(
+      completedAppointment.patient_id
+    ).catch((err) => {
+      return sendResponse(
+        500,
+        false,
+        req.body,
+        err.message || "Some error occurred while retrieving patient name."
+      );
+    });
 
     // book the new slot
     const doctorNewSlot = await Doctor.findByIdAndUpdate(
@@ -1277,17 +1280,47 @@ const requestFollowUp = async (req, res) => {
         return sendResponse(
           500,
           false,
-          {...req.body, sessionPrice:sessionPrice},
+          { ...req.body, sessionPrice: sessionPrice },
           err.message || "Some error occurred while requesting appointment."
         );
       }
     });
 
+    // add money to doctor's wallet
+    const modifyMoney = await Doctor.findByIdAndUpdate(
+      req.body.doctor_id,
+      {
+        walletBalance: doctorNewSlot.walletBalance + sessionPrice,
+      },
+      { new: true }
+    ).catch((err) => {
+      if (err) {
+        return sendResponse(
+          500,
+          false,
+          { ...req.body, sessionPrice: sessionPrice },
+          err.message ||
+            "Some error occurred while adding money to doctor's wallet."
+        );
+      }
+    });
+
+    if (!modifyMoney) {
+      return sendResponse(
+        500,
+        false,
+        { ...req.body, sessionPrice: sessionPrice },
+        err.message ||
+          "Some error occurred while adding money to doctor's wallet."
+      );
+    }
+
+
     if (!appointment) {
       return sendResponse(
         500,
         false,
-        {...req.body, sessionPrice:sessionPrice, doctor: doctorNewSlot},
+        { ...req.body, sessionPrice: sessionPrice, doctor: doctorNewSlot },
         err.message || "Some error occurred while requesting appointment."
       );
     }
@@ -1302,7 +1335,7 @@ const requestFollowUp = async (req, res) => {
     return sendResponse(
       500,
       false,
-      {...req.body, sessionPrice:sessionPrice, doctor: doctorNewSlot},
+      { ...req.body, sessionPrice: sessionPrice, doctor: doctorNewSlot },
       err.message || "Some error occurred while requesting follow-up."
     );
   }
@@ -1419,7 +1452,8 @@ const cancelAppointment = async (req, res) => {
       Math.abs(
         currentDate.getTime() - new Date(selectedAppointment.date).getTime()
       ) >=
-      24 * 60 * 60 * 1000
+        24 * 60 * 60 * 1000 &&
+      selectedAppointment.status !== "pending"
     ) {
       // remove from doc's wallet using API
       const negBalance = selectedAppointment.price.doctor;
@@ -1448,6 +1482,25 @@ const cancelAppointment = async (req, res) => {
         patient._id,
         {
           walletBalance: newBalance,
+        },
+        { new: true }
+      ).catch((err) => {
+        if (err) {
+          return sendResponse(
+            500,
+            false,
+            req.params,
+            err.message || "Some error occurred while refunding to your wallet."
+          );
+        }
+      });
+    } else if (selectedAppointment.status === "pending") {
+      // remove from doc's wallet using API
+      const negBalance = selectedAppointment.price.patient;
+      let updatedPatient = await Patient.findByIdAndUpdate(
+        selectedAppointment.patient_id,
+        {
+          $inc: { amountDue: -1 * negBalance },
         },
         { new: true }
       ).catch((err) => {
@@ -1771,43 +1824,40 @@ const tempSub = async (req, res) => {
   //res.redirect(307, "/patient/subscribe");
 
   try {
-
-    const payment = await PaymentTransit.create(
-      {
-        totalPrice: data.price * (famLen + linkedLen + 1),
-        items: [
-          {
-            name:
-              data.healthPackage +
-              " Health Package Subscription" +
-              " (Renewal: " +
-              data.renewal +
-              ")",
-            quantity: famLen + linkedLen + 1,
-            price: data.price * (famLen + linkedLen + 1),
-          },
-        ],
-        payload: {
-          username: data.username,
-          healthPackage: data.healthPackage,
-          renewal: data.renewal,
+    const payment = await PaymentTransit.create({
+      totalPrice: data.price * (famLen + linkedLen + 1),
+      items: [
+        {
+          name:
+            data.healthPackage +
+            " Health Package Subscription" +
+            " (Renewal: " +
+            data.renewal +
+            ")",
+          quantity: famLen + linkedLen + 1,
+          price: data.price * (famLen + linkedLen + 1),
         },
-        postURL: `patient/${username}/subscriptions/subscribe`,
-      }).catch((err) => {
-        return res.status(500).json({
-          success: false,
-          data: null,
-          message: err.message || "Some error occurred while creating payment transit.",
-        });
-      }
-    );
+      ],
+      payload: {
+        username: data.username,
+        healthPackage: data.healthPackage,
+        renewal: data.renewal,
+      },
+      postURL: `patient/${username}/subscriptions/subscribe`,
+    }).catch((err) => {
+      return res.status(500).json({
+        success: false,
+        data: null,
+        message:
+          err.message || "Some error occurred while creating payment transit.",
+      });
+    });
 
     return res.status(200).json({
       success: true,
       data: payment,
       message: "Data sent successfully",
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -2065,8 +2115,129 @@ const getTransitData = async (req, res) => {
       data: null,
       message: error.message || "Some error occurred while performing request",
     });
-  } 
-}
+  }
+};
+
+const payDoctorScheduledFollowUp = async (req, res) => {
+  // ASSUMES JWT AUTHENTICATION
+  // EXPECTED INPUT: param: self_username, { doctor_id: "69fe353h55g3h34hg53h",
+  // appointment_id: "69fe353h55g3h34hg53h"},
+
+  let responseSent = false; // Track whether a response has been sent
+  const sendResponse = (statusCode, success, data, message) => {
+    if (!responseSent) {
+      responseSent = true;
+      return res.status(statusCode).json({ success: success, data, message });
+    }
+  };
+
+  try {
+    const selectedAppointment = await Appointments.findById(
+      req.body.appointment_id
+    ).catch((err) => {
+      if (err) {
+        return sendResponse(
+          500,
+          false,
+          req.body,
+          err.message || "Some error occurred while retrieving appointment."
+        );
+      }
+    });
+
+    // auth check
+    const username = req.params.username;
+    const patient = await getPatient(username);
+    let isLinked = patient.linkedAccounts.find((elem) => {
+      String(elem.patient_id) === String(selectedAppointment.patient_id);
+    })
+      ? true
+      : false;
+    if (
+      String(patient._id) !== String(selectedAppointment.patient_id) &&
+      !isLinked
+    ) {
+      return sendResponse(
+        401,
+        false,
+        {
+          ...req.body,
+          pid: patient._id,
+          app_p_pid: selectedAppointment.patient_id,
+        },
+        "Unauthorized to pay for this patient"
+      );
+    }
+
+    // remove from patients due (from wallet handled by payment page)
+    const amountDue = patient.amountDue - selectedAppointment.price.patient;
+    let updatedPatient = await Patient.findByIdAndUpdate(
+      patient._id,
+      {
+        amountDue: amountDue,
+      },
+      { new: true }
+    ).catch((err) => {
+      if (err) {
+        return sendResponse(
+          500,
+          false,
+          req.body,
+          err.message || "Some error occurred while paying from your wallet."
+        );
+      }
+    });
+
+    // add to doc's wallet
+    const modifyMoney = await Doctor.findByIdAndUpdate(
+      selectedAppointment.doctor_id,
+      {
+        $inc: { walletBalance: selectedAppointment.price.doctor },
+      },
+      { new: true }
+    ).catch((err) => {
+      if (err) {
+        return sendResponse(
+          500,
+          false,
+          req.body,
+          err.message || "Some error occurred while paying to doctor's wallet."
+        );
+      }
+    });
+
+    // set appointment to upcoming
+    const editedAppointment = await Appointments.findByIdAndUpdate(
+      selectedAppointment._id,
+      {
+        status: "upcoming",
+      },
+      { new: true }
+    ).catch((err) => {
+      if (err) {
+        return sendResponse(
+          500,
+          false,
+          req.body,
+          err.message || "Some error occurred while mofidying appointment."
+        );
+      }
+    });
+
+    return sendResponse(
+      200,
+      true,
+      editedAppointment,
+      "Payment successful"
+    );
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: error.message || "Some error occurred while performing request",
+    });
+  }
+};
 
 module.exports = {
   addFamMember,
@@ -2096,4 +2267,5 @@ module.exports = {
   cancelAppointment,
   requestFollowUp,
   getTransitData,
+  payDoctorScheduledFollowUp,
 };

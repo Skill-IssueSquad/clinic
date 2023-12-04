@@ -24,14 +24,20 @@ export default function AppointmentSplitButton({
   appointment_id,
   none,
   refresh,
+  canBook,
+  pending
 }) {
   const navigate = useNavigate();
   none = none || (old && !appointment);
   const options = none
-  ? ["No Actions"]
-  : appointment
-  ? ["Select Action", old ? "Request Follow-up" : "Reschedule Appointment", ...(old ? [] : ["Cancel"])]
-  : ["Select Action", ...(old ? ["Cancel"] : [])];
+    ? ["No Actions"]
+    : appointment
+    ? [
+        "Select Action",
+        old ? "Request Follow-up" : "Reschedule Appointment",
+        ...(old ? [] : ["Cancel"]),
+      ]
+    : pending ? ["Select Action", "Pay", "Cancel"]: ["Select Action", ...(old ? ["Cancel"] : [])];
 
   let clr = "";
   const [open, setOpen] = React.useState(false);
@@ -43,16 +49,32 @@ export default function AppointmentSplitButton({
   const [showClose, setShowClose] = React.useState(false);
 
   const handleClick = () => {
-    if (options[selectedIndex] === "Reschedule Appointment") {
-      navigate(`/patient/rescheduleSlot/${doctor_id}/${appointment_id}`);
-    } else if (options[selectedIndex] === "Request Follow-up") {
-      navigate(`/patient/requestFollowUp/${doctor_id}/${appointment_id}`);
-    } else if (options[selectedIndex] === "Cancel") {
+    if (canBook || options[selectedIndex] === "Cancel" || pending) {
+      if (options[selectedIndex] === "Reschedule Appointment") {
+        navigate(`/patient/rescheduleSlot/${doctor_id}/${appointment_id}`);
+      } else if (options[selectedIndex] === "Request Follow-up") {
+        navigate(`/patient/requestFollowUp/${doctor_id}/${appointment_id}`);
+      } else if (options[selectedIndex] === "Cancel") {
+        handleDiagOpen();
+      } else if (options[selectedIndex] === "Select Action") {
+        openOptions();
+      } else if (options[selectedIndex] === "Pay") {
+        handleDocPay();
+      }
+    } else {
       handleDiagOpen();
-    } else if (options[selectedIndex] === "Select Action") {
-      openOptions();
     }
   };
+
+  const handleDocPay = async () => {
+    const res = await axios.post(
+      `http://localhost:8000/patient/${localStorage.getItem("username")}/docFollowUpPay`, {doctor_id, appointment_id}
+    );
+
+    if (res.data.success) {
+      refresh(true);
+    }
+  }
 
   const handleMenuItemClick = (event, index) => {
     setSelectedIndex(index);
@@ -180,34 +202,45 @@ export default function AppointmentSplitButton({
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {"Appointment Cancellation"}
+          {canBook  || options[selectedIndex] === "Cancel" ? "Appointment Cancellation": "Action Blocked"}
         </DialogTitle>
         <DialogContent>
-          {!diagLoading && cancelMsg == null ? (
-            <DialogContentText id="alert-dialog-description">
-              Are you sure you want to cancel this appointment?
-            </DialogContentText>
-          ) : cancelMsg !== null ? (
-            <DialogContentText id="alert-dialog-description">
-              {cancelMsg}
-            </DialogContentText>
+          {canBook || options[selectedIndex] === "Cancel"? (
+            !diagLoading && cancelMsg == null ? (
+              <DialogContentText id="alert-dialog-description">
+                Are you sure you want to cancel this appointment?
+              </DialogContentText>
+            ) : cancelMsg !== null ? (
+              <DialogContentText id="alert-dialog-description">
+                {cancelMsg}
+              </DialogContentText>
+            ) : (
+              <DialogContentText id="alert-dialog-description">
+                cancelling...
+              </DialogContentText>
+            )
           ) : (
             <DialogContentText id="alert-dialog-description">
-              cancelling...
+              Please pay any pending follow-up fees or cancel them to proceed.
             </DialogContentText>
           )}
+
           {diagLoading && <CircularProgress variant="solid" />}
         </DialogContent>
         <DialogActions>
-          {!showClose ? (
-            <div>
-              <Button onClick={() => handleClose("no")}>No</Button>
-              <Button onClick={() => handleClose("yes")} autoFocus>
-                Yes
-              </Button>
-            </div>
+          {canBook || options[selectedIndex] === "Cancel" ? (
+            !showClose ? (
+              <div>
+                <Button onClick={() => handleClose("no")}>No</Button>
+                <Button onClick={() => handleClose("yes")} autoFocus>
+                  Yes
+                </Button>
+              </div>
+            ) : (
+              <Button onClick={() => handleClose("close")}>Close</Button>
+            )
           ) : (
-            <Button onClick={() => handleClose("close")}>Close</Button>
+            <Button onClick={() => handleClose("jclose")}>Close</Button>
           )}
         </DialogActions>
       </Dialog>
