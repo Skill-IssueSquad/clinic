@@ -1,5 +1,5 @@
 require("dotenv").config();
-
+const { Server } = require("socket.io");
 const express = require("express");
 const app = express();
 const cors = require("cors");
@@ -14,18 +14,12 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY, {
 });
 const { equateBalance } = require("./src/controllers/Balance");
 const { completeAppointments } = require("./src/controllers/DoctorController");
-// Import necessary modules
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const cron = require("node-cron");
-
-// ... (previous imports and functions)
-
-// Multer configuration
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    // Specify the directory where the files will be stored
     const uploadDir = "./uploads/";
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir);
@@ -33,13 +27,11 @@ const storage = multer.diskStorage({
     cb(null, uploadDir);
   },
   filename: function (req, file, cb) {
-    // Generate a unique filename for the uploaded file
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     const fileExtension = path.extname(file.originalname);
     cb(null, file.fieldname + "-" + uniqueSuffix + fileExtension);
   },
 });
-
 const upload = multer({ storage: storage });
 const doctorRequestRouter = require("./src/routes/DoctorRequestRouter");
 const accountRouter = require("./src/routes/AccountRouter");
@@ -51,7 +43,23 @@ const {
   authPatient,
 } = require("./src/middleware/Authentication");
 const doctorRequest = require("./src/models/DoctorRequest");
+const io = new Server(process.env.SOCKET_PORT, {
+  cors: {
+    origin: "*",
+  },
+});
 
+io.on("connection", (socket) => {
+  console.log(`Socket ID : ${socket.id}`);
+  socket.on("join-room", (data) => {
+    //console.log(data);
+    socket.join(data.roomId);
+    console.log("Joined room ", data.roomId);
+  });
+  socket.on("disconnect", () => {
+    console.log("User disconnected");
+  });
+});
 mongoose
   .connect(process.env.DATABASE_URL, { useNewUrlParser: true })
   .then(() => {
