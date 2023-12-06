@@ -6,9 +6,7 @@ import io from "socket.io-client";
 const socket = io.connect("http://localhost:8080");
 const Chat = () => {
   let show = false;
-  const navigate = useNavigate();
   const location = useLocation();
-  var isDoctor = false;
   const [messages, setMessages] = useState([]);
   const [currentMessage, setCurrentMessage] = useState("");
   var doctorUsername = "";
@@ -22,7 +20,6 @@ const Chat = () => {
     if (localStorage.getItem("role") === "Doctor") {
       doctorUsername = localStorage.getItem("username");
       patientUsername = location.state.username;
-      isDoctor = true;
     }
 
     if (localStorage.getItem("role") === "Patient") {
