@@ -29,7 +29,7 @@ const PatientList = ({ username }) => {
     f();
   }, []);
   const chat = (patient) => {
-    navigate("/Doctor_Chat", { state: { patientID: patient.id } });
+    navigate("/Doctor_Chat", { state: { username: patient.username } });
   };
 
   return (

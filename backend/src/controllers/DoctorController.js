@@ -1364,7 +1364,7 @@ const getChatPatients = async (req, res) => {
       const patientUsername = patientObj.username;
       const patientInfo = {
         name: `${patientName}(${patientUsername})`,
-        id: patientId,
+        username: patientUsername,
       };
       if (!usernames.includes(patientUsername)) {
         patients.push(patientInfo);

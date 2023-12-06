@@ -19,6 +19,7 @@
     "node-cron": "^3.0.3",
     "nodemailer": "^6.9.7",
     "number-to-words": "^1.2.4",
+    "socket.io": "^4.7.2",
     "stripe": "^14.4.0"
   },
   "devDependencies": {
