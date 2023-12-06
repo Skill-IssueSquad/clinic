@@ -1,10 +1,11 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Grid, Card, CardContent, Typography } from "@mui/material";
 import io from "socket.io-client";
 import Peer from "peerjs";
 
 const VideoCall = () => {
   const videoGridRef = useRef(null);
+  let peers = {};
   const roomId = window.location.pathname.split("/")[2];
   const socket = io("http://localhost:8001");
   const myPeer = new Peer(undefined, {
@@ -12,7 +13,10 @@ const VideoCall = () => {
     port: "3001",
   });
 
-  const peers = {};
+  myPeer.on("open", (id) => {
+    console.log("peer id", id);
+    socket.emit("join-room", roomId, id);
+  });
 
   useEffect(() => {
     const myVideo = document.createElement("video");
@@ -35,11 +39,6 @@ const VideoCall = () => {
           call.on("stream", (userVideoStream) => {
             addVideoStream(video, userVideoStream);
           });
-
-          //if a user leaves the room we want to remove their video
-          call.on("close", () => {
-            video.remove();
-          });
         });
 
         //if a new user joins the room we want to send our stream to that user
@@ -52,12 +51,7 @@ const VideoCall = () => {
     socket.on("user-disconnected", (userId) => {
       if (peers[userId]) peers[userId].close();
     });
-
-    myPeer.on("open", (id) => {
-      console.log("peer id", id);
-      socket.emit("join-room", roomId, id);
-    });
-  }, []);
+  }, [peers]);
 
   const addVideoStream = (video, stream) => {
     video.srcObject = stream;
@@ -87,8 +81,8 @@ const VideoCall = () => {
   };
 
   return (
-    <Grid container spacing={2} ref={videoGridRef}>
-      <video autoPlay playsInline muted />
+    <Grid container spacing={2} className="video-grid" ref={videoGridRef}>
+      <video autoPlay playsInline muted style={{ display: "none" }} />
     </Grid>
   );
 };
