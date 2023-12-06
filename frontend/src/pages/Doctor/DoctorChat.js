@@ -75,7 +75,6 @@ const Chat = () => {
         <div>
           <div style={{ textAlign: "center" }}>
             <h1>EL7A2NI Live Chat</h1>
-            <p>Chatting ...</p>
           </div>
           <div
             style={{
