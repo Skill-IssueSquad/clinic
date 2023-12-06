@@ -56,6 +56,11 @@ io.on("connection", (socket) => {
     socket.join(data.roomId);
     console.log("Joined room ", data.roomId);
   });
+  socket.on("send-message", (data) => {
+    console.log(data);
+    //  socket.to(data.roomId).emit("receive-message", data.message);
+  });
+
   socket.on("disconnect", () => {
     console.log("User disconnected");
   });

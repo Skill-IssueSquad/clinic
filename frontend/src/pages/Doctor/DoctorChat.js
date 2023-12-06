@@ -8,6 +8,9 @@ const Chat = () => {
   let show = false;
   const navigate = useNavigate();
   const location = useLocation();
+  var isDoctor = false;
+  const [messages, setMessages] = useState([]);
+  const [message, setMessage] = useState("");
   var doctorUsername = "";
   var patientUsername = "";
   if (
@@ -19,6 +22,7 @@ const Chat = () => {
     if (localStorage.getItem("role") === "Doctor") {
       doctorUsername = localStorage.getItem("username");
       patientUsername = location.state.username;
+      isDoctor = true;
     }
 
     if (localStorage.getItem("role") === "Patient") {
@@ -31,12 +35,60 @@ const Chat = () => {
       roomId: doctorUsername + patientUsername,
     });
   }, []);
+  const handleSendMessage = async () => {
+    if (message === "" || message === null || message === undefined) {
+      alert("Please enter a message");
+      return;
+    }
+    const messageData = {
+      message: message,
+      senderUsername: isDoctor ? doctorUsername : patientUsername,
+      receiverUsername: isDoctor ? patientUsername : doctorUsername,
+      isDoctor,
+      time:
+        new Date(Date.now()).getHours() +
+        ":" +
+        new Date(Date.now()).getMinutes(),
+    };
+    await socket.emit("send-message", messageData);
+    document.getElementById("message").value = "";
+  };
   return (
     <div>
       {show ? (
         <div>
-          <h1>Chat</h1>
-          <p>Chatting ...</p>
+          <div style={{ textAlign: "center" }}>
+            <h1>EL7A2NI Live Chat</h1>
+            <p>Chatting ...</p>
+          </div>
+          <div
+            style={{
+              width: "100%",
+              height: "500px",
+              border: "1px solid black",
+              overflow: "scroll",
+            }}
+          >
+            <div id="messages"></div>
+          </div>
+          <div style={{ textAlign: "center" }}>
+            <input
+              type="text"
+              id="message"
+              placeholder="Enter Message"
+              style={{ width: "50%" }}
+              onChange={(e) => {
+                setMessage(e.target.value);
+              }}
+            />
+            <button
+              onClick={() => {
+                handleSendMessage();
+              }}
+            >
+              &#9658;
+            </button>
+          </div>
         </div>
       ) : (
         <h2>No access</h2>
