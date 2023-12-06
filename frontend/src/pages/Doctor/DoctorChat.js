@@ -31,13 +31,23 @@ const Chat = () => {
     }
   }
   useEffect(() => {
-    socket.emit("join-room", {
-      roomId: doctorUsername + patientUsername,
-    });
+    const f = async () => {
+      await socket.emit("join-room", {
+        roomId: doctorUsername + patientUsername,
+      });
+      await socket.on("receive-message", (data) => {
+        // console.log(data);
+        // const messagesDiv = document.getElementById("messages");
+        // const messageDiv = document.createElement("div");
+        // messageDiv.innerHTML = `<p>${data.message}</p><p>${data.time}</p>`;
+        // messagesDiv.appendChild(messageDiv);
+      });
+    };
+    f();
   }, []);
   const handleSendMessage = async () => {
     if (message === "" || message === null || message === undefined) {
-      alert("Please enter a message");
+      //alert("Please enter a message");
       return;
     }
     const messageData = {
@@ -45,6 +55,7 @@ const Chat = () => {
       senderUsername: isDoctor ? doctorUsername : patientUsername,
       receiverUsername: isDoctor ? patientUsername : doctorUsername,
       isDoctor,
+      roomId: doctorUsername + patientUsername,
       time:
         new Date(Date.now()).getHours() +
         ":" +
