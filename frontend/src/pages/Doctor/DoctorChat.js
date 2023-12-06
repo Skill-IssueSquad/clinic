@@ -35,12 +35,22 @@ const Chat = () => {
       await socket.emit("join-room", {
         roomId: doctorUsername + patientUsername,
       });
-      await socket.on("receive-message", (message) => {
+      await socket.on("receive-message", (data) => {
         console.log("inside receive-message");
-        if (message === null || message === undefined || message === "") {
+        if (
+          data.message === null ||
+          data.message === undefined ||
+          data.message === ""
+        ) {
           return;
         }
-        setMessages((prev) => [...prev, message]);
+        setMessages((prev) => [
+          ...prev,
+          {
+            message: `${doctorUsername} : ${data.message} (${data.time})`,
+            alignment: "left",
+          },
+        ]);
       });
     };
     f();
@@ -66,6 +76,13 @@ const Chat = () => {
         new Date(Date.now()).getMinutes(),
     };
     await socket.emit("send-message", messageData);
+    setMessages((prev) => [
+      ...prev,
+      {
+        message: `You : ${currentMessage} (${messageData.time})`,
+        alignment: "right",
+      },
+    ]);
     document.getElementById("message").value = "";
     setCurrentMessage("");
   };
@@ -86,8 +103,8 @@ const Chat = () => {
           >
             {messages.map((m) => {
               return (
-                <div>
-                  <p>{m}</p>
+                <div style={{ textAlign: m.alignment }}>
+                  <p>{m.message}</p>
                 </div>
               );
             })}

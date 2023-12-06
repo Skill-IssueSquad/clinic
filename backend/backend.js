@@ -58,7 +58,11 @@ io.on("connection", (socket) => {
   });
   socket.on("send-message", (data) => {
     console.log(data);
-    socket.to(data.roomId).emit("receive-message", data.message);
+    const send = {
+      message: data.message,
+      time: data.time,
+    };
+    socket.to(data.roomId).emit("receive-message", data);
   });
 
   socket.on("disconnect", () => {
