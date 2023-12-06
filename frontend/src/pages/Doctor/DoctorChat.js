@@ -10,7 +10,7 @@ const Chat = () => {
   const location = useLocation();
   var isDoctor = false;
   const [messages, setMessages] = useState([]);
-  const [message, setMessage] = useState("");
+  const [currentMessage, setCurrentMessage] = useState("");
   var doctorUsername = "";
   var patientUsername = "";
   if (
@@ -35,23 +35,27 @@ const Chat = () => {
       await socket.emit("join-room", {
         roomId: doctorUsername + patientUsername,
       });
-      await socket.on("receive-message", (data) => {
-        // console.log(data);
-        // const messagesDiv = document.getElementById("messages");
-        // const messageDiv = document.createElement("div");
-        // messageDiv.innerHTML = `<p>${data.message}</p><p>${data.time}</p>`;
-        // messagesDiv.appendChild(messageDiv);
+      await socket.on("receive-message", (message) => {
+        console.log("inside receive-message");
+        if (message === null || message === undefined || message === "") {
+          return;
+        }
+        setMessages((prev) => [...prev, message]);
       });
     };
     f();
   }, []);
   const handleSendMessage = async () => {
-    if (message === "" || message === null || message === undefined) {
+    if (
+      currentMessage === "" ||
+      currentMessage === null ||
+      currentMessage === undefined
+    ) {
       //alert("Please enter a message");
       return;
     }
     const messageData = {
-      message: message,
+      message: currentMessage,
       senderUsername: isDoctor ? doctorUsername : patientUsername,
       receiverUsername: isDoctor ? patientUsername : doctorUsername,
       isDoctor,
@@ -63,6 +67,7 @@ const Chat = () => {
     };
     await socket.emit("send-message", messageData);
     document.getElementById("message").value = "";
+    setCurrentMessage("");
   };
   return (
     <div>
@@ -80,7 +85,13 @@ const Chat = () => {
               overflow: "scroll",
             }}
           >
-            <div id="messages"></div>
+            {messages.map((m) => {
+              return (
+                <div>
+                  <p>{m}</p>
+                </div>
+              );
+            })}
           </div>
           <div style={{ textAlign: "center" }}>
             <input
@@ -89,7 +100,7 @@ const Chat = () => {
               placeholder="Enter Message"
               style={{ width: "50%" }}
               onChange={(e) => {
-                setMessage(e.target.value);
+                setCurrentMessage(e.target.value);
               }}
             />
             <button
