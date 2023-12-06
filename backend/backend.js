@@ -45,7 +45,7 @@ const {
 const doctorRequest = require("./src/models/DoctorRequest");
 const io = new Server(process.env.SOCKET_PORT, {
   cors: {
-    origin: "*",
+    origin: "http://localhost:3000",
   },
 });
 
