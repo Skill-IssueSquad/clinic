@@ -37,18 +37,6 @@ const Chat = () => {
         <div>
           <h1>Chat</h1>
           <p>Chatting ...</p>
-          <script
-            defer
-            src="http://localhost:8080/socket.io/socket.io.js"
-          ></script>
-          <script defer src="/chat.js"></script>
-          <div id="message-container"></div>
-          <form id="send-container">
-            <input type="text" id="message-input" />
-            <button type="submit" id="send-button">
-              Send
-            </button>
-          </form>
         </div>
       ) : (
         <h2>No access</h2>
