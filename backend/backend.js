@@ -116,12 +116,12 @@ app.get("/video", (req, res) => {
 
 videoIo.on("connection", (socket) => {
   socket.on("join-room", (roomId, userId) => {
-    console.log("joined room", roomId, "as user", userId);
+    console.log("user", userId, "joined room", roomId);
     socket.join(roomId);
-    socket.broadcast.to(roomId).emit("user-connected", userId); //el mafrood to.broadcast.emit bass feeh error
+    socket.broadcast.to(roomId).emit("user-connected", userId);
     socket.on("disconnect", () => {
-      socket.broadcast.to(roomId).emit("user-disconnected", userId); //el mafrood to.broadcast.emit bass feeh error
-      console.log("user", userId, "disconnected", "from room", roomId);
+      console.log("user", userId, "left room", roomId);
+      socket.broadcast.to(roomId).emit("user-disconnected", userId);
     });
   });
 });

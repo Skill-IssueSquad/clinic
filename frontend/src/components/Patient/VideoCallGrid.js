@@ -5,7 +5,7 @@ import Peer from "peerjs";
 
 const VideoCall = () => {
   const videoGridRef = useRef(null);
-  let peers = {};
+  const peers = {};
   const roomId = window.location.pathname.split("/")[2];
   const socket = io("http://localhost:8001");
   const myPeer = new Peer(undefined, {
@@ -13,14 +13,15 @@ const VideoCall = () => {
     port: "3001",
   });
 
-  myPeer.on("open", (id) => {
-    console.log("peer id", id);
-    socket.emit("join-room", roomId, id);
-  });
-
   useEffect(() => {
+    //when we connect we want to create a video stream and send it to the server
     const myVideo = document.createElement("video");
     myVideo.muted = true;
+
+    myPeer.on("open", (id) => {
+      console.log("peer id", id);
+      socket.emit("join-room", roomId, id);
+    });
 
     navigator.mediaDevices
       .getUserMedia({
@@ -41,7 +42,6 @@ const VideoCall = () => {
           });
         });
 
-        //if a new user joins the room we want to send our stream to that user
         socket.on("user-connected", (userId) => {
           connectToNewUser(userId, stream);
         });
@@ -51,21 +51,14 @@ const VideoCall = () => {
     socket.on("user-disconnected", (userId) => {
       if (peers[userId]) peers[userId].close();
     });
-  }, [peers]);
-
-  const addVideoStream = (video, stream) => {
-    video.srcObject = stream;
-    video.addEventListener("loadedmetadata", () => {
-      video.play();
-    });
-
-    videoGridRef.current.append(video);
-  };
+  }, []);
 
   const connectToNewUser = (userId, stream) => {
     //call user with said userId and send our stream to that user
     const call = myPeer.call(userId, stream);
     const video = document.createElement("video");
+
+    peers[userId] = call;
 
     //when we recieve a stream from the user we called we want to add it to our video grid
     call.on("stream", (userVideoStream) => {
@@ -76,13 +69,21 @@ const VideoCall = () => {
     call.on("close", () => {
       video.remove();
     });
-
-    peers[userId] = call;
   };
 
+  const addVideoStream = (video, stream) => {
+    video.srcObject = stream;
+    video.addEventListener("loadedmetadata", () => {
+      video.play();
+    });
+
+    videoGridRef.current.appendChild(video);
+  };
+
+  //return a video grid i will append videos to
   return (
-    <Grid container spacing={2} className="video-grid" ref={videoGridRef}>
-      <video autoPlay playsInline muted style={{ display: "none" }} />
+    <Grid container spacing={2} ref={videoGridRef}>
+      <video autoPlay playsInline muted />
     </Grid>
   );
 };
