@@ -37,7 +37,8 @@ const Chat = () => {
         if (
           data.message === null ||
           data.message === undefined ||
-          data.message === ""
+          data.message === "" ||
+          data.roomId !== doctorUsername + patientUsername
         ) {
           return;
         }
@@ -63,9 +64,6 @@ const Chat = () => {
     }
     const messageData = {
       message: currentMessage,
-      senderUsername: isDoctor ? doctorUsername : patientUsername,
-      receiverUsername: isDoctor ? patientUsername : doctorUsername,
-      isDoctor,
       roomId: doctorUsername + patientUsername,
       time:
         new Date(Date.now()).getHours() +

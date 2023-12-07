@@ -1174,7 +1174,7 @@ const getPatient = async (req, res) => {
     ) {
       const prescription = await Prescription.findById({ _id: prescriptionID });
       prescription.PharmacySubmitStatus = true;
-      prescription.isFilled = true;
+      // prescription.isFilled = true;
       prescription.save();
     }
     const healthPackageType = patient.healthPackageType;
