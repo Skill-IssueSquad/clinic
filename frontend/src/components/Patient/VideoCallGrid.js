@@ -5,15 +5,15 @@ import Peer from "peerjs";
 
 const VideoCall = () => {
   const videoGridRef = useRef(null);
-  const peers = {};
-  const roomId = window.location.pathname.split("/")[2];
-  const socket = io("http://localhost:8001");
   const myPeer = new Peer(undefined, {
     host: "/",
     port: "3001",
   });
+  let peers = {};
+  const roomId = window.location.pathname.split("/")[2];
 
   useEffect(() => {
+    const socket = io("http://localhost:8001");
     //when we connect we want to create a video stream and send it to the server
     const myVideo = document.createElement("video");
     myVideo.muted = true;
@@ -29,6 +29,7 @@ const VideoCall = () => {
         audio: true,
       })
       .then((stream) => {
+        //add our video stream to the video grid
         addVideoStream(myVideo, stream);
 
         //when we recieve a call we want to answer it and send our stream to the caller
@@ -83,7 +84,7 @@ const VideoCall = () => {
   //return a video grid i will append videos to
   return (
     <Grid container spacing={2} ref={videoGridRef}>
-      <video autoPlay playsInline muted />
+      {/* <video autoPlay playsInline muted /> */}
     </Grid>
   );
 };
