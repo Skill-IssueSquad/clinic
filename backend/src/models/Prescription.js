@@ -20,6 +20,10 @@ const prescriptionSchema = new mongoose.Schema({
           type: String,
           required: true,
         },
+        taken: {
+          type: Boolean,
+          required: false,
+        },
       },
     ],
     default: [],

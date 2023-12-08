@@ -46,7 +46,7 @@ const sendPrescriptionMedicinesToPharmacy = async (req, res) => {
 
            return res.status(200).json({
              success: true,
-             data: prescriptions,
+             data: medicinesArray,
              message: "Patient retrieved successfully",
            });
         } else {
@@ -109,9 +109,111 @@ async function getPatient(username) {
 //   }
 // }
 
+// const setIsFilledForPrescription = async (req, res) => {
+
+//   const {id}= req.body;
+//  // console.log("I reached here: "+username);
+//   // find if there is patient with this username
+//   try {
+//    const Pres = await Prescription.findOne({ _id: id })
+    
+//          if(Pres){
+//           Pres.isFilled = true;
+//          return res.status(200).json({
+//            success: true,
+//            data: Pres,
+//            message: "IsFilled updated successfully",
+//          });
+//       } else {
+//         return res.status(404).json({
+//           success: false,
+//           data: null,
+//           message: "Prescription not found",
+//         });
+//       }
+//     } catch (error) {
+//       return res.status(500).json({
+//         success: false,
+//         data: null,
+//         message:
+//           error.message || "Some error occurred while retrieving Prescription.",
+//       });
+//     }
+
+
+    
+
+// }
+
+const setTakenForPres = async (req, res) => {
+
+  const {medicines,username}= req.body;
+ // console.log("I reached here: "+username);
+  // find if there is patient with this username
+  try {
+    const patient = await getPatient(username);
+        if (patient) {
+            const prescriptionIDs = patient.perscreption_ids;
+            let prescriptions =[]
+
+            for(let i=0; i<prescriptionIDs.length; i++){
+                
+              let prescription = await Prescription.findOne({ _id: prescriptionIDs[i].prescription_id });
+
+              console.log(prescription);
+            //  if(prescription.isFilled === false){
+              if(prescription.isFilled == false && prescription.PharmacySubmitStatus == true){
+                prescriptions.push(prescription);
+              }
+            //  }
+          }
+          for(let i=0;i<medicines.length;i++){
+            for(let j=0;j<prescriptions.length;j++){
+              for(let k=0;k<prescriptions[j].medicines.length;k++){
+                if(medicines[i] == prescriptions[j].medicines[k].medcineName){
+                  prescriptions[j].medicines[k].taken = true;
+                }
+              }
+            }
+          }
+
+          for(let i =0 ; i<prescriptions.length;i++){
+            for(let j =0;j<prescriptions[i].medicines.length;j++){
+              if(prescriptions[i].medicines[j].taken== false){
+                  break;
+              }
+              if(j==medicines.length -1){
+                prescriptions[i].isFilled==true;
+              }
+            }
+          }
+        }
+        
+        else {
+          return res.status(404).json({
+            success: false,
+            data: null,
+            message: "Patient not found",
+          });
+        }      
+         
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        data: null,
+        message:
+          error.message || "Some error occurred while retrieving Prescription.",
+      });
+    }
+
+
+    
+
+}
+
 const setIsFilledForPrescription = async (req, res) => {
 
-  const {id}= req.body;
+  //const {id}= req.body;
  // console.log("I reached here: "+username);
   // find if there is patient with this username
   try {
@@ -144,7 +246,6 @@ const setIsFilledForPrescription = async (req, res) => {
     
 
 }
-
 
   module.exports = {
     sendPrescriptionMedicinesToPharmacy,setIsFilledForPrescription
