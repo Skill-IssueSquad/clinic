@@ -2,6 +2,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { auth } from "../Protected/AuthProvider";
 import io from "socket.io-client";
+import { Typography, TextField, Button, Paper } from "@mui/material";
 
 const socket = io.connect("http://localhost:8080");
 const Chat = () => {
@@ -54,6 +55,7 @@ const Chat = () => {
     f();
   }, []);
   const handleSendMessage = async () => {
+    event.preventDefault();
     if (
       currentMessage === "" ||
       currentMessage === null ||
@@ -78,50 +80,71 @@ const Chat = () => {
         alignment: "right",
       },
     ]);
-    document.getElementById("message").value = "";
+    //document.getElementById("message").value = "";
     setCurrentMessage("");
+  };
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
   };
   return (
     <div>
       {show ? (
         <div>
-          <div style={{ textAlign: "center" }}>
-            <h1>EL7A2NI Live Chat</h1>
-          </div>
-          <div
-            style={{
-              width: "100%",
-              height: "500px",
-              border: "1px solid black",
-              overflow: "scroll",
-            }}
-          >
-            {messages.map((m) => {
-              return (
-                <div style={{ textAlign: m.alignment }}>
-                  <p>{m.message}</p>
-                </div>
-              );
-            })}
-          </div>
-          <div style={{ textAlign: "center" }}>
-            <input
-              type="text"
-              id="message"
-              placeholder="Enter Message"
-              style={{ width: "50%" }}
-              onChange={(e) => {
-                setCurrentMessage(e.target.value);
-              }}
-            />
-            <button
-              onClick={() => {
-                handleSendMessage();
+          <Paper style={{ padding: "20px", marginTop: "20px", width: "400px" }}>
+            <Typography variant="h4" align="center" gutterBottom>
+              EL7A2NI Live Chat
+            </Typography>
+            <div
+              style={{
+                width: "100%",
+                height: "300px",
+                border: "1px solid black",
+                overflowY: "auto",
+                marginBottom: "10px",
               }}
             >
-              &#9658;
-            </button>
-          </div>
+              {messages.map((message, index) => (
+                <div
+                  key={index}
+                  style={{
+                    textAlign: message.alignment,
+                    padding: "5px",
+                    marginBottom: "5px",
+                    borderRadius: "5px",
+                    backgroundColor:
+                      message.alignment === "right" ? "#4caf50" : "#2196f3",
+                    color: "#fff",
+                    display: "inline-block",
+                    maxWidth: "70%",
+                  }}
+                >
+                  {message.message}
+                </div>
+              ))}
+            </div>
+            <TextField
+              multiline
+              rows={2}
+              variant="outlined"
+              fullWidth
+              placeholder="Type your message..."
+              id="message"
+              value={currentMessage}
+              onChange={(e) => setCurrentMessage(e.target.value)}
+              onKeyPress={handleKeyPress}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              style={{ marginTop: "10px" }}
+              onClick={handleSendMessage}
+            >
+              Send
+            </Button>
+          </Paper>
         </div>
       ) : (
         <h2>No access</h2>
