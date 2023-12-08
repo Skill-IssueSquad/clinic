@@ -25,7 +25,7 @@ const sendPrescriptionMedicinesToPharmacy = async (req, res) => {
 
                 console.log(prescription);
               //  if(prescription.isFilled === false){
-                if(prescription.isFilled == false){
+                if(prescription.isFilled == false && prescription.PharmacySubmitStatus == true){
                   prescriptions.push(prescription);
                 }
               //  }
@@ -46,7 +46,7 @@ const sendPrescriptionMedicinesToPharmacy = async (req, res) => {
 
            return res.status(200).json({
              success: true,
-             data: medicinesArray,
+             data: prescriptions,
              message: "Patient retrieved successfully",
            });
         } else {

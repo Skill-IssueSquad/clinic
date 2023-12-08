@@ -7,7 +7,7 @@ const prescriptionSchema = new mongoose.Schema({
   },
   isFilled: {
     type: Boolean,
-    required: true,
+    required: false,
   },
   medicines: {
     type: [
