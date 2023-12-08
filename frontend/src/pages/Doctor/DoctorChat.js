@@ -92,8 +92,14 @@ const Chat = () => {
   return (
     <div>
       {show ? (
-        <div>
-          <Paper style={{ padding: "20px", marginTop: "20px", width: "400px" }}>
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <Paper
+            style={{
+              padding: "20px",
+              marginTop: "20px",
+              width: "400px",
+            }}
+          >
             <Typography variant="h4" align="center" gutterBottom>
               EL7A2NI Live Chat
             </Typography>
@@ -107,21 +113,23 @@ const Chat = () => {
               }}
             >
               {messages.map((message, index) => (
-                <div
-                  key={index}
-                  style={{
-                    textAlign: message.alignment,
-                    padding: "5px",
-                    marginBottom: "5px",
-                    borderRadius: "5px",
-                    backgroundColor:
-                      message.alignment === "right" ? "#4caf50" : "#2196f3",
-                    color: "#fff",
-                    display: "inline-block",
-                    maxWidth: "70%",
-                  }}
-                >
-                  {message.message}
+                <div style={{ textAlign: message.alignment }}>
+                  <div
+                    key={index}
+                    style={{
+                      padding: "5px",
+                      marginBottom: "5px",
+                      borderRadius: "5px",
+                      backgroundColor:
+                        message.alignment === "right" ? "#4caf50" : "#2196f3",
+                      color: "#fff",
+                      display: "inline-block",
+                      maxWidth: "70%",
+                    }}
+                  >
+                    {message.message}
+                  </div>
+                  <br />
                 </div>
               ))}
             </div>
