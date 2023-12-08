@@ -16,15 +16,19 @@ import {
   TableRow,
   Paper,
 } from "@mui/material";
+import Loading from "../Loading";
 const PatientList = ({ username }) => {
   const navigate = useNavigate();
   const [patients, setPatients] = useState([]);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const f = async () => {
+      setLoading(true);
       const response = await fetch(`/doctor/chat/getPatients/${username}`);
       const data = await response.json();
       console.log(data);
       setPatients(data.data);
+      setLoading(false);
     };
     f();
   }, []);
@@ -44,25 +48,30 @@ const PatientList = ({ username }) => {
                 <TableCell>Chat</TableCell>
               </TableRow>
             </TableHead>
-            <TableBody>
-              {patients.map((patient) => (
-                <TableRow
-                  key={patient._id}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell>{patient.name}</TableCell>
-                  <TableCell>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => chat(patient)}
-                    >
-                      Chat
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
+
+            {loading ? (
+              <p>Loading...</p>
+            ) : (
+              <TableBody>
+                {patients.map((patient) => (
+                  <TableRow
+                    key={patient._id}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell>{patient.name}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => chat(patient)}
+                      >
+                        Chat
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            )}
           </Table>
         </TableContainer>
       </div>
