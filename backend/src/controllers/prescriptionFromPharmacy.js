@@ -167,26 +167,93 @@ const setTakenForPres = async (req, res) => {
               }
             //  }
           }
-          for(let i=0;i<medicines.length;i++){
-            for(let j=0;j<prescriptions.length;j++){
-              for(let k=0;k<prescriptions[j].medicines.length;k++){
-                if(medicines[i] == prescriptions[j].medicines[k].medcineName){
-                  prescriptions[j].medicines[k].taken = true;
+
+
+          await Promise.all(
+            medicines.map(async (medicine) => {
+              for (let j = 0; j < prescriptions.length; j++) {
+                for (let k = 0; k < prescriptions[j].medicines.length; k++) {
+                  if (medicine === prescriptions[j].medicines[k].medicineName) {
+                    const prescription = await Prescription.findOneAndUpdate(
+                      { _id: prescriptions[j]._id, "medicines.medicineName": medicine },
+                      { $set: { "medicines.$.taken": true } },
+                      { new: true }
+                    );
+    
+                    prescriptions[j] = prescription;
+                  }
                 }
               }
-            }
-          }
+            })
+          );
 
-          for(let i =0 ; i<prescriptions.length;i++){
-            for(let j =0;j<prescriptions[i].medicines.length;j++){
-              if(prescriptions[i].medicines[j].taken== false){
+          // for(let i=0;i<medicines.length;i++){
+          //   for(let j=0;j<prescriptions.length;j++){
+          //     for(let k=0;k<prescriptions[j].medicines.length;k++){
+          //       console.log("theMedicinesSent: "+medicines[i]);
+          //       console.log("theMedicinesSent: "+prescriptions[j].medicines[k]);
+
+          //       if(medicines[i] == prescriptions[j].medicines[k].medicineName){
+
+                  
+          //         //prescriptions[j].medicines[k].taken = true;
+          //         const prescription = await Prescription.findOneAndUpdate(
+          //           { _id: prescriptions[j]._id, "medicines.medicineName": medicines[i] },
+          //           { $set: { "medicines.$.taken": true } },
+          //         );
+
+          //         prescriptions[j] = prescription;
+          //         console.log("theMedicinesSentss: "+prescriptions[0].medicines);
+
+                  
+          //       }
+          //     }
+          //   }
+          // }
+         
+          // for(let i =0 ; i<prescriptions.length;i++){
+          //   for(let j =0;j<prescriptions[i].medicines.length;j++){
+          //     if(prescriptions[i].medicines[j].taken== false){
+          //         break;
+          //     }
+          //     if(j==medicines.length -1){
+          //       //prescriptions[i].isFilled==true;
+          //       const prescription = await Prescription.findOneAndUpdate(
+          //         { _id: prescriptions[i]._id },
+          //         { $set: { isFilled: true } }
+                
+          //       );
+
+          //       prescriptions[j] = prescription;
+
+          //     }
+          //   }
+          // }
+          await Promise.all(
+            prescriptions.map(async (prescription) => {
+              for (let j = 0; j < prescription.medicines.length; j++) {
+                if (prescription.medicines[j].taken === false) {
                   break;
+                }
+                if (j === medicines.length - 1) {
+                  const updatedPrescription = await Prescription.findOneAndUpdate(
+                    { _id: prescription._id },
+                    { $set: { isFilled: true } },
+                    { new: true }
+                  );
+    
+                  prescriptions[j] = updatedPrescription;
+                }
               }
-              if(j==medicines.length -1){
-                prescriptions[i].isFilled==true;
-              }
-            }
-          }
+            })
+          );
+    
+          return res.status(200).json({
+            success: true,
+            data: prescriptions,
+            message: "Updated prescriptions successfully",
+          });
+
         }
         
         else {
@@ -248,6 +315,6 @@ const setIsFilledForPrescription = async (req, res) => {
 }
 
   module.exports = {
-    sendPrescriptionMedicinesToPharmacy,setIsFilledForPrescription
+    sendPrescriptionMedicinesToPharmacy,setIsFilledForPrescription,setTakenForPres
   };
   
