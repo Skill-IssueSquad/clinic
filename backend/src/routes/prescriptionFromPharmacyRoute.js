@@ -7,6 +7,6 @@ const {
 router.post("/setIsFilledForPrescription",setIsFilledForPrescription);
 
 router.post("/sendPrescriptionMedicinesToPharmacy", sendPrescriptionMedicinesToPharmacy);
-router.get("/getMedicinesFromPharmacy", setTakenForPres);
+router.post("/getMedicinesFromPharmacy", setTakenForPres);
 
 module.exports = router;
