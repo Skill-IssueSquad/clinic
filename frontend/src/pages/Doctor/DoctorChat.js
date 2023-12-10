@@ -55,7 +55,7 @@ const Chat = () => {
     f();
   }, []);
   const handleSendMessage = async () => {
-    event.preventDefault();
+    //event.preventDefault();
     if (
       currentMessage === "" ||
       currentMessage === null ||

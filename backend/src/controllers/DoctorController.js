@@ -948,18 +948,30 @@ const getMedicinesStatus = async (req, res) => {
         data: null,
         message: "No prescription found",
       };
-      res.status(200).json(send);
+      const Data = {
+        data: send,
+        additionalMedicines: "",
+      };
+      res.status(200).json(Data);
       return;
     }
     const prescription = await Prescription.findById({ _id: prescriptionId });
     const medicines = prescription.medicines;
+    var additionalMedicines = prescription.additionalMedicines;
+    if (additionalMedicines === null || additionalMedicines === undefined) {
+      additionalMedicines = "";
+    }
     console.log(medicines);
     const send = {
       success: true,
       data: medicines,
       message: "Medicines status retrieved successfully",
     };
-    res.status(200).json(send);
+    const Data = {
+      data: send,
+      additionalMedicines,
+    };
+    res.status(200).json(Data);
     return;
   } catch (error) {
     const send = {
@@ -967,7 +979,11 @@ const getMedicinesStatus = async (req, res) => {
       data: null,
       message: `${error.message}`,
     };
-    res.status(500).json(send);
+    const Data = {
+      data: send,
+      additionalMedicines: "",
+    };
+    res.status(500).json(Data);
   }
 };
 
@@ -1387,6 +1403,57 @@ const getChatPatients = async (req, res) => {
   }
 };
 
+const saveAdditionalMedicines = async (req, res) => {
+  try {
+    const { appID, additionalMedicines } = req.body;
+    var appointment = await Appointments.findById({ _id: appID });
+    var prescriptionId = appointment.prescription_id;
+    if (
+      prescriptionId === null ||
+      prescriptionId === undefined ||
+      prescriptionId === ""
+    ) {
+      const prescription = await Prescription.create({
+        PharmacySubmitStatus: false,
+        isFilled: false,
+        additionalMedicines,
+      });
+      prescriptionId = prescription._id;
+      appointment = await Appointments.findByIdAndUpdate(
+        { _id: appID },
+        {
+          prescription_id: prescriptionId,
+        },
+        { new: true }
+      );
+      const send = {
+        success: true,
+        data: prescription,
+        message:
+          "Prescription created successfully and additional medicines added",
+      };
+      res.status(200).json(send);
+      return;
+    }
+    const prescription = await Prescription.findById({ _id: prescriptionId });
+    prescription.additionalMedicines = additionalMedicines;
+    prescription.save();
+    const send = {
+      success: true,
+      data: prescription,
+      message: "Additional medicines saved successfully",
+    };
+    res.status(200).json(send);
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: error.message,
+    };
+    res.status(500).json(send);
+  }
+};
+
 module.exports = {
   getDoctor,
   createDoctor,
@@ -1415,4 +1482,5 @@ module.exports = {
   completeAppointments,
   getPrescriptions,
   getChatPatients,
+  saveAdditionalMedicines,
 };

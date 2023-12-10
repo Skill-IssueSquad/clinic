@@ -28,6 +28,10 @@ const prescriptionSchema = new mongoose.Schema({
     ],
     default: [],
   },
+  additionalMedicines: {
+    type: String,
+    default: "",
+  },
 });
 
 const Prescription = mongoose.model("Prescription", prescriptionSchema);
