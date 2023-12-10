@@ -6,8 +6,7 @@ import VideoCall from "../components/Patient/VideoCallGrid";
 const CallDoctor = () => {
   return (
     <div>
-      <ResponsiveAppBar />
-      <h1>Call Doctor</h1>
+      <h1>Video Call</h1>
       <VideoCall />
     </div>
   );

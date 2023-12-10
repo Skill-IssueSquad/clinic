@@ -3,6 +3,7 @@ import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -19,6 +20,7 @@ const settings = ["Profile", "Change Password", "Logout"];
 
 function ResponsiveAppBar() {
   const navigate = useNavigate();
+  //const history = useHistory();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -43,30 +45,50 @@ function ResponsiveAppBar() {
   };
 
   const handleUserMenu = async (text) => {
-    switch(text){
-      case "Profile": navigate((localStorage.getItem("role").toLocaleLowerCase() === "doctor") ? "/Doctor_Profile" : '/Admin'); break;
-      case "Account": navigate('/Admin/ViewAdmins'); break;
-      case "Dashboard": navigate('/Admin/ViewDoctors'); break;
-      case "Change Password": navigate('/ChangePassword'); break;
+    switch (text) {
+      case "Profile":
+        navigate(
+          localStorage.getItem("role").toLocaleLowerCase() === "doctor"
+            ? "/Doctor_Profile"
+            : "/Admin"
+        );
+        break;
+      case "Account":
+        navigate("/Admin/ViewAdmins");
+        break;
+      case "Dashboard":
+        navigate("/Admin/ViewDoctors");
+        break;
+      case "Change Password":
+        navigate("/ChangePassword");
+        break;
       default: {
-        const response = await fetch('/account/logout', {method: 'GET'});
+        const response = await fetch("/account/logout", { method: "GET" });
         const json = await response.json();
-        if (response.ok){
+        if (response.ok) {
           //setToken();
-          localStorage.setItem('token','');
-          localStorage.setItem('role','');
-          localStorage.setItem('username', '');
-          navigate('/');
+          localStorage.setItem("token", "");
+          localStorage.setItem("role", "");
+          localStorage.setItem("username", "");
+          navigate("/");
         }
-      };
+      }
     }
-  }
+  };
 
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           {/* <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} /> */}
+          <IconButton
+            size="large"
+            aria-label="back"
+            onClick={() => navigate(-1)} // Add this line
+            color="inherit"
+          >
+            <ArrowBackIcon />
+          </IconButton>
           <Typography
             variant="h6"
             noWrap
