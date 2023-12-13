@@ -518,6 +518,17 @@ const viewAllDoctors = async (req, res) => {
       }
     });
 
+    let packageDiscount = 0;
+    
+    if (patient.healthPackageType.status === "subscribed") {
+      const package = await Packages.findOne({
+        packageType: patient.healthPackageType.type,
+      });
+
+      packageDiscount = package.discountOnSession;
+
+    }  
+
     const markup = (await Clinic.findOne({})).markupPercentage;
 
     doctors = doctors.map((doctor) => {
@@ -527,19 +538,16 @@ const viewAllDoctors = async (req, res) => {
       // check on health package type for discount
       let discount = 0;
 
-      const package =
-        patient.healthPackageType.status === "subscribed"
-          ? Packages.findOne({ type: patient.healthPackageType.type })
-          : null;
-
-      const sessionPrice = (
+      let sessionPrice = (
         (doctor.hourlyRate / 2) *
         (1 + markup / 100) *
-        (1 - (package ? package.discountOnSession / 100.0 : 0))
+        (1 - (packageDiscount ? packageDiscount / 100.0 : 0))
       ).toFixed(2);
 
+      
+
       // Return a new object with the modified properties
-      return { ...doctor._doc, sessionPrice };
+      return { ...doctor._doc, sessionPrice};
       //   } else {
       //     // no contract for this doctor
       //     const sessionPrice = -1;
@@ -608,27 +616,36 @@ const viewAllDoctorsAvailable = async (req, res) => {
 
     console.log("DOCS MATCHING: ", doctors);
 
+    let packageDiscount = 0;
+    
+    if (patient.healthPackageType.status === "subscribed") {
+      const package = await Packages.findOne({
+        packageType: patient.healthPackageType.type,
+      });
+
+      packageDiscount = package.discountOnSession;
+
+    }  
+
     const markup = (await Clinic.findOne({})).markupPercentage;
 
-    doctors = doctors.map(async (doctor) => {
+    doctors = doctors.map((doctor) => {
       // get each doctors markup from contract
       // if (doctor.contracts.length > 0) {
 
       // check on health package type for discount
       let discount = 0;
-      const package =
-        patient.healthPackageType.status === "subscribed"
-          ? Packages.findOne({ type: patient.healthPackageType.type })
-          : null;
 
-      const sessionPrice = (
+      let sessionPrice = (
         (doctor.hourlyRate / 2) *
         (1 + markup / 100) *
-        (1 - (package ? package.discountOnSession / 100.0 : 0))
+        (1 - (packageDiscount ? packageDiscount / 100.0 : 0))
       ).toFixed(2);
 
+      
+
       // Return a new object with the modified properties
-      return { ...doctor._doc, sessionPrice };
+      return { ...doctor._doc, sessionPrice};
       //   } else {
       //     // no contract for this doctor
       //     const sessionPrice = -1;
@@ -637,6 +654,8 @@ const viewAllDoctorsAvailable = async (req, res) => {
       //     return { ...doctor._doc, sessionPrice };
       //   }
     });
+
+    
 
     return res.status(200).json({
       success: true,
@@ -846,12 +865,19 @@ const bookAppointment = async (req, res) => {
         err.message || "Some error occurred while updating doctor."
       );
     }
+    let packageDiscount = 0;
+    
+    if (patient.healthPackageType.status === "subscribed") {
+      const package = await Packages.findOne({
+        packageType: patient.healthPackageType.type,
+      });
+
+      packageDiscount = package.discountOnSession;
+
+    }  
+
     const markup = (await Clinic.findOne({})).markupPercentage;
 
-    const package =
-      patient.healthPackageType.status === "subscribed"
-        ? await Packages.findOne({ type: patient.healthPackageType.type })
-        : null;
 
     const sessionPrice = (
       (doctor.hourlyRate / 2) *
@@ -1249,10 +1275,16 @@ const requestFollowUp = async (req, res) => {
 
     const markup = (await Clinic.findOne({})).markupPercentage;
 
-    const package =
-      currPatient.healthPackageType.status === "subscribed"
-        ? await Packages.findOne({ type: patient.healthPackageType.type })
-        : null;
+    let packageDiscount = 0;
+    
+    if (patient.healthPackageType.status === "subscribed") {
+      const package = await Packages.findOne({
+        packageType: patient.healthPackageType.type,
+      });
+
+      packageDiscount = package.discountOnSession;
+
+    }  
 
     const sessionPrice = (
       (doctorNewSlot.hourlyRate / 2) *
