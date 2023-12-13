@@ -23,6 +23,7 @@ import {
 import axios from "axios";
 import CircularProgress from "@mui/joy/CircularProgress";
 import { auth } from "../../pages/Protected/AuthProvider";
+import { useNavigate } from "react-router-dom";
 
 let bookingOptions = [];
 
@@ -41,6 +42,7 @@ const SlotBooker = ({ doctor_id }) => {
   const [loading, setLoading] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState({});
+  const [docName, setDocName] = useState("Loading Slots...");
   const [selectedPatient, setSelectedPatient] = useState({
     patient_name: null,
   });
@@ -72,6 +74,8 @@ const SlotBooker = ({ doctor_id }) => {
   const handleSelectedPatient = (patient) => {
     setSelectedPatient(patient);
   };
+
+  const navigate = useNavigate();
 
   const applyFilters = () => {
     const filteredSlots = originalData.filter((slot) => {
@@ -107,7 +111,7 @@ const SlotBooker = ({ doctor_id }) => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const fetchedSlots = await axios.get(
+      let fetchedSlots = await axios.get(
         "http://localhost:8000/patient/freeAppointments",
         {
           params: {
@@ -115,6 +119,12 @@ const SlotBooker = ({ doctor_id }) => {
           },
         }
       );
+
+      setDocName(`Dr. ${fetchedSlots.data.data.doc_name}'s slots`);
+
+      fetchedSlots = fetchedSlots.data.data.appointments;
+
+      
 
       let bookOptions = await axios.get(
         `http://localhost:8000/patient/${localStorage.getItem(
@@ -172,7 +182,7 @@ const SlotBooker = ({ doctor_id }) => {
         const response = await axios.post(
           `http://localhost:8000/patient/${localStorage.getItem(
             "username"
-          )}/bookAppointment`,
+          )}/tempBook`,
           {
             doctor_id: selectedSlot._id,
             patient_id: selectedPatient.patient_id,
@@ -186,10 +196,10 @@ const SlotBooker = ({ doctor_id }) => {
         );
 
         if (response.data.success) {
-          if (response.data.success) {
             handleCloseDialog();
+            navigate("/patient/payment/${response.data.data.transit_id}");
             setMessage(response.data.message || "Slot booked successfully");
-          }
+         
         } else {
           handleCloseDialog();
           setMessage(response.data.message || "Slot booking failed");
@@ -220,14 +230,8 @@ const SlotBooker = ({ doctor_id }) => {
       {show ? (
         <div>
           <p></p>
-          <div
-            
-          >
-            {slots.length > 0 ? (
-              <h2>Dr. {slots[0].doctor_name}'s Slots</h2>
-            ) : (
-              <h2>Loading Slots</h2>
-            )}
+          <div >
+            <h2>{docName}</h2>
           </div>
 
           <div

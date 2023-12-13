@@ -41,6 +41,7 @@ const RequestFollowUp = ({ doctor_id, appointment_id }) => {
   const [loading, setLoading] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState({});
+  const [docName, setDocName] = useState("Loading slots...");
   const [Patient, setPatient] = useState({});
 
   const handleDayChange = (event) => {
@@ -101,7 +102,7 @@ const RequestFollowUp = ({ doctor_id, appointment_id }) => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const fetchedSlots = await axios.get(
+      let fetchedSlots = await axios.get(
         "http://localhost:8000/patient/freeAppointments",
         {
           params: {
@@ -109,6 +110,10 @@ const RequestFollowUp = ({ doctor_id, appointment_id }) => {
           },
         }
       );
+
+      setDocName(`Dr. ${fetchedSlots.data.data.doc_name}'s slots`);
+
+      fetchedSlots = fetchedSlots.data.data.appointments;
 
       let patient = await axios.get(
         `http://localhost:8000/patient/${localStorage.getItem("username")}`
@@ -210,11 +215,7 @@ const RequestFollowUp = ({ doctor_id, appointment_id }) => {
       {show ? (
         <div>
           <p></p>
-          {slots.length > 0 ? (
-            <h2>Dr. {slots[0].doctor_name}'s Slots</h2>
-          ) : (
-            <h2>Loading Slots</h2>
-          )}
+          <h2>{docName}</h2>
           <div>
             <p> Choose a suitable date to request a follow-up. </p>
           </div>

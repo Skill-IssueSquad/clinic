@@ -50,6 +50,7 @@ const {
   editWalletBalance,
   getTransitData,
   payDoctorScheduledFollowUp,
+  tempBookAppointment,
 } = require("../controllers/PatientController");
 
 const { create } = require("../models/Patient");
@@ -76,6 +77,7 @@ router.post("/:username/doctors", viewAllDoctors);
 router.post("/:username/doctors/available", viewAllDoctorsAvailable);
 router.post("/createDoc", createDoc); // TESTING PURPOSES ONLY
 router.post("/:username/bookAppointment", bookAppointment);
+router.post("/:username/tempBook", tempBookAppointment); // TESTING PURPOSES ONLY
 router.post("/:username/reschduleAppointment", rescheduleAppointment);
 router.delete(
   "/:username/appointments/:doctor_id/:appointment_id",

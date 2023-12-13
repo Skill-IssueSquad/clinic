@@ -676,6 +676,7 @@ const getAllFreeDocAppointments = async (req, res) => {
   // EXPECTED INPUT: { doctor_id: "69fe353h55g3h34hg53h" }
   try {
     // get doctor_id from query params
+    const docName = (await Doctor.findById(req.query.doctor_id)).name;
     const appointments = await Doctor.aggregate([
       {
         $match: {
@@ -709,7 +710,7 @@ const getAllFreeDocAppointments = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data: appointments,
+      data: {doc_name: docName , appointments: appointments},
       message: "Successfully retrieved all appointments",
     });
   } catch (err) {
@@ -882,7 +883,7 @@ const bookAppointment = async (req, res) => {
     const sessionPrice = (
       (doctor.hourlyRate / 2) *
       (1 + markup / 100) *
-      (1 - (package ? package.discountOnSession / 100.0 : 0))
+      (1 - (packageDiscount ? packageDiscount / 100.0 : 0))
     ).toFixed(2);
 
     // create new appointment
@@ -956,6 +957,122 @@ const bookAppointment = async (req, res) => {
     );
   }
 };
+
+const tempBookAppointment = async (req, res) => {
+  
+  // ASSUMES JWT AUTHENTICATION
+  // EXPECTED INPUT: param: self_username, { doctor_id: "69fe353h55g3h34hg53h",
+  //    startTime: "2022-05-01T00:00:00.000+00:00", day: "2023-4-5", timeSlot: "22:00",
+  //    patient_id, national_id(can be null), patient_name, slot_id}
+  let responseSent = false; // Track whether a response has been sent
+
+  const sendResponse = (statusCode, success, data, message) => {
+    if (!responseSent) {
+      responseSent = true;
+      return res.status(statusCode).json({ success: success, data, message });
+    }
+  };
+
+  try {
+    // auth check
+    const username = req.params.username;
+    const patient = await getPatient(username);
+    let isLinked = patient.linkedAccounts.find((elem) => {
+      String(elem.patient_id) === String(req.body.patient_id);
+    })
+      ? true
+      : false;
+    if (String(patient._id) !== String(req.body.patient_id) && !isLinked) {
+      return sendResponse(
+        401,
+        false,
+        req.body,
+        "Unauthorized to book appointment for this patient"
+      );
+    }
+
+    // edit availableSlots array in doctor
+    const doctor = await Doctor.findById(
+      req.body.doctor_id,
+    ).catch((err) => {
+      if (err) {
+        return sendResponse(
+          500,
+          false,
+          req.body,
+          err.message || "Some error occurred while fetching doctor."
+        );
+      }
+    });
+
+    if (!doctor) {
+      return sendResponse(
+        500,
+        false,
+        req.body,
+        err.message || "Some error occurred while updating doctor."
+      );
+    }
+    let packageDiscount = 0;
+    
+    if (patient.healthPackageType.status === "subscribed") {
+      const package = await Packages.findOne({
+        packageType: patient.healthPackageType.type,
+      });
+
+      packageDiscount = package.discountOnSession;
+
+    }  
+
+    const markup = (await Clinic.findOne({})).markupPercentage;
+
+
+    const sessionPrice = (
+      (doctor.hourlyRate / 2) *
+      (1 + markup / 100) *
+      (1 - (packageDiscount ? packageDiscount / 100.0 : 0))
+    ).toFixed(2);
+
+    // create entry in payment transit
+    const paymentTransit = await PaymentTransit.create({
+      totalPrice: sessionPrice,
+      items: [
+        {
+            name: `Appointment with ${doctor.name} on ${req.body.day} at ${req.body.timeSlot} for ${req.body.patient_name}` ,
+            quantity: 1,
+            price: sessionPrice,
+        },
+      ],
+      payload: req.body,
+      postURL: `patient/${username}/bookAppointment`,
+    }).catch((err) => {
+      if (err) {
+        return sendResponse(
+          500,
+          false,
+          req.body,
+          err.message || "Some error occurred while creating payment entry."
+        );
+      }
+    });
+
+    
+    return sendResponse(
+      200,
+      true,
+      {transit_id: paymentTransit._id},
+      "Appointment created successfully"
+    );
+  } catch (err) {
+    return sendResponse(
+      500,
+      false,
+      req.body,
+      err.message || "Some error occurred while creating appointment."
+    );
+  }
+
+}
 
 const rescheduleAppointment = async (req, res) => {
   // ASSUMES JWT AUTHENTICATION
@@ -1289,7 +1406,7 @@ const requestFollowUp = async (req, res) => {
     const sessionPrice = (
       (doctorNewSlot.hourlyRate / 2) *
       (1 + markup / 100) *
-      (1 - (package ? package.discountOnSession / 100.0 : 0))
+      (1 - (packageDiscount ? packageDiscount / 100.0 : 0))
     ).toFixed(2);
 
     // create request appointment
@@ -1527,7 +1644,7 @@ const cancelAppointment = async (req, res) => {
         }
       });
     } else if (selectedAppointment.status === "pending") {
-      // remove from doc's wallet using API
+      // remove from patients amount due
       const negBalance = selectedAppointment.price.patient;
       let updatedPatient = await Patient.findByIdAndUpdate(
         selectedAppointment.patient_id,
@@ -2300,4 +2417,5 @@ module.exports = {
   requestFollowUp,
   getTransitData,
   payDoctorScheduledFollowUp,
+  tempBookAppointment
 };

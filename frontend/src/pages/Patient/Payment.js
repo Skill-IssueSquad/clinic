@@ -24,6 +24,7 @@ import OrderDetails from "../../components/Patient/OrderDetailsCard";
 import Card from "@mui/joy/Card";
 import Typography from "@mui/joy/Typography";
 import PaySuccess from "../../components/Patient/PaySuccess";
+import StripePayCard from "../../components/Patient/stripePay";
 
 //get patient details
 const patientDetails = async (username) => {
@@ -35,15 +36,37 @@ const Payment = () => {
   const transit_id = useParams().transit_id;
   let username = localStorage.getItem("username");
   const [openDialog, setOpenDialog] = useState(false);
+  const [openCardDialog, setOpenCardDialog] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [patient, setPatient] = useState({});
   const [refresh, setRefresh] = useState(false);
   const [orderData, setOrderData] = useState({});
+  const [price, setPrice] = useState(0);
   const [success, setSuccess] = useState(null);
 
   const handleDialog = () => {
     setOpenDialog(false);
     setRefresh(!refresh);
+  };
+
+  const handleCardDialog = () => {
+    setOpenCardDialog(false);
+    setRefresh(!refresh);
+  };
+
+  const openPayCardDialog = () => {
+    setOpenCardDialog(true);
+  };
+
+  const closePayCardDialog = () => {
+    setOpenCardDialog(false);
+    if (!success) {
+      setSuccess(null);
+    }
+  };
+
+  const onSuccess = (val) => {
+    setSuccess(val);
   };
 
   useEffect(() => {
@@ -59,6 +82,7 @@ const Payment = () => {
 
       if (res.data.success) {
         setOrderData(res.data.data);
+        setPrice(res.data.data.totalPrice);
       }
     };
 
@@ -91,7 +115,7 @@ const Payment = () => {
         );
         setPatient(res.data.data);
 
-        let result = await handlePayment();
+        let result = await handlePayment(orderData);
 
         setSuccess(result);
 
@@ -102,8 +126,6 @@ const Payment = () => {
     } else {
       setSuccess(false);
     }
-
-    
   };
 
   return (
@@ -112,7 +134,7 @@ const Payment = () => {
       flexDirection="column"
       alignItems="center"
       justifyContent="center"
-      minHeight={success ? "103.5vh" :"90vh"}
+      minHeight={success ? "103.5vh" : "90vh"}
     >
       <Card variant="outlined">
         <WalletBalanceComp
@@ -174,7 +196,12 @@ const Payment = () => {
                       Pay By Wallet
                     </Button>
                     <Divider orientation="vertical">Or</Divider>
-                    <Button variant="contained" color="primary" disabled={success}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      disabled={success}
+                      onClick={openPayCardDialog}
+                    >
                       Pay By Card
                     </Button>
                   </Stack>
@@ -183,10 +210,60 @@ const Payment = () => {
             </Box>
           </Card>
 
+          <Dialog
+            open={openCardDialog}
+            PaperProps={{
+              style: {
+                width: "50ch",
+              },
+            }}
+          >
+            <DialogTitle>
+              {" "}
+              {success == null
+                ? "Stripe Payment"
+                : success
+                ? "Payment Successful"
+                : "Payment Failed"}{" "}
+            </DialogTitle>
+            <DialogContent>
+              {success == null ? (
+                <StripePayCard
+                  amount={price}
+                  orderData={orderData}
+                  onPay={handlePayment}
+                  onSuccess={onSuccess}
+                ></StripePayCard>
+              ) : (
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  {success ? (
+                    <Typography>
+                      Your payment has been done successfully.
+                    </Typography>
+                  ) : (
+                    <Typography>Payment failed</Typography>
+                  )}
+                </Box>
+              )}
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={closePayCardDialog}>OK</Button>
+            </DialogActions>
+          </Dialog>
+
           <Dialog open={openDialog} onClose={handleDialog}>
             <DialogTitle>
               {" "}
-              {success == null ? "Processing" : success ? "Payment Successful" : "Payment Failed"}{" "}
+              {success == null
+                ? "Processing"
+                : success
+                ? "Payment Successful"
+                : "Payment Failed"}{" "}
             </DialogTitle>
             <DialogContent>
               {success == null ? (
