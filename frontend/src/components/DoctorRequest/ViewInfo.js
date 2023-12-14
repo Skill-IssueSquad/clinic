@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Button, Card } from 'react-bootstrap';
 import { useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const ViewInfo = ()=> {
     const [text, setText] = React.useState('');
@@ -25,85 +26,31 @@ const ViewInfo = ()=> {
         setSelectedID(file);
     };
 
-    const handleUploadID = async () => {
-        try {
-
-            const attribute = "ID";
-            const data = selectedID;
-            const updatedData ={[attribute]: data};
-            const response = await fetch('doctorRequest/updateInfo/' + username, { method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(updatedData),});
-
-            const json = await response.json();
-
-            if(response.ok){
-                console.log("updated");
-            }
-            else{
-                console.log("failed");
-            }
-
-        } catch (error) {
-            console.log(error);
-
-        }
-    }
-
     const handleLicenseChange = (event) => {
         const file = event.target.files[0];
         setSelectedLicense(file);
     };
-
-    const handleUploadLicense = async () => {
-        try {
-
-            const attribute = "License";
-            const data = selectedLicense;
-            const updatedData ={[attribute]: data};
-            const response = await fetch('doctorRequest/updateInfo/' + username, { method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(updatedData),});
-
-            const json = await response.json();
-
-            if(response.ok){
-                console.log("updated");
-            }
-            else{
-                console.log("failed");
-            }
-
-        } catch (error) {
-            console.log(error);
-
-        }
-    }
 
     const handleDegreeChange = (event) => {
         const file = event.target.files[0];
         setSelectedDegree(file);
     };
 
-    const handleUploadDegree = async () => {
+     const handleUploadDocuments = async () => {
         try {
+            const formData = new FormData();
+            formData.append('documents', selectedID);
+            formData.append('documents', selectedLicense);
+            formData.append('documents', selectedDegree);
 
-            const attribute = "Degree";
-            const data = selectedDegree;
-            const updatedData ={[attribute]: data};
-            const response = await fetch('doctorRequest/updateInfo/' + username, { method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(updatedData),});
+            const response = await axios.patch('http://localhost:8000/doctorRequest/updateInfo/' + username, formData, {
+                withCredentials: true,
+              });
 
-            const json = await response.json();
 
-            if(response.ok){
+            console.log(response)
+
+            if(response){
                 console.log("updated");
             }
             else{
@@ -115,6 +62,7 @@ const ViewInfo = ()=> {
 
         }
     }
+
 
 
     useEffect(() => {
@@ -125,6 +73,7 @@ const ViewInfo = ()=> {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include',
                 body: JSON.stringify({username}),});
         
                 const json = await response.json();
@@ -160,11 +109,12 @@ const ViewInfo = ()=> {
                 ))
             }
             <input type="file" onChange={handleIDChange} />
-            <Button  color="primary" variant="contained" style={{top:'0px', left:'400px'}} onClick={handleUploadID}>Upload ID</Button>
+            {/* <Button  color="primary" variant="contained" style={{top:'0px', left:'400px'}} onClick={handleUploadID}>Upload ID</Button> */}
             <input type="file" onChange={handleLicenseChange} />
-            <Button  color="primary" variant="contained" style={{top:'0px', left:'400px'}} onClick={handleUploadLicense}>Upload License</Button>
+            {/* <Button  color="primary" variant="contained" style={{top:'0px', left:'400px'}} onClick={handleUploadLicense}>Upload License</Button> */}
             <input type="file" onChange={handleDegreeChange} />
-            <Button  color="primary" variant="contained" style={{top:'0px', left:'400px'}} onClick={handleUploadDegree}>Upload Degree</Button>
+            <br/>
+            <Button  color="primary" variant="contained" style={{top:'0px', left:'400px'}} onClick={handleUploadDocuments}>Upload Documents</Button>
             </Card>
         </div>
     );

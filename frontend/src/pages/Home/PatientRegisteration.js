@@ -3,7 +3,7 @@ import PatientRegisterationForm from "../../components/Home/PatientRegisteration
 
 const PatientRegisteration = () => {
     return(
-        <div>
+        <div style={{backgroundColor: '#f0f0f0', padding: '15px'}}>
             <PatientRegisterationForm flag = {true}/>
         </div>
     );

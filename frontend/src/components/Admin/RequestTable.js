@@ -44,7 +44,7 @@ export default function DataTable() {
     const fetchDataFromDatabase = async () => {
         try {
             // Fetch data from the database
-            const response = await fetch('/admin/viewInfo');
+            const response = await fetch('/admin/viewInfo', {credentials: 'include'});
             const json = await response.json();
 
             if(response.ok){
@@ -64,7 +64,7 @@ export default function DataTable() {
     const isRowSelectable = (params) => false; // Function to make all rows unselectable
     
   return (
-    <div style={{ height: 400, width: '100%' }} >
+    <div style={{ height: 400, width: '100%', backgroundColor: '#ffffff', borderRadius: '5px' }} >
       <DataGrid
         rows={rows}
         columns={columns}

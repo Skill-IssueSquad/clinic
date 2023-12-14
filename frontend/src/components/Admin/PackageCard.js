@@ -21,7 +21,7 @@ export default function OutlinedCard({data,onClick}) {
 
     const handleRemove = async ()=>{
       try{
-          const response = await fetch('/admin/deletePackage/' +data.packageType, {method: 'DELETE'});
+          const response = await fetch('/admin/deletePackage/' +data.packageType, {method: 'DELETE', credentials: 'include'});
           const json = await response.json();
           console.log(json);
           if(response.ok){

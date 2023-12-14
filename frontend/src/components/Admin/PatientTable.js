@@ -38,7 +38,7 @@ export default function DataTable() {
 
     const handleRemove = async (username) => {
       try{
-        const response = await fetch('/admin/removePatient/' +username, {method: 'DELETE'});
+        const response = await fetch('/admin/removePatient/' +username, {method: 'DELETE', credentials: 'include'});
         const json = await response.json();
       
         if(response.ok){
@@ -59,7 +59,7 @@ export default function DataTable() {
     const fetchDataFromDatabase = async () => {
         try {
             // Fetch data from the database
-            const response = await fetch('/admin/viewPatients');
+            const response = await fetch('/admin/viewPatients', {credentials: 'include'});
             const json = await response.json();
 
             if(response.ok){
@@ -79,7 +79,7 @@ export default function DataTable() {
     const isRowSelectable = (params) => false; // Function to make all rows unselectable
     
   return (
-    <div style={{ height: 400, width: '100%' }} >
+    <div style={{ height: 400, width: '100%', backgroundColor: '#ffffff', borderRadius: '5px' }} >
       <DataGrid
         rows={rows}
         columns={columns}

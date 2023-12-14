@@ -41,33 +41,24 @@ const doctorRequestSchema = new Schema({
     type: String,
     required: true,
   },
-  // documents: {
-  //   type: [
-  //     {
-  //       documentType: {
-  //         type: String,
-  //         required: true,
-  //       },
-  //       documentName: {
-  //         type: String,
-  //         required: true,
-  //       },
-  //       documentFile: {
-  //         type: Buffer, //not sure abt this tho
-  //         required: true,
-  //       },
-  //     },
-  //   ],
-  //   default: []
-  // },
-  ID : {
-    data: Buffer,
-  },
-  License : {
-    data: Buffer,
-  },
-  Degree : {
-    data: Buffer,
+  documents: {
+    type: [
+      {
+        documentType: {
+          type: String,
+          required: true,
+        },
+        documentName: {
+          type: String,
+          required: true,
+        },
+        documentFile: {
+          type: Buffer, //not sure abt this tho
+          required: true,
+        },
+      },
+    ],
+    default: []
   },
   otp: {
     type: String,

@@ -9,7 +9,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import validator from 'validator';
 
 
 export default function FormDialog() {
@@ -26,6 +26,7 @@ export default function FormDialog() {
     setFormData({
         username: '',
         password: '',
+        email: '',
         firstName: '',
         lastName: '',
       });
@@ -35,6 +36,7 @@ export default function FormDialog() {
   const [formData, setFormData] = useState({
     username: '',
     password: '',
+    email: '',
     firstName: '',
     lastName: '',
   });
@@ -68,12 +70,25 @@ export default function FormDialog() {
     if (!data.password) {
     errors.password = 'Password is required';
     }
+    else if (!validator.isStrongPassword(data.password, { 
+      minLength: 8, minLowercase: 1, 
+      minUppercase: 1, minNumbers: 1, minSymbols: 1 
+      })) {
+      errors.password = 'Password does not match required format';
+    }
+    if(!data.email) {
+      errors.email = 'Email is required';
+    }
+    else if(!validator.isEmail(data.email)){
+      errors.email = "Email is invalid";
+    }
     else{
         try{
-            const response = await fetch('/admin/createAdmin/', {method: 'POST', 
+            const response = await fetch('http://localhost:8000/admin/createAdmin/', {method: 'POST', 
             headers: {
                 'Content-Type': 'application/json',
             },
+            credentials: 'include',
             body: JSON.stringify(data),});
 
             const json = await response.json();
@@ -83,13 +98,21 @@ export default function FormDialog() {
               setFormData({
                 username: '',
                 password: '',
+                email: '',
                 firstName: '',
                 lastName: '',
               });
               navigate('/Admin/ViewAdmins'); setOpen(false);
             }
             else{
-                errors.username = "Username already taken";
+                //errors.username = "Username already taken";
+                const err = json.message;
+                if(err === "Username is already taken"){
+                  errors.username = err;
+                }
+                else if (err === "Email is already taken"){
+                  errors.email = err;
+                }
                 return errors;
             }
               
@@ -129,6 +152,17 @@ export default function FormDialog() {
           onChange={handleChange}
           error={!!errors.password}
           helperText={errors.password}
+          fullWidth
+          style={{ marginBottom: '20px' }}
+        />
+        <br />
+        <TextField
+          label="Email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          error={!!errors.email}
+          helperText={errors.email}
           fullWidth
           style={{ marginBottom: '20px' }}
         />

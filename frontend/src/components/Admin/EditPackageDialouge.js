@@ -82,6 +82,7 @@ const handleUpdate = async (field, data)=>{
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(updatedData),});
 
         const json = await response.json();

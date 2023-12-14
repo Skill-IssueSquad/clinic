@@ -85,6 +85,7 @@ export default function FormDialog({}) {
             headers: {
                 'Content-Type': 'application/json',
             },
+            credentials: 'include',
             body: JSON.stringify(data),});
 
             const json = await response.json();
