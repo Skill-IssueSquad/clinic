@@ -50,14 +50,14 @@ const io = new Server(process.env.SOCKET_PORT, {
 });
 
 io.on("connection", (socket) => {
-  console.log(`Socket ID : ${socket.id}`);
+  // console.log(`Socket ID : ${socket.id}`);
   socket.on("join-room", (data) => {
     //console.log(data);
     socket.join(data.roomId);
     console.log("Joined room ", data.roomId);
   });
   socket.on("send-message", (data) => {
-    console.log(data);
+    // console.log(data);
     const send = {
       message: data.message,
       time: data.time,
@@ -67,7 +67,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    console.log("User disconnected");
+    // console.log("User disconnected");
   });
 });
 mongoose
