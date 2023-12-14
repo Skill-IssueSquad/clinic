@@ -3,6 +3,28 @@ const { Server } = require("socket.io");
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const mongoose = require("mongoose");
+const doctorRouter = require("./src/routes/DoctorRouter");
+const adminRouter = require("./src/routes/AdminRouter");
+const PatientRegisteration = require("./src/routes/patientRegisteration");
+const DoctorRegisteration = require("./src/routes/doctorRegisteration");
+const patientRouter = require("./src/routes/PatientRouter");
+const { equateBalance } = require("./src/controllers/Balance");
+const { completeAppointments } = require("./src/controllers/DoctorController");
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
+const cron = require("node-cron");
+const doctorRequestRouter = require("./src/routes/DoctorRequestRouter");
+const accountRouter = require("./src/routes/AccountRouter");
+const cookieParser = require("cookie-parser");
+const {
+  authAdmin,
+  authDoctor,
+  authDoctorRequest,
+  authPatient,
+} = require("./src/middleware/Authentication");
+const doctorRequest = require("./src/models/DoctorRequest");
 
 //socket for video server
 //server is only used to set up the rooms
@@ -15,21 +37,10 @@ const videoIo = require("socket.io")(socketVideoServer, {
 });
 const { v4: uuidV4 } = require("uuid");
 
-const mongoose = require("mongoose");
-const doctorRouter = require("./src/routes/DoctorRouter");
-const adminRouter = require("./src/routes/AdminRouter");
-const PatientRegisteration = require("./src/routes/patientRegisteration");
-const DoctorRegisteration = require("./src/routes/doctorRegisteration");
-const patientRouter = require("./src/routes/PatientRouter");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "",
 });
-const { equateBalance } = require("./src/controllers/Balance");
-const { completeAppointments } = require("./src/controllers/DoctorController");
-const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
-const cron = require("node-cron");
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     // Specify the directory where the files will be stored
@@ -47,25 +58,10 @@ const storage = multer.diskStorage({
     cb(null, file.fieldname + "-" + uniqueSuffix + fileExtension);
   },
 });
-
 const upload = multer({ storage: storage });
-const doctorRequestRouter = require("./src/routes/DoctorRequestRouter");
-const accountRouter = require("./src/routes/AccountRouter");
-const cookieParser = require("cookie-parser");
-const {
-  authAdmin,
-  authDoctor,
-  authDoctorRequest,
-  authPatient,
-} = require("./src/middleware/Authentication");
-const cookieParser = require("cookie-parser");
-const {
-  authAdmin,
-  authDoctor,
-  authDoctorRequest,
-  authPatient,
-} = require("./src/middleware/Authentication");
-const doctorRequest = require("./src/models/DoctorRequest");
+
+
+
 const io = new Server(process.env.SOCKET_PORT, {
   cors: {
     origin: "http://localhost:3000",

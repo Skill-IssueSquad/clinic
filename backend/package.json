@@ -4,7 +4,7 @@
   "description": "",
   "main": "backend.js",
   "scripts": {
-    "dev": "nodemon backend.js"
+    "dev": "nodemon backend.js && peerjs --port 3001"
   },
   "author": "",
   "license": "ISC",
