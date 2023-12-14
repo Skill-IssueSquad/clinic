@@ -961,7 +961,7 @@ const getMedicinesStatus = async (req, res) => {
     if (additionalMedicines === null || additionalMedicines === undefined) {
       additionalMedicines = "";
     }
-    console.log(medicines);
+    // console.log(medicines);
     const send = {
       success: true,
       data: medicines,
@@ -1261,7 +1261,7 @@ const getPrescriptions = async (req, res) => {
           }
         }
       }
-      console.log(prescriptionIDs);
+      // console.log(prescriptionIDs);
       var prescriptions = [];
 
       for (const prescription_id of prescriptionIDs) {
@@ -1426,6 +1426,9 @@ const saveAdditionalMedicines = async (req, res) => {
         },
         { new: true }
       );
+      const patient = await Patient.findById({ _id: appointment.patient_id });
+      patient.perscreption_ids.push({ prescription_id: prescriptionId });
+      patient.save();
       const send = {
         success: true,
         data: prescription,
