@@ -4,11 +4,15 @@ import { Button, colors } from "@mui/material";
 import { red } from "@mui/material/colors";
 import AddAdminDialog from './AddAdminDialog';
 import ConfirmationAlert from "./ConfirmationAlert";
+import CircularProgress from '@mui/material/CircularProgress';
 
 
 export default function DataTable() {
     const [rows, setRows] = useState([]); // State to store the rows
     const [open, setOpen] = useState(false);
+    const [showProgress, setShowProgress] = useState(true);
+
+    
 
     const handleOpen = () => {
       setOpen(true);
@@ -39,7 +43,7 @@ export default function DataTable() {
     const handleRemove = async (username) => {
       try{
 
-        const response = await fetch('/admin/removeAdmin/' +username, {method: 'DELETE'});
+        const response = await fetch('/admin/removeAdmin/' +username, {method: 'DELETE', credentials: 'include',});
         const json = await response.json();
       
         if(response.ok){
@@ -60,12 +64,13 @@ export default function DataTable() {
     const fetchDataFromDatabase = async () => {
         try {
             // Fetch data from the database
-            const response = await fetch('/admin/viewAdmins');
+            const response = await fetch('http://localhost:8000/admin/viewAdmins', {credentials: 'include'});
             const json = await response.json();
 
             if(response.ok){
                 // Update the state with the fetched data
                 const data = json.data
+                setShowProgress(false);
                 setRows(data);
             }
         } catch (error) {
@@ -80,7 +85,7 @@ export default function DataTable() {
     const isRowSelectable = (params) => false; // Function to make all rows unselectable
     
   return (
-    <div style={{ height: 400, width: '100%' }} >
+    <div style={{ height: 400, width: '100%', backgroundColor: '#ffffff', borderRadius: '5px'}}>
       <DataGrid
         rows={rows}
         columns={columns}
@@ -94,9 +99,8 @@ export default function DataTable() {
         disableRowSelectionOnClick={true}
         disableColumnSelector={true}
       />
-      {/* <Button onClick = {handleOpen}variant="contained" color="success" style={{left:'1280px' ,top:'20px'}}>
-        Add Admin
-      </Button> */}
+        {/* {showProgress && <CircularProgress color="secondary" size={60} style={{paddingBottom: '200px', marginLeft: '200px'}}/>}  */}
+      {/* </DataGrid> */}
       <AddAdminDialog  />
     </div>
   );

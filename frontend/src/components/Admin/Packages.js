@@ -17,7 +17,7 @@ const Packages = ({refresh}) => {
       // Simulate fetching card data from a database (replace with actual API call)
       const fetchData = async () => {
         try {
-          const response = await fetch('/admin/viewPackages');
+          const response = await fetch('/admin/viewPackages', {credentials: 'include'});
           const json = await response.json();
 
           if (response.ok) {
@@ -41,7 +41,7 @@ const Packages = ({refresh}) => {
             <PackageCard  data={cardData} key={index} onClick={handleRefresh}/>
           ))
         ) : (
-          <div>
+          <div style={{backgroundColor: '#f0f0f0',paddingBottom: '600px'}}>
           No existing packages
           </div>
         )}

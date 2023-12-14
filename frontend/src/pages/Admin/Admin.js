@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import AdminSideBar from "../../components/Admin/AdminSideBar";
-import DashboardView from "../../components/Admin/DashboardView";
+import Analytics from "../../components/Admin/Analytics";
 import { auth } from "../Protected/AuthProvider";
 
 const Admin = () => {
@@ -12,8 +12,8 @@ const Admin = () => {
     }
 
     return(
-        <div>
-            {show && <AdminSideBar flag = {true}/>}
+        <div style={{backgroundColor: '#f0f0f0', padding: '5px'}}>
+            {show && <AdminSideBar flag = {true} ViewComponent={<Analytics/>} item = "Dashboard"/>}
             {!show && <h2>No access</h2>}
         </div>
     );

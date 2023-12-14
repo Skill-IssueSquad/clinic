@@ -101,6 +101,7 @@ mongoose
   })
   .catch((err) => console.log(err));
 
+
 app.get("/config", (req, res) => {
   res.send({
     publicKey: process.env.STRIPE_PUBLISHABLE_KEY,
@@ -119,7 +120,13 @@ app.post("/create-payment-intent", async (req, res) => {
   });
 });
 
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000', // Replace with the actual origin of your frontend
+  credentials: true, // Allow credentials (cookies, etc.) to be sent
+}));
+
+app.use(cookieParser());
+  
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use("/DoctorStaticData", express.static("DoctorStaticData"));

@@ -104,7 +104,7 @@ function ResponsiveAppBar() {
               textDecoration: "none",
             }}
           >
-            EL7A2NI
+            El7a2ni Clinic
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>

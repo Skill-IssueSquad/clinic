@@ -13,8 +13,8 @@ const ViewRequests = () => {
     }
 
     return (
-        <div>
-        {show &&  <AdminSideBar flag = {false} ViewComponent={<RequestTable/>}/>}
+        <div style={{backgroundColor: '#f0f0f0', paddingBottom: '220px'}}>
+        {show &&  <AdminSideBar flag = {false} ViewComponent={<RequestTable/>} item="Join Requests"/>}
         {!show && <h2>No access</h2>}
        
         </div>

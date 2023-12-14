@@ -3,6 +3,7 @@ const Doctor = require("../models/Doctor");
 const DoctorRequest = require("../models/DoctorRequest");
 const Patient = require("../models/Patient");
 const HealthPackage = require("../models/Packages");
+const bcrypt = require('bcrypt')
 
 
 //View all admins 
@@ -26,25 +27,40 @@ const viewAdmins = async (req,res) => {
 };
 
 //Add Admin
-const createAdmin =  async (req,res) => {
-    const attributes = {... req.body};
-    try{
-        const newAdmin = await Admin.create(attributes);
+const createAdmin = async (req, res) => {
+    const { username, password, email } = req.body;
+    try {
+        const salt = await bcrypt.genSalt();
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        const newAdmin = await Admin.create({
+            username: username,
+            password: hashedPassword,
+            email: email,
+        });
         const reply = {
             success: true,
             data: newAdmin,
             message: "Admin added successfully",
         };
-        res.status(200).json(reply);
-    } catch(error){
-        const reply = {
-            success: false,
-            data: null,
-            message: error.message,
-        };
-        res.status(400).json(reply);
+        return res.status(200).json(reply);
+    } catch (error) {
+      let err;
+      if (error.message.includes("E11000 duplicate key error collection: Pharmacy.admins index: username_1 dup key")){
+        err = "Username is already taken"
+      }
+      else if (error.message.includes("E11000 duplicate key error collection: Pharmacy.admins index: email_1 dup key")){
+        err = "Email is already taken"
+      }
+      const reply = {
+        success: false,
+        data: null,
+        message: err,
+      };
+      return res.status(500).json(reply);
     }
-};
+  };
+  
 
 //Remove an admin
 const removeAdmin = async (req,res) => {

@@ -24,6 +24,11 @@ export default function CustomizedDialogs({rows, username}) {
   const [text, setText] = React.useState('');
   const path = "AdminStaticData/Test.pdf";
   const [user, setUser] = React.useState('');
+  const [showButton, setShowButton] = React.useState(true);
+  const [pdfUrl1, setPdfUrl1] = React.useState('');
+  const [pdfUrl2, setPdfUrl2] = React.useState('');
+  const [pdfUrl3, setPdfUrl3] = React.useState('');
+
 
 
   const handleClickOpen = () => {
@@ -37,7 +42,16 @@ export default function CustomizedDialogs({rows, username}) {
         "Affiliate Hospital: " +info.affiliatedHospital,
         "Educational Background: " + info.educationalBackground,
     ]
+    if(info.status=="Accepted" || info.status=="Rejected"){
+      setShowButton(false);
+    }
     setUser(info.username);
+    if(info.documents[0])
+      setPdfUrl1(info.documents[0].documentUrl);
+    if(info.documents[1])
+      setPdfUrl2(info.documents[1].documentUrl);
+    if(info.documents[2])
+      setPdfUrl3(info.documents[2].documentUrl);
     setText(textParagraph);
     setOpen(true);
   };
@@ -51,6 +65,7 @@ export default function CustomizedDialogs({rows, username}) {
         headers: {
             'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({user}),});
 
         console.log("gets response");
@@ -74,6 +89,7 @@ export default function CustomizedDialogs({rows, username}) {
         headers: {
             'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({user}),});
 
       const json = await response.json();
@@ -121,8 +137,9 @@ export default function CustomizedDialogs({rows, username}) {
           ))
         }
         {console.log("hi")}
-        <PDFViewer pdfUrl="http://localhost:8000/AdminStaticData/Test.pdf"/>
-        </DialogContent>
+        <PDFViewer pdfUrl={pdfUrl1}/>
+        <PDFViewer pdfUrl={pdfUrl2}/>
+        <PDFViewer pdfUrl={pdfUrl3}/>        </DialogContent>
         <DialogActions>
           <Button autoFocus color= 'secondary' onClick={handleClose}>
            Cancel
