@@ -23,13 +23,12 @@ import Avatar from '@mui/material/Avatar';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import { useNavigate } from 'react-router-dom';
-import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import Doctor from '@mui/icons-material/Person';
-import Patient from '@mui/icons-material/PersonOutline';
-import Request from '@mui/icons-material/StickyNote2';
-import Package from '@mui/icons-material/HealthAndSafety';
-import { useAuth } from '../../pages/Protected/AuthProvider';
+import Analytics from "../../components/Admin/Analytics";
+import AdminTable from "./AdminTable";
+import DoctorTable from "./DoctorTable";
+import PatientTable from "./PatientTable";
+import RequestTable from "./RequestTable";
+import Packages from './Packages';
 
 
 const drawerWidth = 240;
@@ -81,12 +80,15 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 const settings = ['Profile', 'Account', 'Dashboard', "Change Password", 'Logout'];
 
-export default function PersistentDrawerLeft({flag, ViewComponent}) {
+export default function PersistentDrawerLeft({flag, ViewComponent, item}) {
   const navigate = useNavigate();
   //const {setToken} = useAuth();
   const theme = useTheme();
   const [open, setOpen] = React.useState(flag);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [selected, setSelected] = React.useState(item);
+  const [viewComponent, setViewComponent] = React.useState(ViewComponent);
+
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -106,13 +108,14 @@ export default function PersistentDrawerLeft({flag, ViewComponent}) {
 
   const handleClickAdmin = (text) => {
     //console.log(text);
+    setSelected(text);
     switch(text){
-      case "Dashboard": navigate('/Admin'); break;
-      case "Admin": navigate('/Admin/ViewAdmins'); setOpen(false); break;
-      case "Doctor": navigate('/Admin/ViewDoctors'); setOpen(false); break;
-      case "Patient":  navigate('/Admin/ViewPatients'); setOpen(false); break;
-      case "Join Requests":  navigate('/Admin/ViewRequests'); setOpen(false); break;
-      default:  navigate('/Admin/ViewPackages');
+      case "Dashboard": navigate("/Admin"); setOpen(false); break;
+      case "Admin": navigate("/Admin/ViewAdmins") ;setOpen(false); break;
+      case "Patient":  navigate("/Admin/ViewPatients"); setOpen(false); break;
+      case "Doctor": navigate("/Admin/ViewDoctors"); setOpen(false); break;
+      case "Join Requests":  navigate("/Admin/ViewRequests"); setOpen(false); break;
+      default: navigate("/Admin/ViewPackages"); setOpen(false) ;
     }
   }
 
@@ -171,7 +174,7 @@ export default function PersistentDrawerLeft({flag, ViewComponent}) {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ position: 'absolute', top:'5px', right:'10px'}}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                <Avatar alt="Remy Sharp" />
               </IconButton>
             </Tooltip>
             <Menu
@@ -220,33 +223,21 @@ export default function PersistentDrawerLeft({flag, ViewComponent}) {
         <Divider />
         <List>
           {['Dashboard', 'Admin', 'Doctor', 'Patient','Join Requests', 'Health Packages'].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton onClick={() => handleClickAdmin(text)}>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
+            <ListItem key={text} disablePadding selected= {selected===text} >
+            <ListItemButton onClick={() => handleClickAdmin(text)}>
+              <ListItemIcon>
+                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+              </ListItemIcon>
+              <ListItemText primary={text} />
+            </ListItemButton>
+          </ListItem>
           ))}
         </List>
         
-        {/* <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List> */}
+      
       </Drawer>
       <Main open={open}>
-        <DrawerHeader />
-        {ViewComponent}
+        {viewComponent}
       </Main>
     </Box>
   );
