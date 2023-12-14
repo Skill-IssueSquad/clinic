@@ -1,5 +1,5 @@
 require("dotenv").config();
-
+const { Server } = require("socket.io");
 const express = require("express");
 const app = express();
 const cors = require("cors");
@@ -24,14 +24,12 @@ const patientRouter = require("./src/routes/PatientRouter");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "",
 });
-// Import necessary modules
+const { equateBalance } = require("./src/controllers/Balance");
+const { completeAppointments } = require("./src/controllers/DoctorController");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-
-// ... (previous imports and functions)
-
-// Multer configuration
+const cron = require("node-cron");
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     // Specify the directory where the files will be stored
@@ -46,6 +44,7 @@ const storage = multer.diskStorage({
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     const fileExtension = path.extname(file.originalname);
     cb(null, file.fieldname + "-" + uniqueSuffix + fileExtension);
+    cb(null, file.fieldname + "-" + uniqueSuffix + fileExtension);
   },
 });
 
@@ -59,8 +58,41 @@ const {
   authDoctorRequest,
   authPatient,
 } = require("./src/middleware/Authentication");
+const cookieParser = require("cookie-parser");
+const {
+  authAdmin,
+  authDoctor,
+  authDoctorRequest,
+  authPatient,
+} = require("./src/middleware/Authentication");
 const doctorRequest = require("./src/models/DoctorRequest");
+const io = new Server(process.env.SOCKET_PORT, {
+  cors: {
+    origin: "http://localhost:3000",
+  },
+});
 
+io.on("connection", (socket) => {
+  // console.log(`Socket ID : ${socket.id}`);
+  socket.on("join-room", (data) => {
+    //console.log(data);
+    socket.join(data.roomId);
+    console.log("Joined room ", data.roomId);
+  });
+  socket.on("send-message", (data) => {
+    // console.log(data);
+    const send = {
+      message: data.message,
+      time: data.time,
+      roomId: data.roomId,
+    };
+    socket.to(data.roomId).emit("receive-message", send);
+  });
+
+  socket.on("disconnect", () => {
+    // console.log("User disconnected");
+  });
+});
 mongoose
   .connect(process.env.DATABASE_URL, { useNewUrlParser: true })
   .then(() => {
@@ -99,7 +131,8 @@ app.use("/documents", express.static("documents"));
 app.use("/Documents", express.static("Documents"));
 
 app.use(cookieParser());
-app.use("/doctor", authDoctor, doctorRouter);
+//app.use("/doctor", authDoctor, doctorRouter);
+app.use("/doctor", doctorRouter);
 app.use("/admin", authAdmin, adminRouter);
 app.use("/AdminStaticData", express.static("AdminStaticData"));
 app.use("/register/patient", PatientRegisteration);
@@ -109,6 +142,7 @@ app.use("/patient", patientRouter);
 app.use("/account", accountRouter);
 app.use("/doctorRequest", authDoctorRequest, doctorRequestRouter);
 
+app.post("/balance/:username", equateBalance);
 //get requests for video server
 app.get("/video", (req, res) => {
   res.redirect(`http://localhost:${3000}/videoCall/${uuidV4()}`);
@@ -125,3 +159,5 @@ videoIo.on("connection", (socket) => {
     });
   });
 });
+// Schedule the task to run at 00:00 (midnight) every day
+cron.schedule("0 0 * * *", completeAppointments);

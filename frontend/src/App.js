@@ -15,6 +15,7 @@ import ViewRequests from "./pages/Admin/ViewRequests";
 import ViewPackages from "./pages/Admin/ViewPackages";
 //import Patients from "./pages/Patient/Patients";
 import DoctorRequest from "./pages/DoctorRequest/DoctorRequest";
+import DoctorRequest from "./pages/DoctorRequest/DoctorRequest";
 import PatientRegisteration from "./pages/Home/PatientRegisteration";
 import DoctorRegisteration from "./pages/Home/DoctorRegisteration";
 import Patient from "./pages/Patient/Patient";
@@ -29,6 +30,8 @@ import Follow from "./pages/Doctor/FollowUp";
 import Payment from "./pages/Patient/Payment";
 import CreditCardPayment from "./pages/Patient/CreditCardPayment";
 import PatientRescheduleSlots from "./pages/Patient/PatientRescheduler";
+import DoctorPrescriptions from "./pages/Doctor/Prescriptions";
+import DoctorChat from "./pages/Doctor/DoctorChat";
 import { useState } from "react";
 import ChangePassword from "./pages/ChangePassword";
 import PatientPrescriptions from "./pages/Patient/PatientPrescriptions";
@@ -53,11 +56,25 @@ function App() {
               path="/PatientRegisteration"
               element={<PatientRegisteration />}
             />
+            <Route
+              path="/DoctorRegisteration"
+              element={<DoctorRegisteration />}
+            />
+            <Route
+              path="/PatientRegisteration"
+              element={<PatientRegisteration />}
+            />
             <Route path="/ChangePassword" element={<ChangePassword />} />
             <Route exact path="/DoctorRequest" element={<DoctorRequest />} />
             <Route exact path="/Doctor_Home" element={<Doctor />} />
             <Route exact path="/Doctor_Profile" element={<DoctorProfile />} />
+            <Route exact path="/Doctor_Home" element={<Doctor />} />
+            <Route exact path="/Doctor_Profile" element={<DoctorProfile />} />
             <Route exact path="/Doctor_FollowUp" element={<Follow />} />
+            <Route exact path="/Admin" element={<Admin />} />
+            <Route exact path="/Admin/ViewAdmins" element={<ViewAdmins />} />
+            <Route exact path="/Admin/ViewDoctors" element={<ViewDoctors />} />
+            
             <Route exact path="/Admin" element={<Admin />} />
             <Route exact path="/Admin/ViewAdmins" element={<ViewAdmins />} />
             <Route exact path="/Admin/ViewDoctors" element={<ViewDoctors />} />
@@ -72,6 +89,8 @@ function App() {
               element={<ViewRequests />}
             />
             <Route
+            />
+            <Route
               exact
               path="/Admin/ViewPackages"
               element={<ViewPackages />}
@@ -81,6 +100,11 @@ function App() {
               exact
               path="/patient/doctors/"
               element={<PatientDoctors />}
+            />
+            <Route
+              exact
+              path="/patient/appointments/"
+              element={<PatientAppointments />}
             />
             <Route
               exact
@@ -131,6 +155,12 @@ function App() {
               element={<MedicalHistory />}
             />
             <Route exact path="/videoCall/:room_id" element={<CallDoctor />} />
+            <Route
+              exact
+              path="/doctor/prescriptions"
+              element={<DoctorPrescriptions />}
+            />
+            <Route exact path="/Doctor_Chat" element={<DoctorChat />} />
           </Routes>
         </div>
       </BrowserRouter>

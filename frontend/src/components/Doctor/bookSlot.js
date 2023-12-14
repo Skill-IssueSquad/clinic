@@ -15,7 +15,7 @@ import {
   TableRow,
   Paper,
 } from "@mui/material";
-
+import { useNavigate } from "react-router-dom";
 const timeSlots = [
   "8:00",
   "8:30",
@@ -51,11 +51,17 @@ const timeSlots = [
   "23:30",
 ];
 
-const DayTimeSlotSelector = ({ username, patientId, appID }) => {
+const DayTimeSlotSelector = ({
+  username,
+  patientId,
+  appID,
+  type,
+  isFollowUp,
+}) => {
+  const navigate = useNavigate();
   const [selectedDay, setSelectedDay] = useState("");
   const [message, setMessage] = useState("");
   const [slots, setSlots] = useState([]);
-
   const handleDayChange = (event) => {
     setSelectedDay(event.target.value);
   };
@@ -71,6 +77,7 @@ const DayTimeSlotSelector = ({ username, patientId, appID }) => {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({ day: selectedDay }),
       });
       const data = await response.json();
@@ -99,13 +106,15 @@ const DayTimeSlotSelector = ({ username, patientId, appID }) => {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify({
         day: slot.day,
         timeSlot: slot.timeSlot,
-        type: "followUp",
+        type,
         startTime: slot.startTime,
         patientId,
         appID,
+        isFollowUp,
       }),
     });
     const data = await response.json();
@@ -113,13 +122,29 @@ const DayTimeSlotSelector = ({ username, patientId, appID }) => {
     if (data.success) {
       slots.forEach((s) => {
         if (s._id === slot._id) {
+          console.log("The S is : ", s);
+          console.log("The slot is : ", slot);
           s.isBooked = true;
           s.patientName = data.data.name;
-          s.appointmentType = "followUp";
+          s.appointmentType = data.data.type;
+        }
+        if (
+          s.timeSlot === data.data.oldSlot &&
+          s.day === data.data.oldDay &&
+          !isFollowUp
+        ) {
+          s.isBooked = false;
+          s.patientName = "";
+          s.appointmentType = "";
         }
       });
     }
     setMessage(data.message);
+    if (data.success) {
+      setTimeout(() => {
+        navigate("/Doctor_Home");
+      }, 5000); // 30 seconds
+    }
   };
 
   return (

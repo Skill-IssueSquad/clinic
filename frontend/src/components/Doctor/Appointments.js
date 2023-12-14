@@ -17,9 +17,15 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { Container } from "@mui/material";
 import PDFViewer from "../pdf";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
-const statusOptions = ["upcoming", "completed", "cancelled", "rescheduled"];
+const statusOptions = [
+  "upcoming",
+  "completed",
+  "cancelled",
+  "rescheduled",
+  "pending",
+];
 const dateOperators = [">", "<", ">=", "<=", "="];
 
 const MultiLevelFilterTable = ({ username }) => {
@@ -36,7 +42,9 @@ const MultiLevelFilterTable = ({ username }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch(`/doctor/appointments/${username}`);
+      const res = await fetch(`/doctor/appointments/${username}`, {
+        credentials: "include",
+      });
       const response = await res.json();
       if (res.ok) {
         const data = response.data;
@@ -243,6 +251,45 @@ const MultiLevelFilterTable = ({ username }) => {
     return cond1 && cond2 && cond3;
   });
 
+  const handleCancelAppointment = async (row) => {
+    console.log("The row is : ", row.appID);
+    const res = await fetch(`/doctor/cancelAppointment/${username}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        appID: row.appID,
+      }),
+    });
+    const data = await res.json();
+    console.log("The response from cancelling is : ", data);
+    if (res.ok) {
+      // const newRows = [...rows];
+      // const index = newRows.findIndex((r) => r.appID === row.appID);
+      // newRows[index].status = "cancelled";
+      rows.forEach((element) => {
+        if (element.appID === row.appID) {
+          element.status = "cancelled";
+        }
+      });
+      setRows(rows);
+      const newSelectedRow = { ...selectedRow };
+      newSelectedRow.status = "cancelled";
+      //setRows(newRows);
+      setSelectedRow(newSelectedRow);
+    }
+  };
+
+  const handelAddPrescription = async (row) => {
+    window.location.href = `http://localhost:3001/Doctor/Prescription?appID=${selectedRow.appID}`;
+  };
+
+  const handleEditPrescription = async (row) => {
+    window.location.href = `http://localhost:3001/Doctor/Prescription?appID=${selectedRow.appID}&prescriptionID=${selectedRow.prescription_id}`;
+  };
+
   return (
     <div>
       <h2 style={{ textAlign: "center" }}>My Patients</h2>
@@ -421,16 +468,58 @@ const MultiLevelFilterTable = ({ username }) => {
             <Dialog open={openDialog} onClose={handleCloseDialog}>
               <DialogTitle>{selectedRow.name}</DialogTitle>
               <DialogContent>
-                <button
-                  onClick={() =>
-                    navigate(
-                      `/Doctor_FollowUp/?patientId=${selectedRow._id}&appID=${selectedRow.appID}`
-                    )
-                  }
-                >
-                  Schedule a follow up
-                </button>
-
+                {selectedRow.status === "upcoming" && (
+                  <div>
+                    <button
+                      onClick={() =>
+                        navigate(
+                          `/Doctor_FollowUp/?patientId=${selectedRow._id}&appID=${selectedRow.appID}&type=${selectedRow.type}&A=R`
+                        )
+                      }
+                    >
+                      Reschedule
+                    </button>
+                    <button
+                      onClick={() => handleCancelAppointment(selectedRow)}
+                    >
+                      Cancel appointment
+                    </button>
+                  </div>
+                )}
+                {selectedRow.status === "completed" &&
+                  (selectedRow.prescription_id === null ||
+                  selectedRow.prescription_id === undefined ||
+                  selectedRow.prescription_id === "" ? (
+                    <div>
+                      <button onClick={() => handelAddPrescription()}>
+                        Add prescription
+                      </button>
+                      <button
+                        onClick={() =>
+                          navigate(
+                            `/Doctor_FollowUp/?patientId=${selectedRow._id}&appID=${selectedRow.appID}&type=followUp&A=F`
+                          )
+                        }
+                      >
+                        Schedule a follow up
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      <button onClick={() => handleEditPrescription()}>
+                        Edit prescription
+                      </button>
+                      <button
+                        onClick={() =>
+                          navigate(
+                            `/Doctor_FollowUp/?patientId=${selectedRow._id}&appID=${selectedRow.appID}&type=followUp&A=F`
+                          )
+                        }
+                      >
+                        Schedule a follow up
+                      </button>
+                    </div>
+                  ))}
                 <button
                   onClick={() =>
                     navigate(
@@ -450,7 +539,8 @@ const MultiLevelFilterTable = ({ username }) => {
                     key !== "_id" &&
                     key !== "appID" &&
                     key !== "familyMember_nationalId" &&
-                    key !== "PUN"
+                    key !== "PUN" &&
+                    key !== "prescription_id"
                   ) {
                     return (
                       <div key={key}>
@@ -459,26 +549,6 @@ const MultiLevelFilterTable = ({ username }) => {
                       </div>
                     );
                   }
-
-                  // else {
-                  //   if (key === "healthRecords" && value !== null) {
-                  //     return (
-                  //       <div key="healthRecords">
-                  //         <span>healthRecords: </span>
-                  //         {selectedRow.healthRecords.map((record, index) => {
-                  //           return (
-                  //             <div key={`record-${index}`}>
-                  //               <span>Name: {record.documentName}</span>
-                  //               <PDFViewer pdfUrl={record.documentUrl} />
-                  //             </div>
-                  //           );
-                  //         })}
-                  //       </div>
-                  //     );
-                  //   } else {
-                  //     return null;
-                  //   }
-                  // }
                 })}
               </DialogContent>
             </Dialog>

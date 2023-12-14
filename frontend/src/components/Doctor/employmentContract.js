@@ -6,7 +6,9 @@ const Contract = ({ setContractAccepted, contractAccepted, username }) => {
   const [totalPrice, setTotalPrice] = useState(null);
   useEffect(() => {
     const f = async () => {
-      const response = await fetch(`/doctor/contract/getMarkup/${username}`);
+      const response = await fetch(`/doctor/contract/getMarkup/${username}`, {
+        credentials: "include",
+      });
       const data = await response.json();
       console.log(data);
       if (data.success) {
@@ -20,7 +22,7 @@ const Contract = ({ setContractAccepted, contractAccepted, username }) => {
 
   const handleClick = async () => {
     const doctor = await fetch(`/doctor/acceptContract/${username}`, {
-      method: "POST",
+      credentials: "include",
     });
     const data = await doctor.json();
     if (data.success) {

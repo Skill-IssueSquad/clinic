@@ -140,11 +140,17 @@ const getAppointments = async (req, res) => {
     const appointments = await Appointments.find({ doctor_id: doctorId });
     var i = 0;
     for (const appointment of appointments) {
+      if (appointment.status === "requested") {
+        continue;
+      }
       const patientId = appointment.patient_id;
       const patient = await Patient.findById({ _id: patientId });
       var healthRecords = null;
       var patientName = "";
-      if (appointment.familyMember_nationalId === null) {
+      if (
+        appointment.familyMember_nationalId === null ||
+        appointment.familyMember_nationalId === ""
+      ) {
         patientName = patient.name;
         healthRecords = patient.healthRecords;
       } else {
@@ -158,7 +164,6 @@ const getAppointments = async (req, res) => {
       }
 
       i++;
-      //const appointmentDate = new Date(appointment.date).toLocaleDateString();
       const appointmentDate = new Date(appointment.date).toLocaleDateString(
         "en-GB",
         {
@@ -167,6 +172,7 @@ const getAppointments = async (req, res) => {
           year: "numeric",
         }
       );
+      const uniqueName = `${patientName}(${patient.username})`;
       const appointmentInfo = {
         _id: patient._id,
         appID: appointment._id,
@@ -175,12 +181,13 @@ const getAppointments = async (req, res) => {
         date: appointmentDate,
         time: appointment.slot,
         status: appointment.status,
-        name: patientName,
+        name: uniqueName,
         gender: patient.gender,
         age: patient.age,
         type: appointment.type,
         mobileNumber: patient.mobileNumber,
         healthRecords: healthRecords,
+        prescription_id: appointment.prescription_id,
       };
       result.push(appointmentInfo);
     }
@@ -614,15 +621,43 @@ const getSchedule = async (req, res) => {
 const addAppointment = async (req, res) => {
   try {
     const { username } = req.params;
-    const { day, timeSlot, startTime, type, patientId, appID } = req.body;
+    const { day, timeSlot, startTime, type, patientId, appID, isFollowUp } =
+      req.body;
     var patient = await Patient.findById({ _id: patientId });
     var doctor = await Doctor.findOne({ username });
     const doctorId = doctor._id;
     var patientName = null;
     // console.log("My name is :", patientName);
     var appointment = await Appointments.findById({ _id: appID });
+    const oldSlot = appointment.slot;
+    const oldDay = appointment.day;
+    if (!isFollowUp) {
+      appointment = await Appointments.findByIdAndUpdate(
+        { _id: appID },
+        {
+          status: "rescheduled",
+        },
+        { new: true }
+      );
+      doctor = await Doctor.findByIdAndUpdate(
+        { _id: doctorId },
+        {
+          $set: {
+            "availableSlots.$[elem].isBooked": false,
+            "availableSlots.$[elem].patientName": "",
+            "availableSlots.$[elem].appointmentType": "",
+          },
+        },
+        {
+          arrayFilters: [
+            { "elem.day": appointment.day, "elem.timeSlot": appointment.slot },
+          ],
+          new: true,
+        }
+      );
+    }
     const familyMember_nationalId = appointment.familyMember_nationalId;
-    if (familyMember_nationalId === null) {
+    if (familyMember_nationalId === null || familyMember_nationalId === "") {
       patientName = patient.name;
     } else {
       const family = patient.extfamilyMembers;
@@ -633,17 +668,11 @@ const addAppointment = async (req, res) => {
       });
     }
     const prescriptionId = appointment.prescription_id;
-    const followUp = await Appointments.create({
-      doctor_id: doctorId,
-      type,
-      date: startTime,
-      day,
-      slot: timeSlot,
-      patient_id: patientId,
-      prescription_id: prescriptionId,
-      familyMember_nationalId,
-      status: "upcoming",
-    });
+    var price = {
+      doctor: appointment.price.doctor,
+      patient: appointment.price.patient,
+    };
+
     doctor = await Doctor.findByIdAndUpdate(
       { _id: doctorId },
       {
@@ -658,37 +687,58 @@ const addAppointment = async (req, res) => {
         new: true,
       }
     );
-    const markup = (await Clinic.findOne({})).markupPercentage;
-    // console.log("The markup is :", markup);
-    var discount = 0;
-    if (patient.healthPackageType.status === "subscribed") {
-      discount = (
-        await Packages.findOne({ packageType: patient.healthPackageType.type })
-      ).discountOnSession;
+    if (isFollowUp) {
+      const markup = (await Clinic.findOne({})).markupPercentage;
+      var discount = 0;
+      if (patient.healthPackageType.status === "subscribed") {
+        discount = (
+          await Packages.findOne({
+            packageType: patient.healthPackageType.type,
+          })
+        ).discountOnSession;
+      }
+      const sessionPrice = (
+        (doctor.hourlyRate / 2) *
+        (1 + markup / 100) *
+        (1 - discount / 100)
+      ).toFixed(2);
+      patient = await Patient.findByIdAndUpdate(
+        { _id: patientId },
+        {
+          $inc: { amountDue: sessionPrice },
+        },
+        { new: true }
+      );
+      price.doctor = sessionPrice;
+      price.patient = sessionPrice;
     }
-    // console.log("The discount is :", discount);
-    const sessionPrice = (
-      (doctor.hourlyRate / 2) *
-      (1 + markup / 100) *
-      (1 - discount)
-    ).toFixed(2);
-    // console.log("The session price is :", sessionPrice);
-    patient = await Patient.findByIdAndUpdate(
-      { _id: patientId },
-      {
-        $inc: { amountDue: sessionPrice  },
-      },
-      { new: true }
-    );
+    var statusAppointment = isFollowUp ? "pending" : "upcoming";
 
+    const followUp = await Appointments.create({
+      doctor_id: doctorId,
+      type,
+      date: startTime,
+      day,
+      slot: timeSlot,
+      patient_id: patientId,
+      prescription_id: prescriptionId,
+      familyMember_nationalId,
+      status: statusAppointment,
+      price,
+    });
     const data = {
       name: patientName,
       followUp,
+      type,
+      oldSlot,
+      oldDay,
     };
     const send = {
       success: true,
       data,
-      message: `${type} scheduled successfully for ${patientName}`,
+      message: `${type} ${
+        isFollowUp ? "scheduled" : "rescheduled"
+      } successfully for ${patientName} . Redirecting to appointments page`,
     };
     res.status(200).json(send);
   } catch (error) {
@@ -731,6 +781,682 @@ const getMarkup = async (req, res) => {
   }
 };
 
+const cancelAppointment = async (req, res) => {
+  try {
+    const { username } = req.params;
+    const { appID } = req.body;
+    console.log(appID);
+    var appointment = await Appointments.findByIdAndUpdate(
+      { _id: appID },
+      {
+        status: "cancelled",
+      },
+      { new: true }
+    );
+    const priceDoc = appointment.price.doctor;
+    const pricePat = appointment.price.patient;
+    var doctor = await Doctor.findOne({ username });
+    const doctorId = doctor._id;
+    var slots = doctor.availableSlots;
+    slots.forEach((slot) => {
+      if (slot.day === appointment.day && slot.timeSlot === appointment.slot) {
+        slot.isBooked = false;
+        slot.patientName = "";
+        slot.appointmentType = "";
+      }
+    });
+    doctor = await Doctor.findByIdAndUpdate(
+      { _id: doctorId },
+      {
+        $set: {
+          "availableSlots.$[elem].isBooked": false,
+          "availableSlots.$[elem].patientName": "",
+          "availableSlots.$[elem].appointmentType": "",
+        },
+      },
+      {
+        arrayFilters: [
+          { "elem.day": appointment.day, "elem.timeSlot": appointment.slot },
+        ],
+        new: true,
+      }
+    );
+    doctor = await Doctor.findByIdAndUpdate(
+      { _id: doctorId },
+      {
+        $dec: { walletBalance: priceDoc },
+      },
+      { new: true }
+    );
+    const patientId = appointment.patient_id;
+    var patient = await Patient.findByIdAndUpdate(
+      { _id: patientId },
+      {
+        $inc: { walletBalance: pricePat },
+      },
+      { new: true }
+    );
+    const Equate = fetch(`http://localhost:8001/balance/${patient.username}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        balance: patient.walletBalance,
+      }),
+    });
+    const send = {
+      success: true,
+      data: appointment,
+      message: "Appointment cancelled successfully",
+    };
+    res.status(200).json(send);
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    res.status(500).json(send);
+  }
+};
+
+const addToPrescription = async (req, res) => {
+  try {
+    const { appID, medicineName, dose, medicineID } = req.body;
+    var message = "";
+    var appointment = await Appointments.findById({ _id: appID });
+    var id = appointment.prescription_id;
+    if (id === null || id === "" || id === undefined) {
+      const prescription = await Prescription.create({
+        PharmacySubmitStatus: false,
+        isFilled: false,
+        medicines: [
+          {
+            medicineName,
+            dose,
+            medicineID,
+          },
+        ],
+      });
+      id = prescription._id;
+      const patient = await Patient.findById({ _id: appointment.patient_id });
+      patient.perscreption_ids.push({ prescription_id: id });
+      patient.save();
+      appointment = await Appointments.findByIdAndUpdate(
+        { _id: appID },
+        {
+          prescription_id: id,
+        },
+        { new: true }
+      );
+      const send = {
+        success: true,
+        data: appointment,
+        message: `Prescription created successfully and ${medicineName} added`,
+      };
+      res.status(200).json(send);
+      return;
+    } else {
+      const prescription = await Prescription.findById({ _id: id });
+      const medicine = {
+        medicineName,
+        dose,
+        medicineID,
+      };
+      prescription.medicines.forEach((med) => {
+        if (med.medicineID === medicineID) {
+          message = `${medicineName} dose updated successfully`;
+          med.dose = dose;
+        }
+      });
+      if (message === "") {
+        message = `${medicineName} added successfully`;
+        prescription.medicines.push(medicine);
+      }
+      prescription.save();
+      const send = {
+        success: true,
+        data: prescription,
+        message,
+      };
+      res.status(200).json(send);
+      return;
+    }
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    res.status(500).json(send);
+  }
+};
+
+const getMedicinesStatus = async (req, res) => {
+  try {
+    const { appID } = req.body;
+    const appointment = await Appointments.findById({ _id: appID });
+    const prescriptionId = appointment.prescription_id;
+    if (
+      prescriptionId === null ||
+      prescriptionId === "" ||
+      prescriptionId === undefined
+    ) {
+      const send = {
+        success: true,
+        data: null,
+        message: "No prescription found",
+      };
+      const Data = {
+        data: send,
+        additionalMedicines: "",
+      };
+      res.status(200).json(Data);
+      return;
+    }
+    const prescription = await Prescription.findById({ _id: prescriptionId });
+    const medicines = prescription.medicines;
+    var additionalMedicines = prescription.additionalMedicines;
+    if (additionalMedicines === null || additionalMedicines === undefined) {
+      additionalMedicines = "";
+    }
+    // console.log(medicines);
+    const send = {
+      success: true,
+      data: medicines,
+      message: "Medicines status retrieved successfully",
+    };
+    const Data = {
+      data: send,
+      additionalMedicines,
+    };
+    res.status(200).json(Data);
+    return;
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    const Data = {
+      data: send,
+      additionalMedicines: "",
+    };
+    res.status(500).json(Data);
+  }
+};
+
+const removeFromPrescription = async (req, res) => {
+  try {
+    const { appID, medicineID } = req.body;
+    var appointment = await Appointments.findById({ _id: appID });
+    const prescriptionId = appointment.prescription_id;
+    const prescription = await Prescription.findById({ _id: prescriptionId });
+    const medicines = prescription.medicines;
+    var newMedicines = [];
+    var medicineName = "";
+    medicines.forEach((medicine) => {
+      if (medicine.medicineID !== medicineID) {
+        newMedicines.push(medicine);
+      } else {
+        medicineName = medicine.medicineName;
+      }
+    });
+    prescription.medicines = newMedicines;
+    prescription.save();
+    const send = {
+      success: true,
+      data: prescription,
+      message: `${medicineName} removed successfully`,
+    };
+    res.status(200).json(send);
+    return;
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    res.status(500).json(send);
+  }
+};
+
+const getRequestedAppointments = async (req, res) => {
+  try {
+    const { username } = req.params;
+    var doctor = await Doctor.findOne({ username });
+    const doctorId = doctor._id;
+    const appointments = await Appointments.find({
+      status: "requested",
+      doctor_id: doctorId,
+    });
+    const result = [];
+    for (const appointment of appointments) {
+      const patientId = appointment.patient_id;
+      const patient = await Patient.findById({ _id: patientId });
+      var patientName = "";
+      if (
+        appointment.familyMember_nationalId === null ||
+        appointment.familyMember_nationalId === ""
+      ) {
+        patientName = patient.name;
+      } else {
+        const family = patient.extfamilyMembers;
+
+        family.forEach((member) => {
+          if (member.national_id === appointment.familyMember_nationalId) {
+            patientName = member.name;
+          }
+        });
+      }
+      const appointmentInfo = {
+        patientName,
+        day: appointment.day,
+        slot: appointment.slot,
+        type: appointment.type,
+        appID: appointment._id,
+      };
+      result.push(appointmentInfo);
+    }
+    const send = {
+      success: true,
+      data: result,
+      message: "Requested appointments found successfully",
+    };
+    res.status(200).json(send);
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    res.status(500).json(send);
+  }
+};
+
+const acceptAppointment = async (req, res) => {
+  try {
+    const { username } = req.params;
+
+    const { appID, patientName, type, day, slot } = req.body;
+    const appointment = await Appointments.findByIdAndUpdate(
+      { _id: appID },
+      {
+        status: "upcoming",
+      },
+      { new: true }
+    );
+    var doctor = await Doctor.findOne({ username });
+    const doctorId = doctor._id;
+    const send = {
+      success: true,
+      data: appointment,
+      message: "Appointment accepted successfully",
+    };
+    res.status(200).json(send);
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    res.status(500).json(send);
+  }
+};
+
+const revokeAppointment = async (req, res) => {
+  try {
+    const { appID } = req.body;
+    const appointment = await Appointments.findByIdAndUpdate(
+      { _id: appID },
+      {
+        status: "cancelled",
+      },
+      { new: true }
+    );
+    const doctorMoney = appointment.price.doctor;
+    const patientMoney = appointment.price.patient;
+    const doctorId = appointment.doctor_id;
+    const patientId = appointment.patient_id;
+    const doctor = await Doctor.findByIdAndUpdate(
+      { _id: doctorId },
+      {
+        $dec: { walletBalance: doctorMoney },
+      },
+      { new: true }
+    );
+    const patient = await Patient.findByIdAndUpdate(
+      { _id: patientId },
+      {
+        $inc: { walletBalance: patientMoney },
+      },
+      { new: true }
+    );
+    doctor = await Doctor.findByIdAndUpdate(
+      { _id: doctorId },
+      {
+        $set: {
+          "availableSlots.$[elem].isBooked": false,
+          "availableSlots.$[elem].patientName": "",
+          "availableSlots.$[elem].appointmentType": "",
+        },
+      },
+      {
+        arrayFilters: [
+          { "elem.day": appointment.day, "elem.timeSlot": appointment.slot },
+        ],
+        new: true,
+      }
+    );
+    const Equate = fetch(`http://localhost:8001/balance/${patient.username}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        balance: patient.walletBalance,
+      }),
+    });
+    const send = {
+      success: true,
+      data: appointment,
+      message: "Appointment revoked successfully",
+    };
+    res.status(200).json(send);
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    res.status(500).json(send);
+  }
+};
+
+const getPatient = async (req, res) => {
+  try {
+    const { appID } = req.params;
+    const appointment = await Appointments.findById({ _id: appID });
+    const patientId = appointment.patient_id;
+    const patient = await Patient.findById({ _id: patientId });
+    const prescriptionID = appointment.prescription_id;
+    if (
+      !(
+        prescriptionID === null ||
+        prescriptionID === "" ||
+        prescriptionID === undefined
+      )
+    ) {
+      const prescription = await Prescription.findById({ _id: prescriptionID });
+      prescription.PharmacySubmitStatus = true;
+      // prescription.isFilled = true;
+      prescription.save();
+    }
+    const healthPackageType = patient.healthPackageType;
+    var discount = 0;
+    if (patient.healthPackageType.status === "subscribed") {
+      discount = (
+        await Packages.findOne({
+          packageType: patient.healthPackageType.type,
+        })
+      ).discountOnMedicinePurchase;
+    }
+    var data = {
+      patient,
+      discount,
+    };
+    const send = {
+      success: true,
+      data,
+      message: "Patient found successfully",
+    };
+
+    res.status(200).json(send);
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: `${error.message}`,
+    };
+    res.status(500).json(send);
+  }
+};
+
+const completeAppointments = async (req, res) => {
+  const appointments = await Appointments.find({ status: "upcoming" });
+  const currentDate = new Date();
+  for (var appointment of appointments) {
+    if (appointment.endTime < currentDate) {
+      appointment.status = "completed";
+      await appointment.save();
+    }
+  }
+};
+
+const getPrescriptions = async (req, res) => {
+  const { username } = req.params;
+
+  try {
+    const doctor = await Doctor.findOne({ username });
+    if (doctor) {
+      const doctorId = doctor._id;
+      var appointments = await Appointments.find({ doctor_id: doctorId });
+      var prescriptionIDs = [];
+      var valid = true;
+      for (const appointment of appointments) {
+        valid = true;
+        if (
+          appointment.prescription_id !== undefined &&
+          appointment.prescription_id !== null &&
+          appointment.prescription_id !== ""
+        ) {
+          for (var id of prescriptionIDs) {
+            if (id.toString() === appointment.prescription_id.toString()) {
+              valid = false;
+            }
+          }
+          if (valid) {
+            prescriptionIDs.push(appointment.prescription_id);
+          }
+        }
+      }
+      // console.log(prescriptionIDs);
+      var prescriptions = [];
+
+      for (const prescription_id of prescriptionIDs) {
+        if (
+          prescription_id === null ||
+          prescription_id === "" ||
+          prescription_id === undefined
+        ) {
+          continue;
+        }
+        // const prescription_id = prescription.prescription_id;
+
+        const prescriptionObj = await Prescription.findById(
+          prescription_id
+        ).catch((err) => {
+          return res.status(500).json({
+            success: false,
+            data: null,
+            message:
+              err.message ||
+              "Some error occurred while retrieving prescriptions.",
+          });
+        });
+
+        let finalObj = {
+          prescription_id: prescription_id,
+          patient_name: null,
+          date: null,
+          PharmacySubmitStatus: prescriptionObj.PharmacySubmitStatus,
+          isFilled: prescriptionObj.isFilled.toString(),
+          medicines: prescriptionObj.medicines,
+        };
+
+        const appointObj = await Appointments.findOne({
+          prescription_id: prescription_id,
+          doctor_id: doctorId,
+        }).catch((err) => {
+          return res.status(500).json({
+            success: false,
+            data: null,
+            message:
+              err.message ||
+              "Some error occurred while retrieving appointments.",
+          });
+        });
+
+        if (appointObj) {
+          //search for doctor name
+          finalObj.date = appointObj.date;
+          const patient = await Patient.findById(appointObj.patient_id);
+          // const doctorObj = await Doctor.findById(appointObj.doctor_id).catch(
+          //   (err) => {
+          //     return res.status(500).json({
+          //       success: false,
+          //       data: null,
+          //       message:
+          //         err.message ||
+          //         "Some error occurred while retrieving doctors.",
+          //     });
+          //   }
+          // );
+
+          if (patient) {
+            finalObj.patient_name = patient.name;
+          }
+        }
+        //print the prescription object
+        //console.log(finalObj);
+
+        //add the prescription object to the prescriptions array
+        prescriptions.push(finalObj);
+
+        //print the prescriptions array
+        //console.log("Here is the prescriptions array (in):");
+        //console.log(prescriptions);
+      }
+
+      //console.log("Here is the prescriptions array (out):");
+      //console.log(prescriptions);
+
+      return res.status(200).json({
+        success: true,
+        data: prescriptions,
+        message: "Prescriptions retrieved successfully",
+      });
+    } else {
+      return res.status(404).json({
+        success: false,
+        data: null,
+        message: "Doctor not found",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: error.message,
+    });
+  }
+};
+
+const getChatPatients = async (req, res) => {
+  try {
+    const { username } = req.params;
+    const doctor = await Doctor.findOne({ username });
+    var patientList = doctor.patientList;
+    const patients = [];
+    const usernames = [];
+    for (var i = 0; i < patientList.length; i++) {
+      const patientId = patientList[i].patient_id;
+      const patientObj = await Patient.findById(patientId);
+      if (!patientObj) {
+        continue;
+      }
+      const patientName = patientObj.name;
+      const patientUsername = patientObj.username;
+      const patientInfo = {
+        name: `${patientName}(${patientUsername})`,
+        username: patientUsername,
+      };
+      if (!usernames.includes(patientUsername)) {
+        patients.push(patientInfo);
+        usernames.push(patientUsername);
+      }
+    }
+    const send = {
+      success: true,
+      data: patients,
+      message: "Patients found successfully",
+    };
+    res.status(200).json(send);
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: error.message,
+    };
+    res.status(500).json(send);
+  }
+};
+
+const saveAdditionalMedicines = async (req, res) => {
+  try {
+    const { appID, additionalMedicines } = req.body;
+    var appointment = await Appointments.findById({ _id: appID });
+    var prescriptionId = appointment.prescription_id;
+    if (
+      prescriptionId === null ||
+      prescriptionId === undefined ||
+      prescriptionId === ""
+    ) {
+      const prescription = await Prescription.create({
+        PharmacySubmitStatus: false,
+        isFilled: false,
+        additionalMedicines,
+      });
+      prescriptionId = prescription._id;
+      appointment = await Appointments.findByIdAndUpdate(
+        { _id: appID },
+        {
+          prescription_id: prescriptionId,
+        },
+        { new: true }
+      );
+      const patient = await Patient.findById({ _id: appointment.patient_id });
+      patient.perscreption_ids.push({ prescription_id: prescriptionId });
+      patient.save();
+      const send = {
+        success: true,
+        data: prescription,
+        message:
+          "Prescription created successfully and additional medicines added",
+      };
+      res.status(200).json(send);
+      return;
+    }
+    const prescription = await Prescription.findById({ _id: prescriptionId });
+    prescription.additionalMedicines = additionalMedicines;
+    prescription.save();
+    const send = {
+      success: true,
+      data: prescription,
+      message: "Additional medicines saved successfully",
+    };
+    res.status(200).json(send);
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: error.message,
+    };
+    res.status(500).json(send);
+  }
+};
+
 module.exports = {
   getDoctor,
   createDoctor,
@@ -748,4 +1474,16 @@ module.exports = {
   getSchedule,
   addAppointment,
   getMarkup,
+  cancelAppointment,
+  addToPrescription,
+  getMedicinesStatus,
+  removeFromPrescription,
+  getRequestedAppointments,
+  acceptAppointment,
+  revokeAppointment,
+  getPatient,
+  completeAppointments,
+  getPrescriptions,
+  getChatPatients,
+  saveAdditionalMedicines,
 };

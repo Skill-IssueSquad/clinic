@@ -75,6 +75,7 @@ const DayTimeSlotSelector = ({
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({ day: selectedDay }),
       });
       const data = await response.json();
