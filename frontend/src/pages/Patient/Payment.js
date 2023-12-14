@@ -252,7 +252,7 @@ const Payment = () => {
               )}
             </DialogContent>
             <DialogActions>
-              <Button onClick={closePayCardDialog}>OK</Button>
+              <Button onClick={closePayCardDialog}>CLOSE</Button>
             </DialogActions>
           </Dialog>
 
