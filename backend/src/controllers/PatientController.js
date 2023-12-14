@@ -1442,7 +1442,7 @@ const requestFollowUp = async (req, res) => {
     const modifyMoney = await Doctor.findByIdAndUpdate(
       req.body.doctor_id,
       {
-        walletBalance: doctorNewSlot.walletBalance + sessionPrice,
+        walletBalance: doctorNewSlot.walletBalance + Number(sessionPrice),
       },
       { new: true }
     ).catch((err) => {
@@ -1487,7 +1487,7 @@ const requestFollowUp = async (req, res) => {
     return sendResponse(
       500,
       false,
-      { ...req.body, sessionPrice: sessionPrice, doctor: doctorNewSlot },
+      { ...req.body},
       err.message || "Some error occurred while requesting follow-up."
     );
   }
