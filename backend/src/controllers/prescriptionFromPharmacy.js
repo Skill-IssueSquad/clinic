@@ -147,6 +147,8 @@ async function getPatient(username) {
 
 const setTakenForPres = async (req, res) => {
 
+  console.log("Medicines: "+req.body.medicines);
+  console.log("Username: "+req.body.username);
   const {medicines,username}= req.body;
  // console.log("I reached here: "+username);
   // find if there is patient with this username
@@ -165,27 +167,71 @@ const setTakenForPres = async (req, res) => {
               if(prescription.isFilled == false && prescription.PharmacySubmitStatus == true){
                 prescriptions.push(prescription);
               }
+
+              console.log("Precriptions 0 : "+prescriptions[0]);
+              console.log("Precriptions 1: "+prescriptions[1]);
             //  }
           }
-
-
-          await Promise.all(
-            medicines.map(async (medicine) => {
+           var isItTaken = false;
+         // await Promise.all(
+          // medicines.map(async (medicine) => {
+            for(var medicine of  medicines){
+              console.log("theMedicinesSent: "+medicine);
               for (let j = 0; j < prescriptions.length; j++) {
+               
+
                 for (let k = 0; k < prescriptions[j].medicines.length; k++) {
-                  if (medicine === prescriptions[j].medicines[k].medicineName) {
-                    const prescription = await Prescription.findOneAndUpdate(
-                      { _id: prescriptions[j]._id, "medicines.medicineName": medicine },
-                      { $set: { "medicines.$.taken": true } },
-                      { new: true }
-                    );
+                  if (medicine === prescriptions[j].medicines[k].medicineName && prescriptions[j].medicines[k].taken === false) {
+                    isItTaken = true;
+                    // const prescription = await Prescription.findOneAndUpdate(
+                    //   { _id: prescriptions[j]._id, "medicines.medicineName": medicine },
+                    //   { $set: { "medicines.taken": true } },
+                   
+                    // );
+
+                    let  prescription = await Prescription.findByIdAndUpdate(
+                      { _id: prescriptions[j]._id },
+                      {
+                        $set: {
+                          "medicines.$[elem].taken": true,
+                          
+                        },
+                      },
+                      {
+                        arrayFilters: [
+                          { "elem.medicineName": medicine },
+                        ],
+                        new: true,
+                      }
+                    )
+
+
+
+
+
+
+
+
+
+
+
+
+
     
                     prescriptions[j] = prescription;
                   }
+                  if(isItTaken){
+                    break;
+                  }
+                }
+                if(isItTaken){
+                  break;
                 }
               }
-            })
-          );
+              isItTaken = false;
+           // });
+            };
+         // );
 
           // for(let i=0;i<medicines.length;i++){
           //   for(let j=0;j<prescriptions.length;j++){
@@ -229,24 +275,41 @@ const setTakenForPres = async (req, res) => {
           //     }
           //   }
           // }
-          await Promise.all(
-            prescriptions.map(async (prescription) => {
-              for (let j = 0; j < prescription.medicines.length; j++) {
-                if (prescription.medicines[j].taken === false) {
+        //  await Promise.all(
+           // prescriptions.map(async (prescription) => 
+           for(let perO of prescriptions){
+              for (let j = 0; j < perO.medicines.length; j++) {
+                if (perO.medicines[j].taken === false) {
                   break;
                 }
-                if (j === medicines.length - 1) {
-                  const updatedPrescription = await Prescription.findOneAndUpdate(
-                    { _id: prescription._id },
-                    { $set: { isFilled: true } },
+                if (j === perO.medicines.length - 1) {
+                  const updatedPrescription = await Prescription.findByIdAndUpdate(
+                    { _id: perO._id },
+                    {  isFilled: true  },
                     { new: true }
                   );
+
+
+                  // let updatedPrescription   = await Prescription.findByIdAndUpdate(
+                  //   { _id: prescriptions[j]._id },
+                  //   {
+                  //     $set: {
+                  //       "medicines.$[elem].taken": true,
+                        
+                  //     },
+                  //   },
+                  //   {
+                  //     arrayFilters: [
+                  //       { "elem.medicineName": medicine },
+                  //     ],
+                  //     new: true,
+                  //   }
+                  // )
     
-                  prescriptions[j] = updatedPrescription;
                 }
               }
-            })
-          );
+            }//)
+          //);
     
           return res.status(200).json({
             success: true,
