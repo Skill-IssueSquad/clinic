@@ -11,8 +11,8 @@ const ViewDoctors = () => {
     }
 
     return ( 
-        <div>
-        {show && <AdminSideBar flag = {false} ViewComponent={<DoctorTable />}/>}
+        <div style={{backgroundColor: '#f0f0f0', paddingBottom: '220px'}}>
+        {show && <AdminSideBar flag = {false} ViewComponent={<DoctorTable />} item="Doctor"/>}
         {!show && <h2>No access</h2>}
         
         </div>
