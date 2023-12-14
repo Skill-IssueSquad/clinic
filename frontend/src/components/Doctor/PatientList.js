@@ -24,7 +24,9 @@ const PatientList = ({ username }) => {
   useEffect(() => {
     const f = async () => {
       setLoading(true);
-      const response = await fetch(`/doctor/chat/getPatients/${username}`);
+      const response = await fetch(`/doctor/chat/getPatients/${username}`, {
+        credentials: "include",
+      });
       const data = await response.json();
       console.log(data);
       setPatients(data.data);

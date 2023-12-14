@@ -20,7 +20,10 @@ const Requests = ({ username }) => {
   useEffect(() => {
     const f = async () => {
       const response = await fetch(
-        `/doctor/getRequestedAppointments/${username}`
+        `/doctor/getRequestedAppointments/${username}`,
+        {
+          credentials: "include",
+        }
       );
       const data = await response.json();
       console.log(data);
@@ -35,6 +38,7 @@ const Requests = ({ username }) => {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify({
         patientName: request.patientName,
         day: request.day,
@@ -53,6 +57,7 @@ const Requests = ({ username }) => {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify({
         appID: request.appID,
       }),

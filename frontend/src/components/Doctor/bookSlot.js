@@ -77,6 +77,7 @@ const DayTimeSlotSelector = ({
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({ day: selectedDay }),
       });
       const data = await response.json();
@@ -105,6 +106,7 @@ const DayTimeSlotSelector = ({
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify({
         day: slot.day,
         timeSlot: slot.timeSlot,

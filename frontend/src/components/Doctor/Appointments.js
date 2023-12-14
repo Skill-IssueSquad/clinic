@@ -42,7 +42,9 @@ const MultiLevelFilterTable = ({ username }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch(`/doctor/appointments/${username}`);
+      const res = await fetch(`/doctor/appointments/${username}`, {
+        credentials: "include",
+      });
       const response = await res.json();
       if (res.ok) {
         const data = response.data;
@@ -256,6 +258,7 @@ const MultiLevelFilterTable = ({ username }) => {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify({
         appID: row.appID,
       }),
