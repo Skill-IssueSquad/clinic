@@ -27,7 +27,6 @@ const Notifications = () => {
       console.log(username)
       const response = await axios.get(
         `http://localhost:8000/patient/getAllUnseenNotifications/${username}`
-   
       );
 
       console.log(response.data)
@@ -42,7 +41,9 @@ const Notifications = () => {
   const handleMarkAsSeen = async (notificationId) => {
     try {
       await axios.patch(
-        `http://localhost:8000/patient/markNotificationAsSeen/${username}/${notificationId}`
+        `http://localhost:8000/patient/markNotificationAsSeen/${username}/${notificationId}`,{
+          withCredentials:true,
+        }
       );
 
       // After successful update, fetch and update notifications

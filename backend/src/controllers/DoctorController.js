@@ -6,6 +6,8 @@ const numberToWords = require("number-to-words");
 const Prescription = require("../models/Prescription");
 const Clinic = require("../models/Clinic");
 const Packages = require("../models/Packages");
+const nodeMailer=require("nodemailer");
+
 
 const getDoctor = async (req, res) => {
   //console.log("I am here");
@@ -836,13 +838,14 @@ const getAllUnseenNotificationsD = async (req, res) => {
     const unseenNotifications = doctor.notifications.filter(
       (notification) => !notification.isSeen
     );
-
+      console.log(unseenNotifications)
     res.status(200).json({
       success: true,
       message: "Unseen notifications retrieved successfully",
       data: unseenNotifications,
     });
   } catch (error) {
+    console.log("ENTERED THE CATCH")
     res.status(500).json({
       success: false,
       error: error.message,
@@ -881,7 +884,11 @@ const sendEmailD = async (req, res) => {
       console.log('it has an error', err)
     }
     else{
-      console.log('email sent')
+      res.status(200).json({
+        success: true,
+        message: "Email sent",
+      });    
+        console.log('email sent')
     }
   })
   //}

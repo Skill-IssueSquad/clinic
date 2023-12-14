@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../pages/Protected/AuthProvider";
+import NavBar from "../../components/navBar";
+
 
 import {
   Button,
@@ -166,6 +168,7 @@ const HealthPackages = () => {
 
   return (
     <div>
+        <NavBar name={"Health Packages"} username={"username"} />
       {show ? (
         <div
           style={{

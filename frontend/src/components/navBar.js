@@ -31,16 +31,17 @@ const ResponsiveAppBar = ({ username }) => {
         const response = await axios.get(
           `http://localhost:8000/patient/getAllUnseenNotifications/${username}`
         );
-
         const unseenNotifications = response.data.data;
         const hasUnseen = unseenNotifications.some(notification => !notification.isSeen);
         setHasUnseenNotifications(hasUnseen);
+
       } catch (error) {
         console.error("Error fetching unseen notifications:", error.message);
       }
     };
 
     fetchUnseenNotifications();
+    
   }, [username]);
 
   const handleOpenNavMenu = (event) => {
@@ -61,8 +62,13 @@ const ResponsiveAppBar = ({ username }) => {
 
   const handleBellIconClick = () => {
     // Navigate to the notifications page or any other desired page
-    navigate('/patient/notifications');
-  };
+    const role= localStorage.getItem("role")
+    if(role==="Patient"){
+      navigate('/patient/notifications');
+    }
+    else{
+    navigate("/Doctor_Home/notifications/");
+    }  };
 
   return (
     <AppBar position="static">

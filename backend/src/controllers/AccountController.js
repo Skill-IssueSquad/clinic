@@ -496,5 +496,5 @@ module.exports = {
     logout,
     forgotPassword,
     verifyOTP,
-    resetPassword
+    resetPassword,
 };

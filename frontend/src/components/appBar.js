@@ -42,7 +42,7 @@ function ResponsiveAppBar({ username }) {
       }
     };
 
-    fetchUnseenNotifications();
+    //fetchUnseenNotifications();
   }, [username]);
 
   const handleOpenNavMenu = (event) => {
@@ -97,7 +97,14 @@ function ResponsiveAppBar({ username }) {
 
   const handleBellIconClick = () => {
     // Navigate to the notifications page or any other desired page
+    const role= localStorage.getItem("role")
+    console.log("H1"+role)
+    if(role==="Patient"){
+      navigate('/patient/notifications');
+    }
+    else{
     navigate("/Doctor_Home/notifications/");
+    }
   };
 
   return (
@@ -207,20 +214,7 @@ function ResponsiveAppBar({ username }) {
                 color="inherit"
                 onClick={handleBellIconClick}
               >
-                <NotificationsIcon />
-                {hasUnseenNotifications && (
-                  <span
-                    style={{
-                      position: "absolute",
-                      top: "8px",
-                      right: "8px",
-                      background: "red",
-                      borderRadius: "50%",
-                      width: "10px",
-                      height: "10px",
-                    }}
-                  />
-                )}
+            
               </IconButton>
             </Tooltip>
           </Box>

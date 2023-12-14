@@ -1,6 +1,7 @@
 import AppBar from "../../components/appBar";
 import Appointments from "../../components/Doctor/Appointments";
 import { auth } from "../Protected/AuthProvider";
+import NavBar from "../../components/navBarForDR";
 
 const Doctor = () => {
   let show = false;
@@ -13,6 +14,7 @@ const Doctor = () => {
 
   return (
     <div>
+      <NavBar name={"Notifications"} username={un} />
       {show ? (
         <div>
           <Appointments username={un} />
