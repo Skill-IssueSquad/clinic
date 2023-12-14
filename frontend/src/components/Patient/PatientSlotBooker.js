@@ -134,7 +134,7 @@ const SlotBooker = ({ doctor_id }) => {
 
       bookingOptions = bookOptions.data.data;
 
-      let sortedData = fetchedSlots.data.data.sort((a, b) => {
+      let sortedData = fetchedSlots.sort((a, b) => {
         const dateA = new Date(
           `${a.availableSlot.day} ${a.availableSlot.timeSlot}`
         );
@@ -150,6 +150,8 @@ const SlotBooker = ({ doctor_id }) => {
           `${slot.availableSlot.day} ${slot.availableSlot.timeSlot}`
         );
         const currentDate = new Date();
+        console.log(date, currentDate);
+        console.log(date >= currentDate); 
         return date >= currentDate;
       });
 
@@ -197,7 +199,7 @@ const SlotBooker = ({ doctor_id }) => {
 
         if (response.data.success) {
             handleCloseDialog();
-            navigate("/patient/payment/${response.data.data.transit_id}");
+            navigate(`/patient/payment/${response.data.data.transit_id}`);
             setMessage(response.data.message || "Slot booked successfully");
          
         } else {

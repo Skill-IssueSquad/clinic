@@ -37,7 +37,7 @@ export default function AppointmentSplitButton({
         old ? "Request Follow-up" : "Reschedule Appointment",
         ...(old ? [] : ["Cancel"]),
       ]
-    : pending ? ["Select Action", "Pay", "Cancel"]: ["Select Action", ...(old ? ["Cancel"] : [])];
+    : pending ? ["Select Action", "Pay", "Cancel"]: ["Select Action", ...(old ? [] : ["Cancel"])];
 
   let clr = "";
   const [open, setOpen] = React.useState(false);

@@ -121,7 +121,7 @@ const RescheduleSlot = ({ doctor_id, appointment_id }) => {
 
       setPatient(patient.data.data);
 
-      let sortedData = fetchedSlots.data.data.sort((a, b) => {
+      let sortedData = fetchedSlots.sort((a, b) => {
         const dateA = new Date(
           `${a.availableSlot.day} ${a.availableSlot.timeSlot}`
         );

@@ -929,7 +929,10 @@ const bookAppointment = async (req, res) => {
 
       await Doctor.findByIdAndUpdate(
         { _id: req.body.doctor_id },
-        { patientList: doctor.patientList }
+        { 
+          patientList: doctor.patientList,
+          $inc: { walletBalance: appointment.price.doctor },
+        }
       ).catch((err) => {
         if (err) {
           return sendResponse(
@@ -2242,28 +2245,45 @@ const removeHealthRecord = async (req, res) => {
 };
 
 const getTransitData = async (req, res) => {
+
+  let responseSent = false; // Track whether a response has been sent
+  const sendResponse = (statusCode, success, data, message) => {
+    if (!responseSent) {
+      responseSent = true;
+      return res.status(statusCode).json({ success: success, data, message });
+    }
+  };
+
+
+
   try {
     const tid = req.params.transit_id;
     const payment = await PaymentTransit.findById(tid).catch((err) => {
-      return res.status(500).json({
-        success: false,
-        data: null,
-        message:
-          err.message || "Some error occurred while retrieving payments.",
-      });
+      return sendResponse(
+        500,
+        false,
+        req.params,
+        err.message || "Some error occurred while retrieving payment transit."
+      );
+    
     });
 
-    return res.status(200).json({
-      success: true,
-      data: payment,
-      message: "ata sent successfully",
-    });
+    return sendResponse(
+      200,
+      true,
+      payment,
+      "Data sent successfully"
+    );
+
+
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      data: null,
-      message: error.message || "Some error occurred while performing request",
-    });
+    return sendResponse(
+      500,
+      false,
+      req.params,
+      error.message || "Some error occurred while performing request"
+    );
+    
   }
 };
 
