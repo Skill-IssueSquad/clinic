@@ -22,7 +22,6 @@ const Contract = ({ setContractAccepted, contractAccepted, username }) => {
 
   const handleClick = async () => {
     const doctor = await fetch(`/doctor/acceptContract/${username}`, {
-      method: "POST",
       credentials: "include",
     });
     const data = await doctor.json();

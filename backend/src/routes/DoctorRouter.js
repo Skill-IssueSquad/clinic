@@ -62,7 +62,7 @@ router.post("/createAppointment", createAppointment);
 router.post("/saveFile", upload.any(), saveFile);
 router.post("/approveDoctor/:username", approveDoctor);
 router.post("/addMoney/:username", addMoney);
-router.post("/acceptContract/:username", acceptContract);
+router.get("/acceptContract/:username", acceptContract);
 router.post("/addSlot/:username", addSlot);
 router.post("/schedule/:username", getSchedule);
 router.post("/addAppointment/:username", addAppointment);
