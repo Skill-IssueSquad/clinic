@@ -10,11 +10,13 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import validator from 'validator';
+import CircularProgress from '@mui/material/CircularProgress';
 
 
 export default function FormDialog() {
   const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
+  const [showProgress, setShowProgress] = useState(false);
 
 
   const handleClickOpen = () => {
@@ -43,16 +45,26 @@ export default function FormDialog() {
 
   const [errors, setErrors] = useState({});
 
+  let validationErrors = {};
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
       [name]: value,
     });
+    validationErrors = errors;
+    switch(name){
+      case "username": validationErrors.username = ""; break;
+      case "email": validationErrors.email = ""; break;
+      default: validationErrors.password = ""; break;
+    }
+  setErrors(validationErrors);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setShowProgress(true);
     const validationErrors = await validateForm(formData);
     if (Object.keys(validationErrors).length === 0) {
       // Submit the form or perform further actions here
@@ -62,25 +74,31 @@ export default function FormDialog() {
     }
   };
 
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      // Submit the form when Enter key is pressed
+      handleSubmit(event);
+    }
+  };
+
   const validateForm = async (data) => {
-    const errors = {};
     if (!data.username) {
-        errors.username = 'Username is required';
+      validationErrors.username = 'Username is required';
     }
     if (!data.password) {
-    errors.password = 'Password is required';
+      validationErrors.password = 'Password is required';
     }
     else if (!validator.isStrongPassword(data.password, { 
       minLength: 8, minLowercase: 1, 
       minUppercase: 1, minNumbers: 1, minSymbols: 1 
       })) {
-      errors.password = 'Password does not match required format';
+        validationErrors.password = 'Password does not match required format';
     }
     if(!data.email) {
-      errors.email = 'Email is required';
+      validationErrors.email = 'Email is required';
     }
     else if(!validator.isEmail(data.email)){
-      errors.email = "Email is invalid";
+      validationErrors.email = "Email is invalid";
     }
     else{
         try{
@@ -108,19 +126,22 @@ export default function FormDialog() {
                 //errors.username = "Username already taken";
                 const err = json.message;
                 if(err === "Username is already taken"){
-                  errors.username = err;
+                  validationErrors.username = err;
                 }
                 else if (err === "Email is already taken"){
-                  errors.email = err;
+                  validationErrors.email = err;
                 }
-                return errors;
+                setShowProgress(false);
+                return validationErrors;
             }
               
         }catch(error){
             console.error('Error fetching data:', error);
+            setShowProgress(false);
         }
     }
-    return errors;
+    setShowProgress(false);
+    return validationErrors;
   };
 
   return (
@@ -132,6 +153,7 @@ export default function FormDialog() {
         <DialogTitle>Add a new Admin</DialogTitle>
         <DialogContent>
 
+        <div>
         <form onSubmit={handleSubmit} style={{ boxSizing:'border-box', width:400, height:450}}>
         <TextField
           label="Username"
@@ -142,6 +164,7 @@ export default function FormDialog() {
           helperText={errors.username}
           fullWidth
           style={{ marginBottom: '20px', marginTop: '5px' }}
+          onKeyDown={handleKeyDown}
         />
         <br />
         <TextField
@@ -154,6 +177,7 @@ export default function FormDialog() {
           helperText={errors.password}
           fullWidth
           style={{ marginBottom: '20px' }}
+          onKeyDown={handleKeyDown}
         />
         <br />
         <TextField
@@ -165,6 +189,7 @@ export default function FormDialog() {
           helperText={errors.email}
           fullWidth
           style={{ marginBottom: '20px' }}
+          onKeyDown={handleKeyDown}
         />
         <br />
         <TextField
@@ -176,6 +201,7 @@ export default function FormDialog() {
           helperText={errors.firstName}
           fullWidth
           style={{ marginBottom: '20px'}}
+          onKeyDown={handleKeyDown}
         />
         <br />
         <TextField
@@ -187,13 +213,17 @@ export default function FormDialog() {
           helperText={errors.lastName}
           fullWidth
           style={{ marginBottom: '20px' }}
+          onKeyDown={handleKeyDown}
         />
-        <br />
-       
-        <Button type="submit" variant="contained" color="primary">
-          Register
-        </Button>
       </form>
+      </div>
+        <Button autoFocus color= 'secondary' onClick={handleClose}>
+           Cancel
+          </Button>
+        <Button type="submit" variant="contained" color="primary" style={{marginLeft:'225px'}}  onClick={handleSubmit} disabled={showProgress}>
+          {!showProgress && "Register"}
+          {showProgress && <CircularProgress color="inherit" size={25}/>}
+        </Button>
         </DialogContent>
        
       </Dialog>

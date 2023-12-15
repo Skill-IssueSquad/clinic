@@ -27,7 +27,7 @@ function App() {
   
   
   return (
-    <div classname="app">
+    <div classname="app"  style={{backgroundColor: '#f0f0f0', minHeight: '727px'}}>
       <BrowserRouter>
       <AppBar hh="" gklh="" />
         <div classname="pages">

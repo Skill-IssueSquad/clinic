@@ -23,13 +23,13 @@ import Avatar from '@mui/material/Avatar';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import { useNavigate } from 'react-router-dom';
-import Analytics from "../../components/Admin/Analytics";
-import AdminTable from "./AdminTable";
-import DoctorTable from "./DoctorTable";
-import PatientTable from "./PatientTable";
-import RequestTable from "./RequestTable";
-import Packages from './Packages';
-
+import { useEffect } from 'react';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import AdminIcon from '@mui/icons-material/ManageAccounts'
+import PatientIcon from '@mui/icons-material/People'
+import DoctorIcon from '@mui/icons-material/HealthAndSafety'
+import RequestIcon from '@mui/icons-material/AddCircle'
+import PackagesIcon from '@mui/icons-material/MedicalInformation'
 
 const drawerWidth = 240;
 
@@ -78,7 +78,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   justifyContent: 'flex-end',
 }));
 
-const settings = ['Profile', 'Account', 'Dashboard', "Change Password", 'Logout'];
+const settings = ['Profile', "Change Password", 'Logout'];
 
 export default function PersistentDrawerLeft({flag, ViewComponent, item}) {
   const navigate = useNavigate();
@@ -109,24 +109,24 @@ export default function PersistentDrawerLeft({flag, ViewComponent, item}) {
   const handleClickAdmin = (text) => {
     //console.log(text);
     setSelected(text);
+    localStorage.setItem('selectedItem',text);    
     switch(text){
       case "Dashboard": navigate("/Admin"); setOpen(false); break;
-      case "Admin": navigate("/Admin/ViewAdmins") ;setOpen(false); break;
-      case "Patient":  navigate("/Admin/ViewPatients"); setOpen(false); break;
-      case "Doctor": navigate("/Admin/ViewDoctors"); setOpen(false); break;
-      case "Join Requests":  navigate("/Admin/ViewRequests"); setOpen(false); break;
-      default: navigate("/Admin/ViewPackages"); setOpen(false) ;
+      case "View Admins": navigate("/Admin/ViewAdmins") ;setOpen(false); break;
+      case "View Doctors": navigate("/Admin/ViewDoctors"); setOpen(false); break;
+      case "View Patients":  navigate("/Admin/ViewPatients"); setOpen(false); break;
+      case "View Join Requests":  navigate("/Admin/ViewRequests"); setOpen(false); break;
+      default: navigate("/Admin/ViewPackages"); setOpen(false);
     }
   }
 
   const handleUserMenu = async (text) => {
     switch(text){
+      //add profile page
       case "Profile": navigate('/Admin'); break;
-      case "Account": navigate('/Admin/ViewAdmins'); setOpen(false); break;
-      case "Dashboard": navigate('/Admin/ViewDoctors'); setOpen(false); break;
       case "Change Password": navigate('/ChangePassword'); break;
       default: {
-        const response = await fetch('/account/logout', {method: 'GET'});
+        const response = await fetch('/account/logout', {method: 'GET', credentials: 'include',});
         const json = await response.json();
         if (response.ok){
           //setToken();
@@ -138,6 +138,14 @@ export default function PersistentDrawerLeft({flag, ViewComponent, item}) {
       };
     }
   }
+
+  useEffect(() => {
+    // Retrieve selected item from localStorage on component mount
+    const storedSelected = localStorage.getItem('selectedItem');
+    if (storedSelected) {
+      setSelected(storedSelected);
+    }
+  }, []);
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -157,7 +165,6 @@ export default function PersistentDrawerLeft({flag, ViewComponent, item}) {
             variant="h6"
             noWrap
             component="a"
-            href="#app-bar-with-responsive-menu"
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
@@ -168,13 +175,13 @@ export default function PersistentDrawerLeft({flag, ViewComponent, item}) {
               textDecoration: 'none',
             }}
           >
-            El7a2ni
+            El7a2ni Clinic
           </Typography>
           
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ position: 'absolute', top:'5px', right:'10px'}}>
-                <Avatar alt="Remy Sharp" />
+                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
               </IconButton>
             </Tooltip>
             <Menu
@@ -209,6 +216,10 @@ export default function PersistentDrawerLeft({flag, ViewComponent, item}) {
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',
+            //backgroundColor: 'rgba(200,0, 255, 0.8)'
+            //style={{
+              backgroundColor: 'rgba(10,52, 99, 1)'
+          //}}
           },
         }}
         variant="persistent"
@@ -216,25 +227,34 @@ export default function PersistentDrawerLeft({flag, ViewComponent, item}) {
         open={open}
       >
         <DrawerHeader>
-          <IconButton onClick={handleDrawerClose}>
+          <IconButton onClick={handleDrawerClose} style={{color: 'white'}}>
             {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
           </IconButton>
         </DrawerHeader>
-        <Divider />
+        {/* <Divider /> */}
         <List>
-          {['Dashboard', 'Admin', 'Doctor', 'Patient','Join Requests', 'Health Packages'].map((text, index) => (
-            <ListItem key={text} disablePadding selected= {selected===text} >
-            <ListItemButton onClick={() => handleClickAdmin(text)}>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
+          {['Dashboard', 'View Admins','View Doctors', 'View Patients','View Join Requests', 'View Health Packages'].map((text, index) => (
+            <ListItem key={text} disablePadding selected= {selected===text} style={{color:'white', fontSize:'10px'}} sx={{
+              '&.Mui-selected': {
+                backgroundColor: 'rgb(255,255,255,0.2)', // Change 'yourSelectedColor' to your desired color
+                color: 'white',
+              },
+              fontSize: '10px',
+            }}>
+              <ListItemButton onClick={() => handleClickAdmin(text)}>
+                <ListItemIcon style={{color:'white'}}>
+                  {index===0? <DashboardIcon/> : 
+                    (index===1? <AdminIcon/> : 
+                    (index===2? <DoctorIcon/>: 
+                    (index===3? <PatientIcon/>  : 
+                    (index===4? <RequestIcon/> : <PackagesIcon/>))))}
+                </ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItemButton>
+            </ListItem>
           ))}
         </List>
         
-      
       </Drawer>
       <Main open={open}>
         {viewComponent}

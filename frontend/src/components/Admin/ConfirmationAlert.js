@@ -23,7 +23,7 @@ export default function AlertDialog({onClick}) {
 
   return (
     <div>
-      <Button variant="contained" color="error" onClick={handleClickOpen}>
+      <Button size='small' variant="contained" color="error" onClick={handleClickOpen}>
         Remove
       </Button>
       <Dialog

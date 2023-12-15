@@ -12,7 +12,7 @@ const ViewPackages = () => {
     }
 
     return ( 
-        <div style={{backgroundColor: '#f0f0f0',paddingBottom: '100px'}}>
+        <div>
         {show &&  <AdminSideBar flag = {false} ViewComponent={<Packages />} item="Health Packages"/>}
         {!show && <h2>No access</h2>}
        

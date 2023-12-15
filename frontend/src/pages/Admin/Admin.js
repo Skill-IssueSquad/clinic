@@ -12,7 +12,7 @@ const Admin = () => {
     }
 
     return(
-        <div style={{backgroundColor: '#f0f0f0', padding: '5px'}}>
+        <div>
             {show && <AdminSideBar flag = {true} ViewComponent={<Analytics/>} item = "Dashboard"/>}
             {!show && <h2>No access</h2>}
         </div>

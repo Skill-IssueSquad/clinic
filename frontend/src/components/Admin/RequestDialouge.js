@@ -30,13 +30,12 @@ export default function CustomizedDialogs({rows, username}) {
   const [pdfUrl3, setPdfUrl3] = React.useState('');
 
 
-
   const handleClickOpen = () => {
     const info = rows.find((item) => item.username === username);
     const textParagraph = [
         "Name: " + info.name +"\n",
         "Email: " + info.email,
-        "Date of Birth" + info.dateOfBirth,
+        "Date of Birth: " + info.dateOfBirth,
         "Username: " + info.username,
         "Hourly Rate: " + info.hourlyRate,
         "Affiliate Hospital: " +info.affiliatedHospital,
@@ -46,12 +45,15 @@ export default function CustomizedDialogs({rows, username}) {
       setShowButton(false);
     }
     setUser(info.username);
-    if(info.documents[0])
+    if(info.documents[0]){
       setPdfUrl1(info.documents[0].documentUrl);
-    if(info.documents[1])
+    }
+    if(info.documents[1]){
       setPdfUrl2(info.documents[1].documentUrl);
-    if(info.documents[2])
+    }
+    if(info.documents[2]){
       setPdfUrl3(info.documents[2].documentUrl);
+    }
     setText(textParagraph);
     setOpen(true);
   };
@@ -75,9 +77,9 @@ export default function CustomizedDialogs({rows, username}) {
 
       if(response.ok){
           // Update the state with the fetched data
+          setOpen(false);
           window.location.reload();
-          setOpen(false);     
-      }
+        }
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -130,26 +132,26 @@ export default function CustomizedDialogs({rows, username}) {
         >
           <CloseIcon />
         </IconButton>
-        <DialogContent dividers>
+        <DialogContent dividers style={{width:'600px'}}>
         {text && text.map((data, index) => (
             <p>{data}
             </p>
           ))
         }
-        {console.log("hi")}
         <PDFViewer pdfUrl={pdfUrl1}/>
         <PDFViewer pdfUrl={pdfUrl2}/>
-        <PDFViewer pdfUrl={pdfUrl3}/>        </DialogContent>
+        <PDFViewer pdfUrl={pdfUrl3}/>
+        </DialogContent>
         <DialogActions>
           <Button autoFocus color= 'secondary' onClick={handleClose}>
            Cancel
           </Button>
-          <Button autoFocus color='warning' onClick={handleReject}>
+          {showButton && <Button autoFocus color='warning' onClick={handleReject}>
            Reject
-          </Button>
-          <Button autoFocus onClick={handleAccept}>
+          </Button>}
+          {showButton && <Button autoFocus onClick={handleAccept}>
            Accept
-          </Button>
+          </Button>}
         </DialogActions>
       </BootstrapDialog>
     </div>

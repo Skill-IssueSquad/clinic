@@ -11,7 +11,7 @@ const ViewAdmins = () => {
     }
 
     return ( 
-        <div style={{backgroundColor: '#f0f0f0', paddingBottom: '220px'}}>
+        <div>
         {show &&  <AdminSideBar flag = {false} ViewComponent={<AdminTable />} item = "Admin"/>}
         {!show && <h2>No access</h2>}
         </div>
