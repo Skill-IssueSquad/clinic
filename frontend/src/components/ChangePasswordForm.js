@@ -131,7 +131,7 @@ function App() {
     };
 
   return (
-    <MDBCard style={{width:540, height:640, left:'440px', top: '30px'}}>
+    <MDBCard style={{width:540, height:600, left:'440px', top: '10px'}}>
     <MDBRow >
         <MDBCol >
         <MDBCardBody className='d-flex flex-column'>
@@ -174,14 +174,9 @@ function App() {
             />
             <br/>
             <br/>
-            {/* <MDBInput wrapperClass='mb-4' label='Username' id='formControlLg' type='username' size="lg"/>
-            <MDBInput wrapperClass='mb-4' label='Password' id='formControlLg' type='password' size="lg"/> */}
-
             {invalid && <h6 style={{color:'red'}} >{errorMessage}</h6>}
             {valid && <h6 style={{color:'blue'}} >{errorMessage}</h6>}
             <Button  style={{ width:485}} color='dark' size='lg' onClick={handleLogin}>Reset Password</Button>
-         
-
         </MDBCardBody>
         </MDBCol>
 

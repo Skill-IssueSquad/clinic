@@ -22,41 +22,24 @@ const StyledTable = styled(Table)(({ theme }) => ({
 }));
 const SimpleTable = ({ subscribarList }) => {
   const navigate = useNavigate();
-  const showNotificationDetail = () => {
-    navigate("/dashboard/transactionDetails");
-  };
+  
   return (
     <Box width="100%" overflow="auto">
       <StyledTable>
         <TableHead>
           <TableRow>
-            <TableCell align="left"></TableCell>
-            <TableCell align="center">Date</TableCell>
-            <TableCell align="center">Amount</TableCell>
-            <TableCell align="center">Type</TableCell>
-            {/* <TableCell align="center">Amount</TableCell>*/}
-            <TableCell align="right"></TableCell>
+            <TableCell align="center">Name</TableCell>
+            <TableCell align="center">Email</TableCell>
+            <TableCell align="center">Status</TableCell>
           </TableRow>
         </TableHead>
 
         <TableBody>
           {subscribarList.map((subscriber, index) => (
             <TableRow key={index}>
-              {/* <Icon className="icon">{subscriber.icon}</Icon> */}
-              <TableCell align="left">
-                {<Icon className="icon">{subscriber.icon}</Icon>}
-              </TableCell>
-              <TableCell align="center">{subscriber.date}</TableCell>
-              <TableCell align="center">{subscriber.amount}</TableCell>
-              <TableCell align="center">{subscriber.type}</TableCell>
-              {/* <TableCell align="center">${subscriber.amount}</TableCell> */}
-              <TableCell align="right">
-                {
-                  <IconButton onClick={showNotificationDetail}>
-                    <Icon sx={{ color: "text.primary" }}>information</Icon>
-                  </IconButton>
-                }
-              </TableCell>
+              <TableCell align="center">{subscriber.name}</TableCell>
+              <TableCell align="center">{subscriber.email}</TableCell>
+              <TableCell align="center">{subscriber.status}</TableCell>
             </TableRow>
           ))}
         </TableBody>

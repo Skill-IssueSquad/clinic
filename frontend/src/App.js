@@ -7,10 +7,12 @@ import ResetPassword from "./pages/Home/ResetPassword";
 import Doctor from "./pages/Doctor";
 import DoctorProfile from "./pages/DoctorProfile";
 import Admin from "./pages/Admin/Admin";
+import AdminChangePassword from "./pages/Admin/ChangePassword";
 import ViewAdmins from "./pages/Admin/ViewAdmins";
 import ViewDoctors from "./pages/Admin/ViewDoctors";
 import ViewPatients from "./pages/Admin/ViewPatients";
 import ViewRequests from "./pages/Admin/ViewRequests";
+import ViewProfile from "./pages/Admin/ViewProfile";
 import ViewPackages from "./pages/Admin/ViewPackages";
 import Patients from "./pages/Patients";
 import DoctorRequest from "./pages/DoctorRequest/DoctorRequest"
@@ -27,7 +29,7 @@ function App() {
   
   
   return (
-    <div classname="app"  style={{backgroundColor: '#f0f0f0', minHeight: '727px'}}>
+    <div classname="app"  style={{backgroundColor: '#f0f0f0', minHeight: '730px'}}>
       <BrowserRouter>
       <AppBar hh="" gklh="" />
         <div classname="pages">
@@ -42,12 +44,13 @@ function App() {
             <Route exact path="/Doctor_Home" element={<Doctor />} />
             <Route exact path="/Doctor_Profile" element={<DoctorProfile />} />
             <Route exact path="/Admin" element={<Admin />} />
+            <Route exact path="/Admin/ChangePassword" element={<AdminChangePassword />} />
             <Route exact path="/Admin/ViewAdmins" element={<ViewAdmins />} />
             <Route exact path="/Admin/ViewDoctors" element={<ViewDoctors />}/>
             <Route exact path="/Admin/ViewPatients" element={<ViewPatients />} />
             <Route exact path="/Admin/ViewRequests" element={<ViewRequests />}/>
             <Route exact path="/Admin/ViewPackages" element={<ViewPackages />} />
-
+            <Route exact path="/Admin/ViewProfile" element={<ViewProfile />} />
             
             <Route exact path="/patient/" element={<Patient />} />
         <Route exact path="/patient/doctors/" element={<PatientDoctors />} />

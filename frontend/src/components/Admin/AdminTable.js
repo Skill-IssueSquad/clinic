@@ -13,13 +13,18 @@ export default function DataTable() {
     const [rows, setRows] = useState([]); // State to store the rows
     const [open, setOpen] = useState(false);
     const [showProgress, setShowProgress] = useState(true);
+
+    const handleClick = () => {
+      {localStorage.setItem('selectedItem',"Dashboard")}
+    }
+    
     const breadcrumbs = [
       <Link
         underline="hover"
         key="2"
         color="grey"
         href="/Admin"
-        // onClick={handleClick}
+        onClick={handleClick}
       >
       {<HomeIcon style={{color: 'blue', opacity: 0.5}}></HomeIcon>}
       </Link>,
@@ -27,8 +32,6 @@ export default function DataTable() {
         View Admins
       </Typography>,
     ];
-
-
 
     const handleOpen = () => {
       setOpen(true);

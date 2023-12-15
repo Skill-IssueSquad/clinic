@@ -10,13 +10,18 @@ const Packages = ({refresh}) => {
     const [cardDataList, setCardDataList] = useState([]);
     const [refreshKey,setRefreshKey] = useState(0);
     const [showProgress, setShowProgress] = useState(true);
+
+    const handleClick = () => {
+      {localStorage.setItem('selectedItem',"Dashboard")}
+    }
+
     const breadcrumbs = [
       <Link
         underline="hover"
         key="2"
         color="grey"
         href="/Admin"
-        // onClick={handleClick}
+        onClick={handleClick}
       >
       {<HomeIcon style={{color: 'blue', opacity: 0.5}}></HomeIcon>}
       </Link>,

@@ -180,7 +180,7 @@ function App() {
               <p className="mb-5 pb-lg-2" style={{color: '#000000'}}>Don't have an account? 
                {' '}<a href="/PatientRegisteration"  style={{color: '#393fDD'}}> <u> Register as a patient </u></a> 
                   <a>|</a>
-               {' '} <a href="/DoctorRegisteration" style={{color: '#393fDD'}}> <u> Register as a pharmacist </u></a> 
+               {' '} <a href="/DoctorRegisteration" style={{color: '#393fDD'}}> <u> Register as a doctor </u></a> 
               </p>
 
             </MDBCardBody>
