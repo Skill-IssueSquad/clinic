@@ -6,6 +6,27 @@ const HealthPackage = require("../models/Packages");
 const bcrypt = require('bcrypt')
 
 
+//Get current admin 
+const getAdmin = async (req,res) => {
+    try{
+        const username = req.params.username;
+        const admin = await Admin.findOne({username});
+        const reply = {
+            success: true,
+            data: admin,
+            message: "Admin retrieved successfully",
+        }
+        res.status(200).json(reply);
+    }catch(error){
+        const reply = {
+            success: false,
+            data: null,
+            message: error.message,
+        };
+        res.status(400).json(reply);
+    }
+};
+
 //View all admins 
 const viewAdmins = async (req,res) => {
     try{
@@ -337,6 +358,7 @@ const deleteHealthPackage = async (req,res) => {
 
 
 module.exports = {
+    getAdmin,
     viewAdmins,
     createAdmin,
     removeAdmin,
