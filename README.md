@@ -106,6 +106,7 @@ Eslint link: [Eslint](https://marketplace.visualstudio.com/items?itemName=dbaeum
 # Section 3: How to use
 
 ## 3.1 | APIs:
+
 > ⚠️: **Note:** Click to expand.
 
 <details>
@@ -235,6 +236,25 @@ Eslint link: [Eslint](https://marketplace.visualstudio.com/items?itemName=dbaeum
 
 </details>
 
+<details>
+    <summary>
+      Account Router (/account)
+    </summary>
+
+`router.post("/registerPatient")` Registers a new patinent to the platorm
+
+`router.post("/registerDoctor")` Registers a new doctor to the platform
+
+`router.post("/login")` Allows for the login functionality
+
+`router.get("/logout")` allows for the logout functionality
+
+`router.post("/forgotPassword")` `router.post("/resetPassword")`allows an account to reset their password in case they forgot it
+
+`router.post("/verifyOTP")` Allows for OTP verification
+
+</details>
+
 ## 3.2 | Testing:
 
 We used Postman to test our different API endpoints.
@@ -243,11 +263,13 @@ We used Postman to test our different API endpoints.
 
 ![Example of a Postman test](image.png)
 
-|Element | Input |
-|-----|-----|
-| Test API: | `http://localhost:8000/patient/bahyone/addFamMember` |
-| Test Body JSON: |`{"name" : "New Fam Member","national_id" : "0123456789","age" : "15", "gender" : "M", "relation" : "son", "healthPackageType" : null }`|
+| Element         | Input                                                                                                                                    |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Test API:       | `http://localhost:8000/patient/bahyone/addFamMember`                                                                                     |
+| Test Body JSON: | `{"name" : "New Fam Member","national_id" : "0123456789","age" : "15", "gender" : "M", "relation" : "son", "healthPackageType" : null }` |
+
 ### Expected reply JSON:
+
 ```bash
 {
     "success" : false,
@@ -256,6 +278,7 @@ We used Postman to test our different API endpoints.
 
 }
 ```
+
 ## 3.3 | How to use:
 
 To run backend
