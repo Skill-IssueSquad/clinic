@@ -101,6 +101,195 @@ Eslint link: [Eslint](https://marketplace.visualstudio.com/items?itemName=dbaeum
 
 ## 2.2 | Code examples and screenshots:
 
+### Code examples:
+
+<details>
+<summary>Adding Family Member to patient account service</summary>
+
+```javascript
+const addFamMember = async (req, res) => {
+  const { name, national_id, age, gender, relation, healthPackageType } =
+    req.body;
+  const { username } = req.params;
+
+  try {
+    const patient = await getPatient(username);
+    if (patient) {
+      //check if extFamilyMembers array is undefined
+      if (!patient.extfamilyMembers) {
+        patient.extfamilyMembers = [];
+      }
+
+      //add new family member info to extfamilyMembers array
+      patient.extfamilyMembers.push({
+        name: name,
+        national_id: national_id,
+        relation: relation, //wife, husband, son, daughter
+        age: age,
+        gender: gender, //M, F, Bahy
+        healthPackageType: healthPackageType,
+      });
+
+      //update the existing patient
+      await Patient.findByIdAndUpdate(patient._id, {
+        extfamilyMembers: patient.extfamilyMembers,
+      }).catch((err) => {
+        return res.status(500).json({
+          success: false,
+          data: null,
+          message: err.message || "Some error occurred while updating patient.",
+        });
+      });
+
+      const newPatient = await Patient.findOne({
+        username: req.params.username,
+      }).catch((err) => {
+        return res.status(500).json({
+          success: false,
+          data: null,
+          message:
+            err.message || "Some error occurred while retrieving patient.",
+        });
+      });
+
+      return res.status(200).json({
+        success: true,
+        data: newPatient,
+        message: "Family member added successfully",
+      });
+    } else {
+      return res.status(404).json({
+        success: false,
+        data: null,
+        message: "Patient not found",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message:
+        error.message || "Some error occurred while retrieving patients.",
+    });
+  }
+};
+```
+
+</details>
+
+<details>
+<summary>
+  Video Calling service using WebRTC
+</summary>
+
+```javascript
+const myPeer = new Peer(undefined, {
+  host: "/",
+  port: "3002",
+});
+let peers = {};
+const roomId = window.location.pathname.split("/")[2];
+
+useEffect(() => {
+  const socket = io("http://localhost:8002");
+  //when we connect we want to create a video stream and send it to the server
+  const myVideo = document.createElement("video");
+  myVideo.muted = true;
+
+  myPeer.on("open", (id) => {
+    console.log("peer id", id);
+    socket.emit("join-room", roomId, id);
+  });
+
+  navigator.mediaDevices
+    .getUserMedia({
+      video: true,
+      audio: true,
+    })
+    .then((stream) => {
+      //add our video stream to the video grid
+      addVideoStream(myVideo, stream);
+
+      //when we recieve a call we want to answer it and send our stream to the caller
+      myPeer.on("call", (call) => {
+        call.answer(stream);
+        const video = document.createElement("video");
+
+        //respond to the video stream
+        call.on("stream", (userVideoStream) => {
+          addVideoStream(video, userVideoStream);
+        });
+      });
+
+      socket.on("user-connected", (userId) => {
+        connectToNewUser(userId, stream);
+      });
+    });
+
+  //when a user disconnects we want to remove their video
+  socket.on("user-disconnected", (userId) => {
+    if (peers[userId]) peers[userId].close();
+  });
+}, []);
+
+const connectToNewUser = (userId, stream) => {
+  //call user with said userId and send our stream to that user
+  const call = myPeer.call(userId, stream);
+  const video = document.createElement("video");
+
+  peers[userId] = call;
+
+  //when we recieve a stream from the user we called we want to add it to our video grid
+  call.on("stream", (userVideoStream) => {
+    addVideoStream(video, userVideoStream);
+  });
+
+  //if a user leaves the room we want to remove their video
+  call.on("close", () => {
+    video.remove();
+  });
+};
+
+const addVideoStream = (video, stream) => {
+  //create a card element that contains name, role and video
+  const card = document.createElement("Card");
+  card.className = "card";
+  //change position of card
+  //card.style.position = "relative";
+  card.style.left = "30%";
+  card.style.transform = "translateX(-50%)";
+  card.style.width = "50%";
+  card.style.height = "50%";
+  card.style.margin = "10px";
+  card.style.backgroundColor = "white";
+  card.style.borderRadius = "10px";
+
+  const cardContent = document.createElement("CardContent");
+  cardContent.className = "card-content";
+
+  const name = document.createElement("h3");
+  name.innerText = "Username: " + localStorage.getItem("username");
+
+  const role = document.createElement("h3");
+  role.innerText = "Role: " + localStorage.getItem("role");
+
+  video.srcObject = stream;
+  video.addEventListener("loadedmetadata", () => {
+    video.play();
+  });
+
+  card.appendChild(video);
+  cardContent.appendChild(name);
+  cardContent.appendChild(role);
+
+  card.appendChild(cardContent);
+
+  videoGridRef.current.append(card);
+};
+```
+
+</details>
+
 ---
 
 # Section 3: How to use
@@ -340,6 +529,7 @@ This project follows the [Contributor Covenant Code of Conduct](https://www.cont
 # Section 4: Credits and Licensing
 
 ## Credits:
+
 > ⚠️: **Note:** Click to expand.
 
 <details>
@@ -365,13 +555,11 @@ This project follows the [Contributor Covenant Code of Conduct](https://www.cont
 
 </details>
 
-
-
 ## License:
 
 **MIT License**
 
-*Copyright (c) 2023 Skill-IssueSquad*
+_Copyright (c) 2023 Skill-IssueSquad_
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -390,4 +578,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
