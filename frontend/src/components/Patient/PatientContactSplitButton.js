@@ -40,7 +40,6 @@ export default function ContactSplitButton({
       if (options[selectedIndex] === "Chat") {
         navigate("/Doctor_Chat", { state: { username: doctorUsername } });
       } else if (options[selectedIndex] === "Video Call") {
-        //const req = axios.post(`http://localhost:8000/video`, {patientId: patientId, doctorId: doctorId});
         navigate(`/videoCall/${String(patientId)}${String(doctorId)}`)
       }  else if (options[selectedIndex] === "Select Action") {
         toggleOptions();

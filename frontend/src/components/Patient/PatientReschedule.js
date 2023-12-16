@@ -108,7 +108,7 @@ const RescheduleSlot = ({ doctor_id, appointment_id }) => {
           params: {
             doctor_id: doctor_id,
           },
-        }
+        }, {withCredentials: true}
       );
 
       setDocName(`Dr. ${fetchedSlots.data.data.doc_name}'s slots`);
@@ -116,7 +116,7 @@ const RescheduleSlot = ({ doctor_id, appointment_id }) => {
       fetchedSlots = fetchedSlots.data.data.appointments;
 
       let patient = await axios.get(
-        `http://localhost:8000/patient/${localStorage.getItem("username")}`
+        `http://localhost:8000/patient/${localStorage.getItem("username")}`, {withCredentials: true}
       );
 
       setPatient(patient.data.data);
@@ -177,7 +177,7 @@ const RescheduleSlot = ({ doctor_id, appointment_id }) => {
             day: slot.availableSlot.day,
             slot: slot.availableSlot.timeSlot,
             slot_id: slot.availableSlot._id,
-          }
+          }, {withCredentials: true}
         );
 
         if (response.data.success) {

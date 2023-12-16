@@ -101,7 +101,7 @@ const AppointmentsMulti = ({ columns, API_GET_URL }) => {
     const fetchData = async () => {
       try {
         setLoading(true); // Set loading to true before request is sent
-        const response = await axios.get(API_GET_URL);
+        const response = await axios.get(API_GET_URL, {withCredentials: true});
         const initialRows = response.data.data.appointments;
 
         setCanBook(response.data.data.amountDue === 0);
