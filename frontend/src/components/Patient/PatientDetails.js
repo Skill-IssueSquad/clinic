@@ -47,7 +47,7 @@ const PatientDetails = ({ patient, handleCancelSubscription }) => {
     for (const linkedAcc of linkedAccounts) {
       console.log(linkedAcc.patient_id);
       const response = await axios.get(
-        `http://localhost:8000/patient/getByID/${linkedAcc.patient_id}`
+        `http://localhost:8000/patient/getByID/${linkedAcc.patient_id}`,{withCredentials: true}
       );
       const data = response.data.data;
       console.log(data);

@@ -156,11 +156,12 @@ const HealthPackages = () => {
 
     try {
       // Replace with your backend endpoint for purchasing health packages
+      
       const response = await axios.post(
         `http://localhost:8000/patient/${localStorage.getItem(
           "username"
         )}/subscriptions/transitSub`,
-        formData
+        formData, {withCredentials: true}
       );
       const data = response.data.data;
 

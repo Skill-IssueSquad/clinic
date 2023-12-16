@@ -45,7 +45,7 @@ const PatientRegisterationForm = () => {
 
     const response = await axios.post(
       "http://localhost:8000/register/patient",
-      patient
+      patient, {withCredentials: true}
     );
 
     const patientData = await json(response);

@@ -69,7 +69,7 @@ export default function AppointmentSplitButton({
   const handleDocPay = async () => {
     const res = await axios.post(
       `http://localhost:8000/patient/${localStorage.getItem("username")}/tempDocFollowUpPay`, {doctor_id, appointment_id}
-    );
+    , {withCredentials: true});
 
     if (res.data.success) {
       navigate(`/patient/payment/${res.data.data.transit_id}`);
@@ -107,7 +107,7 @@ export default function AppointmentSplitButton({
             `http://localhost:8000/patient/${localStorage.getItem(
               "username"
             )}/appointments/${doctor_id}/${appointment_id}`
-          )
+          , {withCredentials: true})
           .then((res) => {
             setDiagLoading(false);
 

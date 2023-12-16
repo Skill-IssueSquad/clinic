@@ -109,8 +109,8 @@ const RequestFollowUp = ({ doctor_id, appointment_id }) => {
         {
           params: {
             doctor_id: doctor_id,
-          },
-        }
+          }, 
+        }, {withCredentials: true}
       );
 
       setDocName(`Dr. ${fetchedSlots.data.data.doc_name}'s slots`);
