@@ -9,7 +9,8 @@ const Chat = () => {
   let show = false;
   const location = useLocation();
   const [messages, setMessages] = useState([]);
-  const [isDoctor, setIsDoctor] = useState(false); //localStorage.getItem("role") === "Doctor" ? true : false
+  //const [isDoctor, setIsDoctor] = useState(false); //localStorage.getItem("role") === "Doctor" ? true : false
+  var isDoctor = false;
   const [currentMessage, setCurrentMessage] = useState("");
   var doctorUsername = "";
   var patientUsername = "";
@@ -25,7 +26,7 @@ const Chat = () => {
       console.log("I'm a doctor");
       console.log(doctorUsername);
       console.log(patientUsername);
-      setIsDoctor(true);
+      isDoctor = true;
     }
 
     if (localStorage.getItem("role") === "Patient") {
@@ -34,7 +35,7 @@ const Chat = () => {
       console.log("I'm a patient");
       console.log(doctorUsername);
       console.log(patientUsername);
-      setIsDoctor(false);
+      isDoctor = false;
     }
   }
   useEffect(() => {
