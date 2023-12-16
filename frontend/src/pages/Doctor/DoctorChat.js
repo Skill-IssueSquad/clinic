@@ -21,11 +21,17 @@ const Chat = () => {
     if (localStorage.getItem("role") === "Doctor") {
       doctorUsername = localStorage.getItem("username");
       patientUsername = location.state.username;
+      console.log("I'm a doctor");
+      console.log(doctorUsername);
+      console.log(patientUsername);
     }
 
     if (localStorage.getItem("role") === "Patient") {
       patientUsername = localStorage.getItem("username");
       doctorUsername = location.state.username;
+      console.log("I'm a patient");
+      console.log(doctorUsername);
+      console.log(patientUsername);
     }
   }
   useEffect(() => {
