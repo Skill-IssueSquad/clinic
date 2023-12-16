@@ -31,3 +31,28 @@ Prettier link: [Prettier](https://marketplace.visualstudio.com/items?itemName=es
 Eslint link: [Eslint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint).
 
 ## 1.4 | Tech and frameworks:
+
+___
+# Section 2: Features
+
+## 2.1 | Main features:
+
+## 2.2 | Complementary features:
+
+## 2.3 | Code examples and screenshots:
+
+___
+# Section 3: How to use
+
+## 3.1 | API's:
+
+## 3.2 | Testing:
+
+## 3.3 | Contribution:
+
+___
+# Section 4: Credits and Licensing
+
+## Credits:
+
+## License:
