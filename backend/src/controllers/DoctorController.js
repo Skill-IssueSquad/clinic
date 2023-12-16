@@ -8,6 +8,39 @@ const Clinic = require("../models/Clinic");
 const Packages = require("../models/Packages");
 const nodeMailer = require("nodemailer");
 
+const sendEmailFunc = async (email, message, subject) => {
+  const transporter = nodeMailer.createTransport({
+    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: "el7a2ni.virtual@gmail.com",
+      pass: "zijy ztiz drcn ioxq",
+    },
+  });
+
+  return await transporter
+    .sendMail({
+      from: "SkillIssue <el7a2ni.virtual@gmail.com>",
+      to: email,
+      subject: subject,
+      text: message,
+    })
+    .then((info) => {
+      if (info) {
+        console.log("email sent");
+        return true;
+      }
+    })
+    .catch((err) => {
+      if (err) {
+        console.log("it has an error");
+        return false;
+      }
+    });
+};
+
 const getDoctor = async (req, res) => {
   //console.log("I am here");
   const { username } = req.params;
@@ -741,6 +774,62 @@ const addAppointment = async (req, res) => {
         isFollowUp ? "scheduled" : "rescheduled"
       } successfully for ${patientName} . Redirecting to appointments page`,
     };
+    //var email = patient.email;
+    var subject = "";
+    var message = "";
+    if (isFollowUp) {
+      subject = "Follow up appointment";
+      message = `Dear ${patient.name},\n\nYour appointment with ${doctor.name} on ${followUp.day} at ${followUp.slot} has been booked successfully.\n\nBest Regards,\nSkillIssue Team`;
+      let sent = await sendEmailFunc(patient.email, message, subject);
+
+      if (!sent) {
+        res.status(500).json({
+          success: false,
+          data: null,
+          message: "Some error occurred while sending email.",
+        });
+        return;
+      }
+      message = `Dear ${doctor.name},\n\nYour appointment with ${patient.name} on ${followUp.day} at ${followUp.slot} has been booked successfully.\n\nBest Regards,\nSkillIssue Team`;
+      sent = await sendEmailFunc(doctor.email, message, subject);
+
+      if (!sent) {
+        res.status(500).json({
+          success: false,
+          data: null,
+          message: "Some error occurred while sending email.",
+        });
+        return;
+      }
+    } else {
+      subject = "Appointment rescheduled";
+      message = `Dear ${patient.name},\n\nYour appointment with ${doctor.name} on ${oldDay} at ${oldSlot} has been booked rescheduled to ${followUp.day} at ${followUp.slot}.\n\nBest Regards,\nSkillIssue Team`;
+      let sent = await sendEmailFunc(patient.email, message, subject);
+
+      if (!sent) {
+        res.status(500).json({
+          success: false,
+          data: null,
+          message: "Some error occurred while sending email.",
+        });
+        return;
+      }
+      message = `Dear ${doctor.name},\n\nYour appointment with ${patient.name} on ${oldDay} at ${oldSlot} has been booked rescheduled to ${followUp.day} at ${followUp.slot}.\n\nBest Regards,\nSkillIssue Team`;
+
+      sent = await sendEmailFunc(doctor.email, message, subject);
+
+      if (!sent) {
+        res.status(500).json({
+          success: false,
+          data: null,
+          message: "Some error occurred while sending email.",
+        });
+        return;
+      }
+    }
+    // message: `Dear ${patient.name},\n\nYour appointment with ${doctor.name} on ${req.body.day} at ${req.body.timeSlot} has been booked successfully.\n\nBest Regards,\nSkillIssue Team`
+    //  `Dear ${patient.name},\n\nYour appointment with ${doctor.name} on ${followUp.day} at ${followUp.slot}`;
+
     res.status(200).json(send);
   } catch (error) {
     const send = {
@@ -846,6 +935,28 @@ const cancelAppointment = async (req, res) => {
         balance: patient.walletBalance,
       }),
     });
+
+    var subject = "Appointment Canalled";
+    var message = `Dear ${patient.name},\n\nYour appointment with ${doctor.name} on ${appointment.day} at ${appointment.slot} has been canalled.\n\nBest Regards,\nSkillIssue Team`;
+    let sent = await sendEmailFunc(patient.email, message, subject);
+    if (!sent) {
+      res.status(500).json({
+        success: false,
+        data: null,
+        message: "Some error occurred while sending email.",
+      });
+      return;
+    }
+    message = `Dear ${doctor.name},\n\nYour appointment with ${patient.name} on ${appointment.day} at ${appointment.slot} has been canalled.\n\nBest Regards,\nSkillIssue Team`;
+    sent = await sendEmailFunc(doctor.email, message, subject);
+    if (!sent) {
+      res.status(500).json({
+        success: false,
+        data: null,
+        message: "Some error occurred while sending email.",
+      });
+      return;
+    }
     const send = {
       success: true,
       data: appointment,
@@ -1089,7 +1200,33 @@ const acceptAppointment = async (req, res) => {
       { new: true }
     );
     var doctor = await Doctor.findOne({ username });
+    var patientID = appointment.patient_id;
+    var patient = await Patient.findById({ patientID });
     const doctorId = doctor._id;
+
+    var subject = "Appointment request accepted";
+    var message = `Dear ${patient.name},\n\nYour appointment request with ${doctor.name} on ${appointment.day} at ${appointment.slot} has been accepted.\n\nBest Regards,\nSkillIssue Team`;
+    let sent = await sendEmailFunc(patient.email, message, subject);
+    if (!sent) {
+      res.status(500).json({
+        success: false,
+        data: null,
+        message: "Some error occurred while sending email.",
+      });
+      return;
+    }
+
+    message = `Dear ${doctor.name},\n\nYour appointment request with ${patient.name} on ${appointment.day} at ${appointment.slot} has been accepted.\n\nBest Regards,\nSkillIssue Team`;
+    sent = await sendEmailFunc(doctor.email, message, subject);
+    if (!sent) {
+      res.status(500).json({
+        success: false,
+        data: null,
+        message: "Some error occurred while sending email.",
+      });
+      return;
+    }
+
     const send = {
       success: true,
       data: appointment,
@@ -1159,6 +1296,29 @@ const revokeAppointment = async (req, res) => {
         balance: patient.walletBalance,
       }),
     });
+
+    var subject = "Appointment Canalled";
+    var message = `Dear ${patient.name},\n\nYour appointment with ${doctor.name} on ${appointment.day} at ${appointment.slot} has been canalled.\n\nBest Regards,\nSkillIssue Team`;
+    let sent = await sendEmailFunc(patient.email, message, subject);
+    if (!sent) {
+      res.status(500).json({
+        success: false,
+        data: null,
+        message: "Some error occurred while sending email.",
+      });
+      return;
+    }
+    message = `Dear ${doctor.name},\n\nYour appointment with ${patient.name} on ${appointment.day} at ${appointment.slot} has been canalled.\n\nBest Regards,\nSkillIssue Team`;
+    sent = await sendEmailFunc(doctor.email, message, subject);
+    if (!sent) {
+      res.status(500).json({
+        success: false,
+        data: null,
+        message: "Some error occurred while sending email.",
+      });
+      return;
+    }
+
     const send = {
       success: true,
       data: appointment,
