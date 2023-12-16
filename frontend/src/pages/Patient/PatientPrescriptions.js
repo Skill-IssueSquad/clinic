@@ -31,7 +31,7 @@ const PatientPrescriptions = () => {
             alignItems="center"
             justifyContent="center"
             minHeight="50vh">
-          <Typography level="h1">Prescriptions</Typography>
+          <Typography level="h2">Prescriptions</Typography>
           <p></p>
           <PrescriptionsMultiLevelFilterTable
             columns={[
