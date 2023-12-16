@@ -4,7 +4,8 @@ import NavBar from "../../components/navBarPatient";
 import { auth } from "../Protected/AuthProvider";
 
 const Notifications = () => {
-  const [notifications, setNotifications] = useState([]);
+  const [UnseenNotifications, setUnseenNotifications] = useState([]);
+  const [SeenNotifications, setSeenNotifications] = useState([]);
   const [username, setUsername] = useState("");
   const [isPatient, setIsPatient] = useState(false);
 
@@ -31,9 +32,16 @@ const Notifications = () => {
       );
 
       console.log(response.data)
-
-      setNotifications(response.data.data);
+      setUnseenNotifications(response.data.data);
       //console.log(Notifications.data)
+
+      const response1 = await axios.get(
+        `http://localhost:8000/patient/getAllSeenNotifications/${username}`,
+        {withCredentials:true},
+      );
+
+      console.log(response1.data)
+      setSeenNotifications(response1.data.data);
 
     } catch (error) {
       console.error("Error fetching notifications:", error.message);
@@ -61,19 +69,37 @@ const Notifications = () => {
       {show ? (
         <div className="PatientDoctors">
           <NavBar name={"Notifications"} username={username} />
-          <h1>Unseen Notifications</h1>
+          <h1>Notifications</h1>
 
+          {/* Unseen Notifications */}
+          <h2>Unseen Notifications</h2>
           <ul>
-          {notifications && notifications.map((notification, index) => (
-            <li key={index}>
-              <strong>{notification.title}</strong>: {notification.notification}
-              {!notification.isSeen && (
-                <button onClick={() => handleMarkAsSeen(notification._id)}>
-                  Mark as Seen
-                </button>
-              )}
-            </li>
-            ))}
+            {UnseenNotifications &&
+              UnseenNotifications.map((notification, index) => (
+                <li key={index}>
+                  <strong>{notification.title}</strong>:{" "}
+                  {notification.notification}
+                  {!notification.isSeen && (
+                    <button
+                      onClick={() => handleMarkAsSeen(notification._id)}
+                    >
+                      Mark as Seen
+                    </button>
+                  )}
+                </li>
+              ))}
+          </ul>
+
+          {/* Seen Notifications */}
+          <h2>Seen Notifications</h2>
+          <ul>
+            {SeenNotifications &&
+              SeenNotifications.map((notification, index) => (
+                <li key={index}>
+                  <strong>{notification.title}</strong>:{" "}
+                  {notification.notification}
+                </li>
+              ))}
           </ul>
         </div>
       ) : (

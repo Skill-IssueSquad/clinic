@@ -53,6 +53,7 @@ const {
   sendEmailD,
   markNotificationAsSeenD,
   getAllUnseenNotificationsD,
+  getAllSeenNotificationsD,
   AddNotificationD,
 } = require("../controllers/DoctorController");
 router.get("/:username", getDoctor);
@@ -85,6 +86,7 @@ router.post("/saveAdditionalMedicines", saveAdditionalMedicines);
 router.patch("/:sendEmail", sendEmailD);
 router.post("/:addNotification",AddNotificationD);
 router.get("/getAllUnseenNotifications/:username",getAllUnseenNotificationsD);
+router.get("/getAllSeenNotificationsD/:username",getAllSeenNotificationsD);
 router.patch("/markNotificationAsSeen/:username/:notificationId",markNotificationAsSeenD);
 
 module.exports = router;

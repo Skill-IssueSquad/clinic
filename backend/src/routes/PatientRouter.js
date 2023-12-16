@@ -56,6 +56,7 @@ const {
   sendEmail,
   AddNotification,
   getAllUnseenNotifications,
+  getAllSeenNotifications,
   markNotificationAsSeen
 } = require("../controllers/PatientController");
 
@@ -124,6 +125,9 @@ router.patch("/:sendEmail", sendEmail);
 router.post("/:addNotification",AddNotification);
 
 router.get("/getAllUnseenNotifications/:username",getAllUnseenNotifications);
+
+router.get("/getAllSeenNotifications/:username",getAllSeenNotifications);
+
 
 router.patch("/markNotificationAsSeen/:username/:notificationId",markNotificationAsSeen);
 

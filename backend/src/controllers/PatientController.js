@@ -2632,6 +2632,39 @@ const getAllUnseenNotifications = async (req, res) => {
   }
 };
 
+const getAllSeenNotifications = async (req, res) => {
+  const { username } = req.params;
+
+  try {
+    const patient = await Patient.findOne({ username });
+
+    if (!patient) {
+      return res.status(404).json({
+        success: false,
+        message: "Patient not found",
+        data: null,
+      });
+    }
+
+    // Filter out the seen notifications
+    const seenNotifications = patient.notifications.filter(
+      (notification) => notification.isSeen
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Seen notifications retrieved successfully",
+      data: seenNotifications,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      data: null,
+    });
+  }
+};
+
 const getAllHealthRecords = async (req, res) => {
   const { username } = req.params;
 
@@ -2997,5 +3030,6 @@ module.exports = {
   sendEmail,
   AddNotification,
   getAllUnseenNotifications,
+  getAllSeenNotifications,
   markNotificationAsSeen,
 };

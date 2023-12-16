@@ -1760,6 +1760,41 @@ const getAllUnseenNotificationsD = async (req, res) => {
   }
 };
 
+const getAllSeenNotificationsD = async (req, res) => {
+  const { username } = req.params;
+
+  console.log(username);
+  try {
+    const doctor = await Doctor.findOne({ username });
+
+    if (!doctor) {
+      return res.status(404).json({
+        success: false,
+        message: "Doctor not found",
+        data: null,
+      });
+    }
+
+    // Filter out the seen notifications
+    const seenNotifications = doctor.notifications.filter(
+      (notification) => notification.isSeen
+    );
+    console.log(seenNotifications);
+    res.status(200).json({
+      success: true,
+      message: "Seen notifications retrieved successfully",
+      data: seenNotifications,
+    });
+  } catch (error) {
+    console.log("Entered the catch block");
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      data: null,
+    });
+  }
+};
+
 const sendEmailD = async (req, res) => {
   //try{
 
@@ -1840,5 +1875,6 @@ module.exports = {
   AddNotificationD,
   markNotificationAsSeenD,
   getAllUnseenNotificationsD,
+  getAllSeenNotificationsD,
   sendEmailD,
 };
