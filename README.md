@@ -30,34 +30,31 @@ Eslint link: [Eslint](https://marketplace.visualstudio.com/items?itemName=dbaeum
 
 ## 1.4 | Tech and frameworks:
 
-|||
-| ----------- | ----------- |
-| [React](https://reactjs.org/) | ![React](	https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)|
-| [Node.js](https://nodejs.org/en/) | ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white) |
-| [JWT](https://jwt.io/)| ![JWT](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens)|
-| [Express](https://expressjs.com/)| ![Express](https://img.shields.io/badge/Express.js-404D59?style=for-the-badge) |
-| [MongoDB](https://www.mongodb.com/)|![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white)|
-| [Mongoose](https://mongoosejs.com/)| ![Mongoose](https://img.shields.io/badge/Mongoose-black.svg?style=for-the-badge&logo=mongoose&logoColor=orange)|
-| [Swagger](https://swagger.io/)| ![Swagger](https://img.shields.io/badge/Swagger-black.svg?style=for-the-badge&logo=swagger&logoColor=white)|
-| [Material-UI](https://material-ui.com/)| ![MUI](https://img.shields.io/badge/MUI-%230081CB.svg?style=for-the-badge&logo=mui&logoColor=white) |
-| [Stripe](https://stripe.com/)|	![Stripe](https://img.shields.io/badge/Stripe-626CD9?style=for-the-badge&logo=Stripe&logoColor=white) |
-| [Typescript](https://www.typescriptlang.org/)|![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)|
-| [Git](https://git-scm.com/)| ![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white)|
-| [Github Actions](github.com/features/actions)|![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white) |
-| [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)| ![MongoDB](https://img.shields.io/badge/MongoDB%20Atlas-white.svg?style=for-the-badge&logo=mongodb&logoColor=green)|
-| [Postman](https://www.postman.com/)|![Postman](https://img.shields.io/badge/postman-black.svg?style=for-the-badge&logo=postman&logoColor=orange)|
-| [VSCode](https://code.visualstudio.com/)|![VScode](https://img.shields.io/badge/VS%20code-black.svg?style=for-the-badge&logo=visualstudiocode&logoColor=blue)|
-
+|                                                      |                                                                                                                      |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| [React](https://reactjs.org/)                        | ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)                  |
+| [Node.js](https://nodejs.org/en/)                    | ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)              |
+| [JWT](https://jwt.io/)                               | ![JWT](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens)                          |
+| [Express](https://expressjs.com/)                    | ![Express](https://img.shields.io/badge/Express.js-404D59?style=for-the-badge)                                       |
+| [MongoDB](https://www.mongodb.com/)                  | ![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white)      |
+| [Mongoose](https://mongoosejs.com/)                  | ![Mongoose](https://img.shields.io/badge/Mongoose-black.svg?style=for-the-badge&logo=mongoose&logoColor=orange)      |
+| [Material-UI](https://material-ui.com/)              | ![MUI](https://img.shields.io/badge/MUI-%230081CB.svg?style=for-the-badge&logo=mui&logoColor=white)                  |
+| [Stripe](https://stripe.com/)                        | ![Stripe](https://img.shields.io/badge/Stripe-626CD9?style=for-the-badge&logo=Stripe&logoColor=white)                |
+| [Git](https://git-scm.com/)                          | ![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white)                  |
+| [Github Actions](github.com/features/actions)        | ![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)         |
+| [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) | ![MongoDB](https://img.shields.io/badge/MongoDB%20Atlas-white.svg?style=for-the-badge&logo=mongodb&logoColor=green)  |
+| [Postman](https://www.postman.com/)                  | ![Postman](https://img.shields.io/badge/postman-black.svg?style=for-the-badge&logo=postman&logoColor=orange)         |
+| [VSCode](https://code.visualstudio.com/)             | ![VScode](https://img.shields.io/badge/VS%20code-black.svg?style=for-the-badge&logo=visualstudiocode&logoColor=blue) |
 
 ---
 
 # Section 2: Features
 
 ## 2.1 | Main features:
+
 #### El7a2ni's clinic offers a wide range of features that you might need in a traditional clinic and more, these include:
 
 > ⚠️: **Note:** Click to expand.
-
 
 <details>
     
@@ -102,6 +99,77 @@ Eslint link: [Eslint](https://marketplace.visualstudio.com/items?itemName=dbaeum
 # Section 3: How to use
 
 ## 3.1 | API's:
+
+<details>
+    <summary>
+        Patient Routes (/patient)
+    </summary>
+
+`router.post(
+  "/:username/healthrecords"
+)` Allows a patient to upload his/her health records
+
+`router.delete("/:username/healthrecords/:recordId")`
+
+`router.get("/:username/healthrecords")`
+
+router.get("/:username/bookingOptions", getPatientBookingOptions);
+router.get("/freeAppointments", getAllFreeDocAppointments);
+router.get("/:username", getPatientAPI);
+router.get("/getByID/:id", getPatientAPIByID);
+router.get("/email/:username", getPatientemUsername);
+router.get("/:username/appointments", getAllAppointments);
+router.get("/:username/appointments/date", getAppointmentsByDate);
+router.get("/:username/appointments/status", getAppointmentsByStatus);
+router.post("/:username/doctors", viewAllDoctors);
+router.post("/:username/doctors/available", viewAllDoctorsAvailable);
+router.post("/createDoc", createDoc); // TESTING PURPOSES ONLY
+router.post("/:username/bookAppointment", bookAppointment);
+router.post("/:username/tempBook", tempBookAppointment); // TESTING PURPOSES ONLY
+router.post("/:username/reschduleAppointment", rescheduleAppointment);
+router.delete(
+"/:username/appointments/:doctor_id/:appointment_id",
+cancelAppointment
+);
+router.post("/:username/requestFollowUp", requestFollowUp);
+router.post("/:username/tempRequestFollowUp", tempRequestFollowUp); // TESTING PURPOSES ONLY
+router.put("/:username/editWalletBalance", editWalletBalance);
+router.get("/transitPay/:transit_id", getTransitData);
+router.post("/:username/docFollowUpPay", payDoctorScheduledFollowUp);
+router.post("/:username/tempDocFollowUpPay", tempPayDoctorFollowUp);
+
+//add family member route
+router.patch("/:username/addFamMember", addFamMember);
+
+//link family member route
+router.patch("/:username/linkFamMember", linkFamMember);
+
+//get family members route
+router.get("/:username/getFamMember", getFamMembers);
+
+//get prescriptions route
+router.get("/:username/prescriptions", getPrescriptions);
+
+//subscribe health package route (temp and will be removed )
+router.post("/:username/subscriptions/transitSub", tempSub);
+router.post("/:username/subscriptions/subscribe", actualSub);
+
+//cancel health package subscription route
+router.patch("/:username/subscriptions/cancel", cancelHealthPackage);
+
+//add family member route
+router.patch("/:username/addFamMember", addFamMember);
+
+//send email
+router.patch("/:sendEmail", sendEmail);
+
+router.post("/:addNotification",AddNotification);
+
+router.get("/getAllUnseenNotifications/:username",getAllUnseenNotifications);
+
+router.patch("/markNotificationAsSeen/:username/:notificationId",markNotificationAsSeen);`
+
+</details>
 
 ## 3.2 | Testing:
 
