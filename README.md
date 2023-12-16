@@ -241,21 +241,10 @@ We used Postman to test our different API endpoints.
 
 ![Example of a Postman test](image.png)
 
-### Test API:
-```bash
-http://localhost:8000/patient/bahyone/addFamMember
-```
-### Test Body JSON:
-```bash
-{
-    "name" : "New Fam Member",
-    "national_id" : "0123456789",
-    "age" : "15",
-    "gender" : "M",
-    "relation" : "son",
-    "healthPackageType" : null
-}
-```
+|Element | Input |
+|-----|-----|
+| Test API: | `http://localhost:8000/patient/bahyone/addFamMember` |
+| Test Body JSON: |`{"name" : "New Fam Member","national_id" : "0123456789","age" : "15", "gender" : "M", "relation" : "son", "healthPackageType" : null }`|
 ### Expected reply JSON:
 ```bash
 {
