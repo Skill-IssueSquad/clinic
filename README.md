@@ -340,6 +340,30 @@ This project follows the [Contributor Covenant Code of Conduct](https://www.cont
 # Section 4: Credits and Licensing
 
 ## Credits:
+> ⚠️: **Note:** Click to expand.
+
+<details>
+    <summary> Documentations: </summary>
+    
+- [Clean code](https://www.oreilly.com/library/view/clean-code-a/9780136083238/)
+- [RESTful Web API Patterns and Practices Cookbook](https://learning.oreilly.com/library/view/restful-web-api/9781098106737/)
+- [Designing Data Intensive Applications](https://www.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/)
+- [Mongoose docs](https://mongoosejs.com/docs/)
+- [Express docs](https://expressjs.com/en/4x/api.html)
+- [ReactJs docs](https://reactjs.org/docs/getting-started.html)
+- [NodeJs docs](https://nodejs.org/en/docs/)
+  
+</details>
+
+<details>
+    <summary> Youtube Videos and Playlists: </summary>
+
+- [REST API (YouTube)](https://www.youtube.com/watch?v=fgTGADljAeg&list=PLZlA0Gpn_vH_uZs4vJMIhcinABSTUH2bY&index=5)
+- [MERN Stack Playlist (YouTube)](https://www.youtube.com/watch?v=98BzS5Oz5E4&list=PL4cUxeGkcC9iJ_KkrkBZWZRHVwnzLIoUE)
+- [React Playlist (YouTube)](https://www.youtube.com/playlist?list=PL4cUxeGkcC9gZD-Tvwfod2gaISzfRiP9d)
+- [MERN Authentication Playlist (YouTube)](https://youtube.com/playlist?list=PL4cUxeGkcC9g8OhpOZxNdhXggFz2lOuCT&si=GWBphc_N4Z70ez9Y)
+
+</details>
 
 
 
