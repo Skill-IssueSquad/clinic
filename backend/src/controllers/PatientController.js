@@ -1,5 +1,5 @@
 const Patient = require("../models/Patient");
-const Doctor = require("../models/Doctor"); 
+const Doctor = require("../models/Doctor");
 const Appointments = require("../models/Appointments");
 const Prescription = require("../models/Prescription");
 const Packages = require("../models/Packages");
@@ -7,8 +7,7 @@ const Clinic = require("../models/Clinic");
 const mongoose = require("mongoose");
 const PaymentTransit = require("../models/PaymentTransit");
 const axios = require("axios");
-const nodeMailer=require("nodemailer");
-
+const nodeMailer = require("nodemailer");
 
 /*
 //message has to be in html like this 
@@ -20,36 +19,45 @@ const html= `<h1>Hello World</h1>
 const sendEmail = async (req, res) => {
   //try{
 
-
-  const { email,message,subject } = req.body;
+  const { email, message, subject } = req.body;
 
   const transporter = nodeMailer.createTransport({
-    service: 'gmail',
-    host: 'smtp.gmail.com',
+    service: "gmail",
+    host: "smtp.gmail.com",
     port: 465,
-    secure: true, 
+    secure: true,
     auth: {
-      user: 'el7a2ni.virtual@gmail.com',
-      pass: 'zijy ztiz drcn ioxq'
-    }
+      user: "el7a2ni.virtual@gmail.com",
+      pass: "zijy ztiz drcn ioxq",
+    },
   });
 
+  const info = await transporter.sendMail(
+    {
+      from: "SkillIssue <el7a2ni.virtual@gmail.com>",
+      to: email,
+      subject: subject,
+      text: message,
+    },
+    (err) => {
+      if (err) {
+        console.log("it has an error", err);
+        return res.status(500).json({
+          success: false,
+          data: null,
+          message: "Some error occurred while sending email.",
+        });
+      } else {
+        console.log("email sent");
+        return res.status(200).json({
+          success: true,
+          data: null,
+          message: "Email sent successfully",
+        });
 
-  
-  const info = await transporter.sendMail({
-
-    from : 'SkillIssue <el7a2ni.virtual@gmail.com>',
-    to: email,
-    subject: subject,
-    text: message
-  },(err)=>{
-    if(err){
-      console.log('it has an error', err)
+      }
     }
-    else{
-      console.log('email sent')
-    }
-  })
+  );
   //}
   //catch{
   //console.log("Message sent: "+ info.messageId)
@@ -714,7 +722,7 @@ const viewAllDoctorsAvailable = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data: {doctors: doctors},
+      data: { doctors: doctors },
       message: "Successfully retrieved all doctors",
     });
   } catch (err) {
@@ -997,6 +1005,53 @@ const bookAppointment = async (req, res) => {
         }
       });
     }
+
+    // nReq = {
+    //   req: {
+    //     body: {
+    //       email: "omar.syd.n@gmail.com",
+    //       message: `Dear ${patient.name},\n\nYour appointment with ${doctor.name} on ${req.body.day} at ${req.body.timeSlot} has been booked successfully.\n\nBest Regards,\nSkillIssue Team`,
+    //       subject: "Appointment Booked Successfully",
+    //     },
+    //   },
+    // };
+
+    // var nRes;
+    // await sendEmail(nReq, nRes);
+
+    await axios.patch("http://localhost:8000/patient/sendEmail", {
+        email: patient.email,
+        message: `Dear ${patient.name},\n\nYour appointment with ${doctor.name} on ${req.body.day} at ${req.body.timeSlot} has been booked successfully.\n\nBest Regards,\nSkillIssue Team`,
+        subject: "Appointment Booked Successfully",
+      }, {withCredentials: true})
+      .catch((err) => {
+        console.log(err);
+        if (err) {
+          return sendResponse(
+            500,
+            false,
+            req.body,
+            err.message || "Some error occurred while sending email."
+          );
+        }
+      });
+
+      await axios.patch("http://localhost:8000/doctor/sendEmail", {
+        email: doctor.email,
+        message: `Dear ${doctor.name},\n\nYour appointment with ${patient.name} on ${req.body.day} at ${req.body.timeSlot} has been booked successfully.\n\nBest Regards,\nSkillIssue Team`,
+        subject: "Appointment Booked Successfully",
+      }, {withCredentials: true})
+      .catch((err) => {
+        console.log(err);
+        if (err) {
+          return sendResponse(
+            500,
+            false,
+            req.body,
+            err.message || "Some error occurred while sending email."
+          );
+        }
+      });
 
     return sendResponse(
       200,
@@ -1573,7 +1628,9 @@ const tempRequestFollowUp = async (req, res) => {
     const username = req.params.username;
     const patient = await getPatient(username);
     let isLinked = patient.linkedAccounts.find((elem) => {
-      return String(elem.patient_id) === String(completedAppointment.patient_id);
+      return (
+        String(elem.patient_id) === String(completedAppointment.patient_id)
+      );
     })
       ? true
       : false;
@@ -2370,10 +2427,6 @@ const AddHealthRecord = async (req, res) => {
   }
 };
 
-
-
-
-
 const AddNotification = async (req, res) => {
   // Extract other health record properties from the request body
 
@@ -2381,15 +2434,13 @@ const AddNotification = async (req, res) => {
   const title = req.body.title;
   const notification = req.body.notification;
 
-
   console.log(username);
   console.log(title);
   console.log(notification);
 
-
   try {
     // Fetch existing health records
-    const patient = await Patient.findOne({username});
+    const patient = await Patient.findOne({ username });
 
     if (!patient) {
       console.log("Patient not found:", req.params.username);
@@ -2400,7 +2451,7 @@ const AddNotification = async (req, res) => {
         data: null,
       });
     }
-    let isSeen=false;
+    let isSeen = false;
     patient.notifications.push({ isSeen, title, notification });
 
     const updatedPatient = await patient.save();
@@ -2419,12 +2470,11 @@ const AddNotification = async (req, res) => {
   }
 };
 
-
 const markNotificationAsSeen = async (req, res) => {
   try {
     const { username, notificationId } = req.params;
 
-    console.log("HEREEE")
+    console.log("HEREEE");
     // Find the patient by username
     const patient = await Patient.findOne({ username });
 
@@ -2454,8 +2504,6 @@ const markNotificationAsSeen = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
-
-
 
 const getAllUnseenNotifications = async (req, res) => {
   const { username } = req.params;
@@ -2489,11 +2537,6 @@ const getAllUnseenNotifications = async (req, res) => {
     });
   }
 };
-
-
-
-
-
 
 const getAllHealthRecords = async (req, res) => {
   const { username } = req.params;
@@ -2560,7 +2603,6 @@ const removeHealthRecord = async (req, res) => {
     });
   }
 };
-
 
 const getTransitData = async (req, res) => {
   let responseSent = false; // Track whether a response has been sent
@@ -2709,7 +2751,6 @@ const payDoctorScheduledFollowUp = async (req, res) => {
   }
 };
 
-
 const tempPayDoctorFollowUp = async (req, res) => {
   // ASSUMES JWT AUTHENTICATION
   // EXPECTED INPUT: param: self_username, { doctor_id: "69fe353h55g3h34hg53h",
@@ -2761,7 +2802,9 @@ const tempPayDoctorFollowUp = async (req, res) => {
       );
     }
 
-    let appointmentPatientName = await Patient.findById(selectedAppointment.patient_id).catch((err) => {
+    let appointmentPatientName = await Patient.findById(
+      selectedAppointment.patient_id
+    ).catch((err) => {
       if (err) {
         return sendResponse(
           500,
@@ -2770,20 +2813,21 @@ const tempPayDoctorFollowUp = async (req, res) => {
           err.message || "Some error occurred while retrieving patient name."
         );
       }
-    })
+    });
     appointmentPatientName = appointmentPatientName.name;
 
-    let doctorName = await Doctor.findById(selectedAppointment.doctor_id).catch((err) => {
-      if (err) {
-        return sendResponse(
-          500,
-          false,
-          req.body,
-          err.message || "Some error occurred while retrieving doctor name."
-        );
+    let doctorName = await Doctor.findById(selectedAppointment.doctor_id).catch(
+      (err) => {
+        if (err) {
+          return sendResponse(
+            500,
+            false,
+            req.body,
+            err.message || "Some error occurred while retrieving doctor name."
+          );
+        }
       }
-    }
-    )
+    );
     doctorName = doctorName.name;
 
     // add payment transit
@@ -2791,9 +2835,9 @@ const tempPayDoctorFollowUp = async (req, res) => {
       totalPrice: selectedAppointment.price.patient,
       items: [
         {
-            name: `Follow-up with ${doctorName} on ${selectedAppointment.day} at ${selectedAppointment.slot} for ${appointmentPatientName}` ,
-            quantity: 1,
-            price: selectedAppointment.price.patient,
+          name: `Follow-up with ${doctorName} on ${selectedAppointment.day} at ${selectedAppointment.slot} for ${appointmentPatientName}`,
+          quantity: 1,
+          price: selectedAppointment.price.patient,
         },
       ],
       payload: req.body,
@@ -2812,7 +2856,7 @@ const tempPayDoctorFollowUp = async (req, res) => {
     return sendResponse(
       200,
       true,
-      {transit_id: paymentTransit._id},
+      { transit_id: paymentTransit._id },
       "Payment successful"
     );
   } catch (error) {
@@ -2822,7 +2866,7 @@ const tempPayDoctorFollowUp = async (req, res) => {
       message: error.message || "Some error occurred while performing request",
     });
   }
-}
+};
 
 module.exports = {
   addFamMember,

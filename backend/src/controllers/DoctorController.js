@@ -6,8 +6,7 @@ const numberToWords = require("number-to-words");
 const Prescription = require("../models/Prescription");
 const Clinic = require("../models/Clinic");
 const Packages = require("../models/Packages");
-const nodeMailer=require("nodemailer");
-
+const nodeMailer = require("nodemailer");
 
 const getDoctor = async (req, res) => {
   //console.log("I am here");
@@ -1461,8 +1460,32 @@ const saveAdditionalMedicines = async (req, res) => {
   }
 };
 
-
-
+const getDoctors = async (req, res) => {
+  try {
+    const doctors = await Doctor.find({});
+    var doctorList = [];
+    for (var doctor of doctors) {
+      const doctorInfo = {
+        name: `${doctor.name}(${doctor.username})`,
+        username: doctor.username,
+      };
+      doctorList.push(doctorInfo);
+    }
+    const send = {
+      success: true,
+      data: doctorList,
+      message: "Doctors found successfully",
+    };
+    res.status(200).json(send);
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: error.message,
+    };
+    res.status(500).json(send);
+  }
+};
 
 const AddNotificationD = async (req, res) => {
   // Extract other health record properties from the request body
@@ -1471,15 +1494,13 @@ const AddNotificationD = async (req, res) => {
   const title = req.body.title;
   const notification = req.body.notification;
 
-
   console.log(username);
   console.log(title);
   console.log(notification);
 
-
   try {
     // Fetch existing health records
-    const doctor = await Doctor.findOne({username});
+    const doctor = await Doctor.findOne({ username });
 
     if (!doctor) {
       console.log("doctor not found:", req.params.username);
@@ -1490,7 +1511,7 @@ const AddNotificationD = async (req, res) => {
         data: null,
       });
     }
-    let isSeen=false;
+    let isSeen = false;
     doctor.notifications.push({ isSeen, title, notification });
 
     const updatedDoctor = await doctor.save();
@@ -1509,12 +1530,11 @@ const AddNotificationD = async (req, res) => {
   }
 };
 
-
 const markNotificationAsSeenD = async (req, res) => {
   try {
     const { username, notificationId } = req.params;
 
-    console.log("HEREEE")
+    console.log("HEREEE");
     // Find the patient by username
     const doctor = await Doctor.findOne({ username });
 
@@ -1545,12 +1565,10 @@ const markNotificationAsSeenD = async (req, res) => {
   }
 };
 
-
-
 const getAllUnseenNotificationsD = async (req, res) => {
   const { username } = req.params;
 
-  console.log(username)
+  console.log(username);
   try {
     const doctor = await Doctor.findOne({ username });
 
@@ -1566,14 +1584,14 @@ const getAllUnseenNotificationsD = async (req, res) => {
     const unseenNotifications = doctor.notifications.filter(
       (notification) => !notification.isSeen
     );
-      console.log(unseenNotifications)
+    console.log(unseenNotifications);
     res.status(200).json({
       success: true,
       message: "Unseen notifications retrieved successfully",
       data: unseenNotifications,
     });
   } catch (error) {
-    console.log("ENTERED THE CATCH")
+    console.log("ENTERED THE CATCH");
     res.status(500).json({
       success: false,
       error: error.message,
@@ -1585,47 +1603,49 @@ const getAllUnseenNotificationsD = async (req, res) => {
 const sendEmailD = async (req, res) => {
   //try{
 
-
-  const { email,message,subject } = req.body;
+  const { email, message, subject } = req.body;
 
   const transporter = nodeMailer.createTransport({
-    service: 'gmail',
-    host: 'smtp.gmail.com',
+    service: "gmail",
+    host: "smtp.gmail.com",
     port: 465,
-    secure: true, 
+    secure: true,
     auth: {
-      user: 'el7a2ni.virtual@gmail.com',
-      pass: 'zijy ztiz drcn ioxq'
-    }
+      user: "el7a2ni.virtual@gmail.com",
+      pass: "zijy ztiz drcn ioxq",
+    },
   });
 
-
-  
-  const info = await transporter.sendMail({
-
-    from : 'SkillIssue <el7a2ni.virtual@gmail.com>',
-    to: email,
-    subject: subject,
-    text: message
-  },(err)=>{
-    if(err){
-      console.log('it has an error', err)
+  const info = await transporter.sendMail(
+    {
+      from: "SkillIssue <el7a2ni.virtual@gmail.com>",
+      to: email,
+      subject: subject,
+      text: message,
+    },
+    (err) => {
+      if (err) {
+        console.log("it has an error", err);
+        return res.status(500).json({
+          success: false,
+          message: "Email not sent",
+          data: null,
+        });
+      } else {
+        return res.status(200).json({
+          success: true,
+          message: "Email sent",
+          data: null,
+        });
+        console.log("email sent");
+      }
     }
-    else{
-      res.status(200).json({
-        success: true,
-        message: "Email sent",
-      });    
-        console.log('email sent')
-    }
-  })
+  );
   //}
   //catch{
   //console.log("Message sent: "+ info.messageId)
   //}
 };
-
-
 
 module.exports = {
   getDoctor,
@@ -1656,6 +1676,7 @@ module.exports = {
   getPrescriptions,
   getChatPatients,
   saveAdditionalMedicines,
+  getDoctors,
   AddNotificationD,
   markNotificationAsSeenD,
   getAllUnseenNotificationsD,

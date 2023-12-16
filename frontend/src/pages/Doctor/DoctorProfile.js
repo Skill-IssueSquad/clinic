@@ -19,6 +19,7 @@ import Contract from "../../components/Doctor/employmentContract";
 import Slots from "../../components/Doctor/mySlots";
 import Requests from "../../components/Doctor/AppointmentsRequests";
 import PatientList from "../../components/Doctor/PatientList";
+import PharmacyList from "../../components/Doctor/PharmacistList";
 import { useNavigate } from "react-router-dom";
 const validator = require("validator");
 const { auth } = require("../Protected/AuthProvider");
@@ -228,6 +229,7 @@ const UserProfile = () => {
               </button>
               <br />
               {contractAccepted && <PatientList username={username} />}
+              {contractAccepted && <PharmacyList />}
               {error && <Typography variant="h6">{error}</Typography>}
               {contractAccepted && <Slots username={username} />}
               {contractAccepted && <Requests username={username} />}
