@@ -74,7 +74,6 @@ router.post("/removeFromPrescription/", removeFromPrescription);
 router.get("/getRequestedAppointments/:username", getRequestedAppointments);
 router.post("/acceptAppointment/:username", acceptAppointment);
 router.post("/revokeAppointment", revokeAppointment);
-router.get("/getPatient/:appID", getPatient);
 router.get("/getPrescriptions/:username", getPrescriptions);
 router.get("/chat/getPatients/:username", getChatPatients);
 router.post("/saveAdditionalMedicines", saveAdditionalMedicines);

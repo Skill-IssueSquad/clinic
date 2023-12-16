@@ -24,8 +24,9 @@ const {
   authDoctorRequest,
   authPatient,
 } = require("./src/middleware/Authentication");
+const {getPatient} = require("./src/controllers/DoctorController");
 const doctorRequest = require("./src/models/DoctorRequest");
-
+// router.get("/getPatient/:appID", getPatient);
 //socket for video server
 //server is only used to set up the rooms
 const socketVideoServer = require("http").createServer(app);
@@ -143,7 +144,7 @@ app.use("/register/doctor", DoctorRegisteration);
 app.use("/patient", patientRouter);
 app.use("/account", accountRouter);
 app.use("/doctorRequest", authDoctorRequest, doctorRequestRouter);
-
+app.get("/getPatient/:appID", getPatient);
 app.post("/balance/:username", equateBalance);
 //get requests for video server
 app.get("/video", (req, res) => {
