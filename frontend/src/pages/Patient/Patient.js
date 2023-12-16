@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Typography, Slide, Paper, Divider } from "@mui/material";
-import NavBar from "../../components/navBar";
+import NavBar from "../../components/navBarPatient";
 import AddFamilyMember from "../../components/Patient/addFamilyMember";
 import PatientDetails from "../../components/Patient/PatientDetails";
 import LinkFamilyMemberForm from "../../components/Patient/linkFamilyMemberform";
@@ -91,6 +91,7 @@ const Patient = () => {
           <NavBar
             name={"Patient Dashboard"}
             username={localStorage.getItem("username")}
+            button = {"Profile"}
           />
           <PatientDetails
             patient={patient}

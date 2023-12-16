@@ -15,7 +15,7 @@ import Stack from "@mui/joy/Stack";
 import CircularProgress from "@mui/joy/CircularProgress";
 import Divider from "@mui/joy/Divider";
 import WalletBalanceComp from "../../components/Patient/WalletBalance";
-import NavBar from "../../components/navBar";
+import NavBar from "../../components/navBarPatient";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";

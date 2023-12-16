@@ -13,21 +13,21 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import { useNavigate } from "react-router-dom";
+import AccountIcon from '@mui/icons-material/AccountCircle'
+import { useEffect } from "react";
 
-const pages = [
+let pages = [
   "Home",
-  "Doctors",
-  "Appointments",
-  "Medical History",
-  "Health Packages",
-  "Prescriptions",
+  "Profile",
+  "Change Password"
 ];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+const settings = ["Logout"];
 
-const ResponsiveAppBar = ({ username }) => {
+const ResponsiveAppBar = ({ username, button }) => {
   let navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -44,6 +44,22 @@ const ResponsiveAppBar = ({ username }) => {
     setAnchorElUser(null);
   };
 
+  const handleUserMenu = async (text) => {
+    switch (text) {
+      default: {
+        const response = await fetch("/account/logout", { method: "GET" });
+        const json = await response.json();
+        if (response.ok) {
+          //setToken();
+          localStorage.setItem("token", "");
+          localStorage.setItem("role", "");
+          localStorage.setItem("username", "");
+          navigate("/");
+        }
+      }
+    }
+  };
+  
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
@@ -52,7 +68,6 @@ const ResponsiveAppBar = ({ username }) => {
             variant="h6"
             noWrap
             component="a"
-            href="#app-bar-with-responsive-menu"
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -63,7 +78,7 @@ const ResponsiveAppBar = ({ username }) => {
               textDecoration: "none",
             }}
           >
-            Patient Dashboard
+            El7a2ni Clinic
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
@@ -102,46 +117,24 @@ const ResponsiveAppBar = ({ username }) => {
               ))}
             </Menu>
           </Box>
-          <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: "flex", md: "none" },
-              flexGrow: 1,
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
-          >
-            Patient Dashboard
-          </Typography>
+          {/* <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} /> */}
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => {
-              let url = "/patient/";
-              if (page === "Home") {
-                url = "/patient/";
-              } else if (page === "Doctors") {
-                url = "/patient/doctors";
-              } else if (page === "Appointments") {
-                url = "/patient/appointments";
-              } else if (page === "Medical History") {
-                url = `/patient/medicalHistory/?PUN=${username}&IP=${true}`;
-              } else if (page == "Health Packages") {
-                url = "/patient/healthPackages/";
-              } else if (page == "Prescriptions") {
-                url = "/patient/prescriptions/";
+              let url;
+              if (page === "Profile") {
+                url = "/Doctor_Profile/";
+              } else if (page === "Home") {
+                url = "/Doctor_Home";
+              } else if (page == "Change Password") {
+                url = "/Doctor/changePassword";
               }
               return (
                 <Button
                   key={page}
                   onClick={() => navigate(url)}
                   sx={{ my: 2, color: "white", display: "block" }}
+                  style={{fontSize:'14px', margin:'10px', marginTop: '20px', 
+                  backgroundColor: button === page? 'black' : 'transparent'}}
                 >
                   {page}
                 </Button>
@@ -152,7 +145,7 @@ const ResponsiveAppBar = ({ username }) => {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+              <AccountIcon style={{color:'white'}}/>
               </IconButton>
             </Tooltip>
             <Menu
@@ -171,9 +164,9 @@ const ResponsiveAppBar = ({ username }) => {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
+              {settings.map((text) => (
+                <MenuItem key={text} onClick={() => handleUserMenu(text)}>
+                  <Typography textAlign="center">{text}</Typography>
                 </MenuItem>
               ))}
             </Menu>

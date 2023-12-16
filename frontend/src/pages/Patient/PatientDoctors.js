@@ -2,7 +2,7 @@ import React, { useState } from "react"; // Import React and useState
 
 import PatientDoctorAvailibityDatePicker from "../../components/Patient/PatientDoctorAvailibityDatePicker";
 import PatientMultiLevel from "../../components/Patient/PatientDoctorsMultiLevelGrid";
-import NavBar from "../../components/navBar";
+import NavBar from "../../components/navBarPatient";
 import { auth } from "../../pages/Protected/AuthProvider";
 import { Card, Typography } from "@mui/joy";
 import { Box, Stack } from "@mui/material";
@@ -50,6 +50,7 @@ function PatientDoctors() {
           <NavBar
             name={"Patient Dashboard"}
             username={localStorage.getItem("username")}
+            button = {"Doctors"}
           />
           <Box
             display="flex"

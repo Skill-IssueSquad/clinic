@@ -7,6 +7,7 @@ import ForgotPassword from "./pages/Home/ForgotPassword";
 import ResetPassword from "./pages/Home/ResetPassword";
 import Doctor from "./pages/Doctor/Doctor";
 import DoctorProfile from "./pages/Doctor/DoctorProfile";
+import DoctorChangePassword from "./pages/Doctor/ChangePassword";
 import Admin from "./pages/Admin/Admin";
 import AdminChangePassword from "./pages/Admin/ChangePassword";
 import ViewAdmins from "./pages/Admin/ViewAdmins";
@@ -20,13 +21,14 @@ import DoctorRequest from "./pages/DoctorRequest/DoctorRequest";
 import PatientRegisteration from "./pages/Home/PatientRegisteration";
 import DoctorRegisteration from "./pages/Home/DoctorRegisteration";
 import Patient from "./pages/Patient/Patient";
+import PatientChangePassword from "./pages/Patient/ChangePassword";
 import PatientDoctors from "./pages/Patient/PatientDoctors";
 import PatientAppointments from "./pages/Patient/PatientAppointments";
 import HealthPackageShop from "./pages/Patient/HealthPackageShop";
 import PatientBookSlots from "./pages/Patient/PatientBookSlots";
 import Payments from "./pages/Patient/Payments";
 import WalletBalance from "./pages/Patient/WalletBalance";
-import MedicalHistory from "./pages/MedicalHistory";
+import MedicalHistory from "./pages/Patient/MedicalHistory";
 import Follow from "./pages/Doctor/FollowUp";
 import Payment from "./pages/Patient/Payment";
 import CreditCardPayment from "./pages/Patient/CreditCardPayment";
@@ -43,7 +45,7 @@ function App() {
   return (
     <div classname="app"  style={{backgroundColor: '#f0f0f0', minHeight: '730px'}}>
       <BrowserRouter>
-        <AppBar />
+        {/* <AppBar /> */}
         <div classname="pages">
           <Routes>
             <Route path="/" element={<Login />} />
@@ -69,9 +71,8 @@ function App() {
             <Route exact path="/DoctorRequest" element={<DoctorRequest />} />
             <Route exact path="/Doctor_Home" element={<Doctor />} />
             <Route exact path="/Doctor_Profile" element={<DoctorProfile />} />
-            <Route exact path="/Doctor_Home" element={<Doctor />} />
-            <Route exact path="/Doctor_Profile" element={<DoctorProfile />} />
             <Route exact path="/Doctor_FollowUp" element={<Follow />} />
+            <Route exact path="/Doctor/changePassword" element={<DoctorChangePassword />} />
             <Route exact path="/Admin" element={<Admin />} />
             <Route exact path="/Admin/ChangePassword" element={<AdminChangePassword />} />
             <Route exact path="/Admin/ViewAdmins" element={<ViewAdmins />} />
@@ -100,6 +101,7 @@ function App() {
 
 <Route exact path="/Admin/ViewProfile" element={<ViewProfile />} />
             <Route exact path="/patient/" element={<Patient />} />
+            <Route exact path="/patient/changePassword/" element={<PatientChangePassword />} />
             <Route
               exact
               path="/patient/doctors/"

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { auth } from "../Protected/AuthProvider";
 import PrescriptionsMultiLevelFilterTable from "../../components/PrescriptionsMultiLevelFilterTable";
-import NavBar from "../../components/navBar";
+import NavBar from "../../components/navBarPatient";
 const PatientPrescriptions = () => {
   let show = false;
 
@@ -18,6 +18,7 @@ const PatientPrescriptions = () => {
           <NavBar
             name={"Patient Dashboard"}
             username={localStorage.getItem("username")}
+            button = {"Prescriptions"}
           />
           <PrescriptionsMultiLevelFilterTable
             columns={[

@@ -3,7 +3,6 @@ import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -13,16 +12,26 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import AccountIcon from '@mui/icons-material/AccountCircle'
+import { useEffect } from "react";
 
-const pages = ["Appointments", "Patients"];
-const settings = ["Profile", "Change Password", "Logout"];
+let pages = [
+  "Profile",
+  "Doctors",
+  "Appointments",
+  "Medical History",
+  "Health Packages",
+  "Prescriptions",
+  "Change Password"
+];
+const settings = ["Logout"];
 
-function ResponsiveAppBar() {
-  const navigate = useNavigate();
-  //const history = useHistory();
+const ResponsiveAppBar = ({ username, button }) => {
+  let navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -35,27 +44,12 @@ function ResponsiveAppBar() {
     setAnchorElNav(null);
   };
 
-  const handleCloseUserMenu = (setting) => {
+  const handleCloseUserMenu = () => {
     setAnchorElUser(null);
-    if (setting === "Profile") {
-      // Redirect to profile page
-      // console.log("Redirecting to profile pasge");
-      navigate("/Doctor_Profile");
-    }
   };
 
   const handleUserMenu = async (text) => {
     switch (text) {
-      case "Profile":
-        navigate(
-          localStorage.getItem("role").toLocaleLowerCase() === "doctor"
-            ? "/Doctor_Profile"
-            : "/Admin"
-        );
-        break;
-      case "Change Password":
-        navigate("/ChangePassword");
-        break;
       default: {
         const response = await fetch("/account/logout", { method: "GET" });
         const json = await response.json();
@@ -69,25 +63,15 @@ function ResponsiveAppBar() {
       }
     }
   };
-
+  
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          {/* <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} /> */}
-          <IconButton
-            size="large"
-            aria-label="back"
-            onClick={() => navigate(-1)} // Add this line
-            color="inherit"
-          >
-            <ArrowBackIcon />
-          </IconButton>
           <Typography
             variant="h6"
             noWrap
-            component={Link}
-            to="/Doctor_Home"
+            component="a"
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -130,14 +114,79 @@ function ResponsiveAppBar() {
                 display: { xs: "block", md: "none" },
               }}
             >
+              {pages.map((page) => (
+                <MenuItem key={page} onClick={handleCloseNavMenu}>
+                  <Typography textAlign="center">{page}</Typography>
+                </MenuItem>
+              ))}
             </Menu>
           </Box>
-
+          {/* <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} /> */}
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
+            {pages.map((page) => {
+              let url = "/patient/";
+              if (page === "Profile") {
+                url = "/patient/";
+              } else if (page === "Doctors") {
+                url = "/patient/doctors";
+              } else if (page === "Appointments") {
+                url = "/patient/appointments";
+              } else if (page === "Medical History") {
+                url = `/patient/medicalHistory/?PUN=${username}&IP=${true}`;
+              } else if (page == "Health Packages") {
+                url = "/patient/healthPackages/";
+              } else if (page == "Prescriptions") {
+                url = "/patient/prescriptions/";
+              }
+              else if (page == "Change Password") {
+                url = "/patient/changePassword/";
+              }
+              return (
+                <Button
+                  key={page}
+                  onClick={() => navigate(url)}
+                  sx={{ my: 2, color: "white", display: "block" }}
+                  style={{fontSize:'14px', margin:'10px', marginTop: '20px', 
+                  backgroundColor: button === page? 'black' : 'transparent'}}
+                >
+                  {page}
+                </Button>
+              );
+            })}
+          </Box>
+
+          <Box sx={{ flexGrow: 0 }}>
+            <Tooltip title="Open settings">
+              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+              <AccountIcon style={{color:'white'}}/>
+              </IconButton>
+            </Tooltip>
+            <Menu
+              sx={{ mt: "45px" }}
+              id="menu-appbar"
+              anchorEl={anchorElUser}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              open={Boolean(anchorElUser)}
+              onClose={handleCloseUserMenu}
+            >
+              {settings.map((text) => (
+                <MenuItem key={text} onClick={() => handleUserMenu(text)}>
+                  <Typography textAlign="center">{text}</Typography>
+                </MenuItem>
+              ))}
+            </Menu>
           </Box>
         </Toolbar>
       </Container>
     </AppBar>
   );
-}
+};
 export default ResponsiveAppBar;

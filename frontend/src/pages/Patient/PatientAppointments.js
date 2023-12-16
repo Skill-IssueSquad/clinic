@@ -1,4 +1,4 @@
-import NavBar from "../../components/navBar";
+import NavBar from "../../components/navBarPatient";
 import React from "react";
 import AppointmentsMulti from "../../components/Patient/PatientAppointmentMulti";
 import { auth } from "../Protected/AuthProvider";
@@ -21,6 +21,7 @@ function PatientAppointments() {
           <NavBar
             name={"Patient Dashboard"}
             username={localStorage.getItem("username")}
+            button = {"Appointments"}
           />
           <Box
             display="flex"

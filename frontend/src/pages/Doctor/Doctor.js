@@ -1,6 +1,8 @@
+import { Navbar } from "react-bootstrap";
 import AppBar from "../../components/appBar";
 import Appointments from "../../components/Doctor/Appointments";
 import { auth } from "../Protected/AuthProvider";
+import NavBar from "../../components/navBarDoctor"
 
 const Doctor = () => {
   let show = false;
@@ -15,6 +17,7 @@ const Doctor = () => {
     <div>
       {show ? (
         <div>
+          <NavBar button={"Home"}/>
           <Appointments username={un} />
         </div>
       ) : (
