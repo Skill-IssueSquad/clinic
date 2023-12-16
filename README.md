@@ -14,8 +14,7 @@ Currently the system is working as expected, all functionalities including the m
 </div>
 
  `chrome.exe --disable-web-security --user-data-dir="C:\temp"`
- 
-***
+
 
 Run from terminal on MacOS.
 <div style=" text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center;">
