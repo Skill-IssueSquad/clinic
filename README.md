@@ -556,8 +556,8 @@ This project follows the [Contributor Covenant Code of Conduct](https://www.cont
 </details>
 
 ## License:
-
-**MIT License**
+<details>
+    <Summary> MIT License </Summary>
 
 _Copyright (c) 2023 Skill-IssueSquad_
 
@@ -578,3 +578,13 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+</details>
+
+
+<details>
+    <Summary> Apache 2.0 License </Summary>
+
+[License details](https://www.apache.org/licenses/LICENSE-2.0)
+
+</details>
