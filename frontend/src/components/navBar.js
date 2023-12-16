@@ -29,7 +29,8 @@ const ResponsiveAppBar = ({ username }) => {
     const fetchUnseenNotifications = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/patient/getAllUnseenNotifications/${username}`
+          `http://localhost:8000/patient/getAllUnseenNotifications/${username}`,
+          {withCredentials:true},
         );
         const unseenNotifications = response.data.data;
         const hasUnseen = unseenNotifications.some(notification => !notification.isSeen);

@@ -66,7 +66,8 @@ const Patient = () => {
   useEffect(() => {
     const fetchPatient = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/patient/${localStorage.getItem('username')}`);
+        const res = await axios.get(`http://localhost:8000/patient/${localStorage.getItem('username')}`,
+        {withCredentials:true},);
         setPatient(res.data.data);
       } catch (error) {
         console.log(error);

@@ -6,7 +6,7 @@ import NavBar from "../../components/navBarForDR";
 
 const NotificationsD = () => {
   const [notifications, setNotifications] = useState([]);
-  const [username, setUsername] = useState(null);
+  const [username, setUsername] = useState('');
   const [isDoctor, setIsDoctor] = useState(false);
   const [token, setToken] = useState("");
 
@@ -24,6 +24,7 @@ const NotificationsD = () => {
     const usn = localStorage.getItem("username");
     console.log("USERPLEASE"+usn)
     setUsername(usn);
+    console.log("USERPLEASE2"+username)
     setToken(localStorage.getItem("token"))
     console.log("HERE USER")
     console.log(localStorage)
@@ -38,47 +39,25 @@ const NotificationsD = () => {
   const fetchNotifications = async () => {
 
     try {
- /*     const response = await axios.get(
-       // `http://localhost:8000/doctor/getAllUnseenNotifications/${username}`
-       `http://localhost:8000/doctor/getAllUnseenNotifications/t`
-      );
-*/
-
 console.log('Token:', token);
-/*
-const getAllUnseenNotificationsEndpoint = 
-`http://localhost:8000/doctor/getAllUnseenNotifications/${username}`;
-  
-  const response = await axios.get(getAllUnseenNotificationsEndpoint, {
-  headers: {
-    'Authorization': `Bearer ${token}`,
-  }
-});
-*/
-
-//${username}
-/*const response = await fetch(`http://localhost:8000/doctor/getAllUnseenNotifications/${username}`, {
-  method: 'GET',
- /* headers: {
-    'Content-Type':'application/json',
-  },
-  'credentials': 'include',*/
-//});
 console.log("UserName: " +username)
+//${username}
 const response = await fetch(`http://localhost:8000/doctor/getAllUnseenNotifications/${username}`, {
   method: 'GET',
-  headers: {
-    'Authorization': `Bearer ${token}`,
-    'Content-Type': 'application/json', // Adjust the content type as needed
-  },
-});
+  credentials: 'include',
 
-if (!response.ok) {
+});
+const json=await response.json()
+
+if (response.ok) {
  // console.log(username)
   console.log(token)
   console.log("Here NOT ERROR")
-  console.log(response)
-  setNotifications(response.data.data);
+  console.log("json.data:  "+json.data)
+  setNotifications(json.data);
+  console.log("HERE3"+response)
+  console.log("HERE2"+notifications[0])
+
 
  // throw new Error(`HTTP error! Status: ${response.status}`);
 }
@@ -94,7 +73,8 @@ if (!response.ok) {
   const handleMarkAsSeen = async (notificationId) => {
     try {
       await axios.patch(
-        `http://localhost:8000/doctor/markNotificationAsSeen/${username}/${notificationId}`
+        `http://localhost:8000/doctor/markNotificationAsSeen/${username}/${notificationId}`,
+       {withCredentials: true,}
       );
 
       // After successful update, fetch and update notifications

@@ -69,7 +69,10 @@ app.post("/create-payment-intent", async (req, res) => {
   });
 });
 
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000', // Replace with the actual origin of your frontend
+  credentials: true, // Allow credentials (cookies, etc.) to be sent
+}));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use("/DoctorStaticData", express.static("DoctorStaticData"));
@@ -82,8 +85,8 @@ app.use("/admin", authAdmin, adminRouter);
 app.use("/AdminStaticData", express.static("AdminStaticData"));
 app.use("/register/patient", PatientRegisteration);
 app.use("/register/doctor", DoctorRegisteration);
-//app.use("/patient", authPatient, patientRouter);
-app.use("/patient", patientRouter);
+app.use("/patient", authPatient, patientRouter);
+//app.use("/patient", patientRouter);
 app.use("/account", accountRouter);
 app.use("/doctorRequest", authDoctorRequest, doctorRequestRouter);
 

@@ -26,7 +26,8 @@ const Notifications = () => {
     try {
       console.log(username)
       const response = await axios.get(
-        `http://localhost:8000/patient/getAllUnseenNotifications/${username}`
+        `http://localhost:8000/patient/getAllUnseenNotifications/${username}`,
+        {withCredentials:true},
       );
 
       console.log(response.data)

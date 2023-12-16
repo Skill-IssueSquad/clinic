@@ -28,10 +28,14 @@ const ResponsiveAppBar = ({ username }) => {
   useEffect(() => {
     const fetchUnseenNotifications = async () => {
       try {
+        console.log("NavBar: "+username)
         const response = await axios.get(
-          `http://localhost:8000/patient/getAllUnseenNotifications/${username}`
+          //${username}
+          `http://localhost:8000/doctor/getAllUnseenNotifications/${username}`,
+          {withCredentials:true},
         );
         const unseenNotifications = response.data.data;
+        console.log("NAVBAR RES: "+response.data)
         const hasUnseen = unseenNotifications.some(notification => !notification.isSeen);
         setHasUnseenNotifications(hasUnseen);
 
