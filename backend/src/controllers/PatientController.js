@@ -818,10 +818,8 @@ const bookAppointment = async (req, res) => {
     const username = req.params.username;
     const patient = await getPatient(username);
     let isLinked = patient.linkedAccounts.find((elem) => {
-      String(elem.patient_id) === String(req.body.patient_id);
-    })
-      ? true
-      : false;
+      return String(elem.patient_id) === String(req.body.patient_id);
+    }) ? true : false;
     if (String(patient._id) !== String(req.body.patient_id) && !isLinked) {
       return sendResponse(
         401,
@@ -981,10 +979,8 @@ const tempBookAppointment = async (req, res) => {
     const username = req.params.username;
     const patient = await getPatient(username);
     let isLinked = patient.linkedAccounts.find((elem) => {
-      String(elem.patient_id) === String(req.body.patient_id);
-    })
-      ? true
-      : false;
+      return String(elem.patient_id) === String(req.body.patient_id);
+    }) ? true : false;
     if (String(patient._id) !== String(req.body.patient_id) && !isLinked) {
       return sendResponse(
         401,
@@ -1120,7 +1116,7 @@ const rescheduleAppointment = async (req, res) => {
     const username = req.params.username;
     const patient = await getPatient(username);
     let isLinked = patient.linkedAccounts.find((elem) => {
-      String(elem.patient_id) === String(editableAppointment.patient_id);
+      return String(elem.patient_id) === String(editableAppointment.patient_id);
     })
       ? true
       : false;
@@ -1324,7 +1320,7 @@ const requestFollowUp = async (req, res) => {
     const username = req.params.username;
     const patient = await getPatient(username);
     let isLinked = patient.linkedAccounts.find((elem) => {
-      String(elem.patient_id) === String(completedAppointment.patient_id);
+      return String(elem.patient_id) === String(completedAppointment.patient_id);
     })
       ? true
       : false;
