@@ -570,7 +570,7 @@ const viewAllDoctors = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data: { doctors: doctorsRes, amountDue: patient.amountDue},
+      data: { doctors: doctorsRes, amountDue: patient.amountDue, patientId: patient._id},
       message: "Successfully retrieved all doctors",
     });
   } catch (err) {

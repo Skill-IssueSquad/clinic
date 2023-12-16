@@ -4,7 +4,7 @@ import { auth } from "../Protected/AuthProvider";
 import io from "socket.io-client";
 import { Typography, TextField, Button, Paper } from "@mui/material";
 
-const socket = io.connect("http://localhost:8080");
+const socket = io.connect("http://localhost:8003");
 const Chat = () => {
   let show = false;
   const location = useLocation();
