@@ -52,6 +52,7 @@ const {
   payDoctorScheduledFollowUp,
   tempBookAppointment,
   tempRequestFollowUp,
+  tempPayDoctorFollowUp,
 } = require("../controllers/PatientController");
 
 const { create } = require("../models/Patient");
@@ -89,6 +90,7 @@ router.post("/:username/tempRequestFollowUp", tempRequestFollowUp); // TESTING P
 router.put("/:username/editWalletBalance", editWalletBalance);
 router.get("/transitPay/:transit_id", getTransitData);
 router.post("/:username/docFollowUpPay", payDoctorScheduledFollowUp); 
+router.post("/:username/tempDocFollowUpPay", tempPayDoctorFollowUp); 
 
 //add family member route
 router.patch("/:username/addFamMember", addFamMember);

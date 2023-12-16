@@ -1525,7 +1525,7 @@ const tempRequestFollowUp = async (req, res) => {
     const username = req.params.username;
     const patient = await getPatient(username);
     let isLinked = patient.linkedAccounts.find((elem) => {
-      String(elem.patient_id) === String(completedAppointment.patient_id);
+      return String(elem.patient_id) === String(completedAppointment.patient_id);
     })
       ? true
       : false;
@@ -2450,7 +2450,7 @@ const payDoctorScheduledFollowUp = async (req, res) => {
     const username = req.params.username;
     const patient = await getPatient(username);
     let isLinked = patient.linkedAccounts.find((elem) => {
-      String(elem.patient_id) === String(selectedAppointment.patient_id);
+      return String(elem.patient_id) === String(selectedAppointment.patient_id);
     })
       ? true
       : false;
@@ -2535,6 +2535,121 @@ const payDoctorScheduledFollowUp = async (req, res) => {
   }
 };
 
+
+const tempPayDoctorFollowUp = async (req, res) => {
+  // ASSUMES JWT AUTHENTICATION
+  // EXPECTED INPUT: param: self_username, { doctor_id: "69fe353h55g3h34hg53h",
+  // appointment_id: "69fe353h55g3h34hg53h"},
+
+  let responseSent = false; // Track whether a response has been sent
+  const sendResponse = (statusCode, success, data, message) => {
+    if (!responseSent) {
+      responseSent = true;
+      return res.status(statusCode).json({ success: success, data, message });
+    }
+  };
+
+  try {
+    const selectedAppointment = await Appointments.findById(
+      req.body.appointment_id
+    ).catch((err) => {
+      if (err) {
+        return sendResponse(
+          500,
+          false,
+          req.body,
+          err.message || "Some error occurred while retrieving appointment."
+        );
+      }
+    });
+
+    // auth check
+    const username = req.params.username;
+    const patient = await getPatient(username);
+    let isLinked = patient.linkedAccounts.find((elem) => {
+      return String(elem.patient_id) === String(selectedAppointment.patient_id);
+    })
+      ? true
+      : false;
+    if (
+      String(patient._id) !== String(selectedAppointment.patient_id) &&
+      !isLinked
+    ) {
+      return sendResponse(
+        401,
+        false,
+        {
+          ...req.body,
+          pid: patient._id,
+          app_p_pid: selectedAppointment.patient_id,
+        },
+        "Unauthorized to pay for this patient"
+      );
+    }
+
+    let appointmentPatientName = await Patient.findById(selectedAppointment.patient_id).catch((err) => {
+      if (err) {
+        return sendResponse(
+          500,
+          false,
+          req.body,
+          err.message || "Some error occurred while retrieving patient name."
+        );
+      }
+    })
+    appointmentPatientName = appointmentPatientName.name;
+
+    let doctorName = await Doctor.findById(selectedAppointment.doctor_id).catch((err) => {
+      if (err) {
+        return sendResponse(
+          500,
+          false,
+          req.body,
+          err.message || "Some error occurred while retrieving doctor name."
+        );
+      }
+    }
+    )
+    doctorName = doctorName.name;
+
+    // add payment transit
+    const paymentTransit = await PaymentTransit.create({
+      totalPrice: selectedAppointment.price.patient,
+      items: [
+        {
+            name: `Follow-up with ${doctorName} on ${selectedAppointment.day} at ${selectedAppointment.slot} for ${appointmentPatientName}` ,
+            quantity: 1,
+            price: selectedAppointment.price.patient,
+        },
+      ],
+      payload: req.body,
+      postURL: `patient/${username}/docFollowUpPay`,
+    }).catch((err) => {
+      if (err) {
+        return sendResponse(
+          500,
+          false,
+          req.body,
+          err.message || "Some error occurred while creating payment entry."
+        );
+      }
+    });
+
+    return sendResponse(
+      200,
+      true,
+      {transit_id: paymentTransit._id},
+      "Payment successful"
+    );
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: error.message || "Some error occurred while performing request",
+    });
+  }
+}
+
 module.exports = {
   addFamMember,
   getFamMembers,
@@ -2566,4 +2681,5 @@ module.exports = {
   payDoctorScheduledFollowUp,
   tempBookAppointment,
   tempRequestFollowUp,
+  tempPayDoctorFollowUp,
 };

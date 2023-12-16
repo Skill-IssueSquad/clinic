@@ -68,10 +68,11 @@ export default function AppointmentSplitButton({
 
   const handleDocPay = async () => {
     const res = await axios.post(
-      `http://localhost:8000/patient/${localStorage.getItem("username")}/docFollowUpPay`, {doctor_id, appointment_id}
+      `http://localhost:8000/patient/${localStorage.getItem("username")}/tempDocFollowUpPay`, {doctor_id, appointment_id}
     );
 
     if (res.data.success) {
+      navigate(`/patient/payment/${res.data.data.transit_id}`);
       refresh(true);
     }
   }
