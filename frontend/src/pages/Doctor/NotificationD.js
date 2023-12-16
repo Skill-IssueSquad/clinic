@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 //import NavBar from "../../components/navBar";
 import { auth } from "../Protected/AuthProvider";
-import NavBar from "../../components/navBarForDR";
+import NavBar from "../../components/navBarDoctor";
 
 const NotificationsD = () => {
   const [notifications, setNotifications] = useState([]);
@@ -39,44 +39,35 @@ const NotificationsD = () => {
   const fetchNotifications = async () => {
 
     try {
-console.log('Token:', token);
-console.log("UserName: " +username)
-//${username}
-const response = await fetch(`http://localhost:8000/doctor/getAllUnseenNotifications/${username}`, {
-  method: 'GET',
-  credentials: 'include',
+      console.log('Token:', token);
+      console.log("UserName: " +username)
+      //${username}
+      const response = await fetch(`http://localhost:8000/doctor/getAllUnseenNotifications/${username}`, {
+        method: 'GET',
+        credentials: 'include',
 
-});
-const json=await response.json()
+      });
+      const json=await response.json()
 
-if (response.ok) {
- // console.log(username)
-  console.log(token)
-  console.log("Here NOT ERROR")
-  console.log("json.data:  "+json.data)
-  setNotifications(json.data);
-  console.log("HERE3"+response)
-  console.log("HERE2"+notifications[0])
-
-
- // throw new Error(`HTTP error! Status: ${response.status}`);
-}
-     // console.log(response)
-
-      //console.log(Notifications.data)
-
- } catch (error) {
-      console.log("HERE ERROR")
-      console.error("Error fetching notifications:", error.message);
-    }
-  };
+      if (response.ok) {
+      // console.log(username)
+        console.log(json.data[0])
+        setNotifications(json.data);
+        console.log(notifications)
+      }
+     
+      } catch (error) {
+            console.log("HERE ERROR")
+            console.error("Error fetching notifications:", error.message);
+          }
+      };
   const handleMarkAsSeen = async (notificationId) => {
     try {
-      await axios.patch(
-        `http://localhost:8000/doctor/markNotificationAsSeen/${username}/${notificationId}`,
-       {withCredentials: true,}
+      const response = await fetch('http://localhost:8000/doctor/markNotificationAsSeen/' +username + "/" + notificationId,
+       {method: "PATCH", credentials: 'include',}
       );
 
+      const json = await response.json();
       // After successful update, fetch and update notifications
       fetchNotifications();
     } catch (error) {
@@ -89,7 +80,7 @@ if (response.ok) {
 
   return (
     <div>
-            <NavBar name={"Notifications"} username={username} />
+      <NavBar  username={username} />
       {show ? (
         <div className="NotificationDoctor">
           <h1>Unseen Notifications</h1>

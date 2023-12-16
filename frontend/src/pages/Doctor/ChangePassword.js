@@ -12,7 +12,7 @@ const ViewPatients = () => {
 
     return (  
         <div>
-            <NavBar button = {"Change Password"}/>
+            <NavBar button = {"Change Password"} username={localStorage.getItem("username")}/>
             <ChangePassword />;
         </div>
     );

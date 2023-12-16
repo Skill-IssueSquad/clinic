@@ -8,7 +8,7 @@ const HealthPackageShop = () => {
 
   return (
     <div>
-      <NavBar button = {"Health Packages"} />
+      <NavBar button = {"Health Packages"}  username={localStorage.getItem("username")} />
       <HealthPackageOptions />;
     </div>
   );

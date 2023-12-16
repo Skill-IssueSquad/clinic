@@ -124,7 +124,7 @@ const UserProfile = () => {
     <div>
       {show ? (
         <div>
-          <NavBar button={"Profile"} />
+          <NavBar button={"Profile"} username={localStorage.getItem("username")}/>
           {user ? (
             <Container maxWidth="md">
               <div

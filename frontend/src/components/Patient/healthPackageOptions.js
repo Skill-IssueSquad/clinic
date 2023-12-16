@@ -183,7 +183,7 @@ const HealthPackages = () => {
 
   return (
     <div>
-        <NavBar name={"Health Packages"} username={"username"} />
+        {/* <NavBar name={"Health Packages"} username={"username"} /> */}
       {show ? (
         <div
           style={{
