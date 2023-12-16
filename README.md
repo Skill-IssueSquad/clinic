@@ -54,6 +54,44 @@ Eslint link: [Eslint](https://marketplace.visualstudio.com/items?itemName=dbaeum
 # Section 2: Features
 
 ## 2.1 | Main features:
+#### El7a2ni's clinic offers a wide range of features that you might need in a traditional clinic and more, these include:
+
+> ⚠️: **Note:** Click to expand.
+
+
+<details>
+    
+ <summary> As a Patient, you can: </summary>
+ 
+  - Reserve and book slots for visits or checkups.
+  - Start a video conference with a doctor.
+  - Upload and download prescriptions and medical health history documents.
+  - Subscribeto health packages for yourself or family members.
+  - Get a virtual wallet for payments.
+  - Live text chat with a doctor.
+  - Link other accounts as family members and relatives.
+  - Save credit cards for future payments.
+  - Find any doctors in any fields.
+  - Claim refunds on eligible items.
+    
+</details>
+
+<details>
+    
+ <summary> As a Doctor, you can: </summary>
+ 
+  - Reserve and book slots for visits or checkups.
+  - Start a video conference with a doctor.
+  - Upload and download prescriptions and medical health history documents.
+  - Subscribeto health packages for yourself or family members.
+  - Get a virtual wallet for payments.
+  - Live text chat with a doctor.
+  - Link other accounts as family members and relatives.
+  - Save credit cards for future payments.
+  - Find any doctors in any fields.
+  - Claim refunds on eligible items.
+    
+</details>
 
 ## 2.2 | Complementary features:
 
