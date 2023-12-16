@@ -63,7 +63,7 @@ const sendEmail = async (req, res) => {
   //}
 };
 
-const sendEmailFunc = async (email, message, subject) => {
+const sendEmailFunc = async (email, message, subject, username) => {
   const transporter = nodeMailer.createTransport({
     service: "gmail",
     host: "smtp.gmail.com",
@@ -78,25 +78,79 @@ const sendEmailFunc = async (email, message, subject) => {
     },
   });
 
-  return await transporter
-    .sendMail({
-      from: "SkillIssue <el7a2ni.virtual@gmail.com>",
-      to: email,
-      subject: subject,
-      text: message,
-    }).then((info) => {
-      if (info) {
-        console.log("email sent");
-        return true;
-      }
-    }).catch((err) => {
-      if (err) {
-        console.log("it has an error");
-        return false;
-      }
-    }
-    );
+  // call addNotificationFunc
+  let res = await addNotificationFunc(username, subject, message);
+  console.log(res.message);
+
+  if (res.success) {
+    return await transporter
+      .sendMail({
+        from: "SkillIssue <el7a2ni.virtual@gmail.com>",
+        to: email,
+        subject: subject,
+        text: message,
+      })
+      .then((info) => {
+        if (info) {
+          console.log("email sent");
+          return true;
+        }
+      })
+      .catch((err) => {
+        if (err) {
+          console.log("it has an error");
+          return false;
+        }
+      });
+  } else {
+    return false;
+  }
 };
+
+const sendEmailFuncD = async (email, message, subject, username) => {
+  const transporter = nodeMailer.createTransport({
+    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: "el7a2ni.virtual@gmail.com",
+      pass: "zijy ztiz drcn ioxq",
+    },
+    tls: {
+      rejectUnauthorized: false,
+    },
+  });
+
+  // call addNotificationFunc
+  let res = await addNotificationFuncD(username, subject, message);
+  console.log(res.message);
+
+  if (res.success) {
+    return await transporter
+      .sendMail({
+        from: "SkillIssue <el7a2ni.virtual@gmail.com>",
+        to: email,
+        subject: subject,
+        text: message,
+      })
+      .then((info) => {
+        if (info) {
+          console.log("email sent");
+          return true;
+        }
+      })
+      .catch((err) => {
+        if (err) {
+          console.log("it has an error");
+          return false;
+        }
+      });
+  } else {
+    return false;
+  }
+};
+
 
 const getPatientAPI = async (req, res) => {
   const { username } = req.params;
@@ -1053,10 +1107,26 @@ const bookAppointment = async (req, res) => {
     // var nRes;
     // await sendEmail(nReq, nRes);
 
+    // let res = await addNotificationFunc(
+    //   username,
+    //   "Appointment Booked Successfully",
+    //   `Dear ${patient.name},\n\nYour appointment with ${doctor.name} on ${req.body.day} at ${req.body.timeSlot} has been booked successfully.\n\nBest Regards,\nSkillIssue Team`
+    // );
+
+    // if (!res.success) {
+    //   return sendResponse(
+    //     500,
+    //     false,
+    //     req.body,
+    //     res.message || "Some error occurred while creating notification."
+    //   );
+    // }
+
     let sent = await sendEmailFunc(
       patient.email,
       `Dear ${patient.name},\n\nYour appointment with ${doctor.name} on ${req.body.day} at ${req.body.timeSlot} has been booked successfully.\n\nBest Regards,\nSkillIssue Team`,
-      "Appointment Booked Successfully"
+      "Appointment Booked Successfully",
+      username
     );
 
     if (!sent) {
@@ -1068,10 +1138,11 @@ const bookAppointment = async (req, res) => {
       );
     }
 
-    sent = await sendEmailFunc(
+    sent = await sendEmailFuncD(
       doctor.email,
       `Dear ${doctor.name},\n\nYour appointment with ${patient.name} on ${req.body.day} at ${req.body.timeSlot} has been booked successfully.\n\nBest Regards,\nSkillIssue Team`,
-      "Appointment Booked Successfully"
+      "Appointment Booked Successfully",
+      doctor.username
     );
 
     if (!sent) {
@@ -1408,7 +1479,8 @@ const rescheduleAppointment = async (req, res) => {
     let sent = await sendEmailFunc(
       patient.email,
       `Dear ${patient.name},\n\nYour appointment with ${doctor.name} on ${editableAppointment.day} at ${editableAppointment.slot} has been rescheduled to ${req.body.day} at ${req.body.slot} successfully.\n\nBest Regards,\nSkillIssue Team`,
-      "Appointment Rescheduled Successfully"
+      "Appointment Rescheduled Successfully",
+      username
     );
 
     if (!sent) {
@@ -1420,10 +1492,11 @@ const rescheduleAppointment = async (req, res) => {
       );
     }
 
-    sent = await sendEmailFunc(
+    sent = await sendEmailFuncD(
       doctor.email,
       `Dear ${doctor.name},\n\nYour appointment with ${patient.name} on ${editableAppointment.day} at ${editableAppointment.slot} has been rescheduled to ${req.body.day} at ${req.body.slot} successfully.\n\nBest Regards,\nSkillIssue Team`,
-      "Appointment Rescheduled Successfully"
+      "Appointment Rescheduled Successfully",
+      doctor.username
     );
 
     if (!sent) {
@@ -1687,7 +1760,8 @@ const requestFollowUp = async (req, res) => {
     let sent = await sendEmailFunc(
       patient.email,
       `Dear ${patient.name},\n\nYour follow-up with ${doctorNewSlot.name} on ${req.body.day} at ${req.body.slot} has been requested successfully.\n\nBest Regards,\nSkillIssue Team`,
-      "Follow-up Requested Successfully"
+      "Follow-up Requested Successfully",
+      username
     );
 
     if (!sent) {
@@ -1699,10 +1773,11 @@ const requestFollowUp = async (req, res) => {
       );
     }
 
-    sent = await sendEmailFunc(
+    sent = await sendEmailFuncD(
       doctorNewSlot.email,
       `Dear ${doctorNewSlot.name},\n\nYour follow-up with ${patient.name} on ${req.body.day} at ${req.body.slot} has been requested successfully.\n\nBest Regards,\nSkillIssue Team`,
-      "Follow-up Requested Successfully"
+      "Follow-up Requested Successfully",
+      doctorNewSlot.username
     );
 
     if (!sent) {
@@ -1713,7 +1788,6 @@ const requestFollowUp = async (req, res) => {
         "Some error occurred while sending email."
       );
     }
-
 
     return sendResponse(
       200,
@@ -2056,7 +2130,8 @@ const cancelAppointment = async (req, res) => {
     let sent = sendEmailFunc(
       patient.email,
       `Dear ${patient.name},\n\nYour appointment with ${doctor.name} on ${selectedAppointment.day} at ${selectedAppointment.slot} has been cancelled successfully.\n\nBest Regards,\nSkillIssue Team`,
-      "Appointment Cancelled Successfully"
+      "Appointment Cancelled Successfully",
+      username
     );
 
     if (!sent) {
@@ -2068,10 +2143,11 @@ const cancelAppointment = async (req, res) => {
       );
     }
 
-    sent = sendEmailFunc(
+    sent = sendEmailFuncD(
       doctor.email,
       `Dear ${doctor.name},\n\nYour appointment with ${patient.name} on ${selectedAppointment.day} at ${selectedAppointment.slot} has been cancelled successfully.\n\nBest Regards,\nSkillIssue Team`,
-      "Appointment Cancelled Successfully"
+      "Appointment Cancelled Successfully",
+      doctor.username
     );
 
     if (!sent) {
@@ -2640,10 +2716,6 @@ const AddNotification = async (req, res) => {
 const addNotificationFunc = async (username, title, notification) => {
   // Extract other health record properties from the request body
 
-  // console.log(username);
-  // console.log(title);
-  // console.log(notification);
-
   try {
     // Fetch existing health records
     const patient = await Patient.findOne({ username });
@@ -2670,12 +2742,46 @@ const addNotificationFunc = async (username, title, notification) => {
   } catch (error) {
     return {
       success: false,
-      error: error.message,
+      message: error.message,
       data: null,
     };
   }
-}
+};
 
+const addNotificationFuncD = async (username, title, notification) => {
+  // Extract other health record properties from the request body
+
+  try {
+    // Fetch existing health records
+    const doctor = await Doctor.findOne({ username });
+
+    if (!doctor) {
+      console.log("Doctor not found:", req.params.username);
+
+      return {
+        success: false,
+        message: "Doctor not found",
+        data: null,
+      };
+    }
+    let isSeen = false;
+    doctor.notifications.push({ isSeen, title, notification });
+
+    const updatedDoctor= await doctor.save();
+
+    return {
+      success: true,
+      message: "Notification added successfully",
+      data: updatedDoctor,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.message,
+      data: null,
+    };
+  }
+};
 
 const markNotificationAsSeen = async (req, res) => {
   try {
@@ -2984,7 +3090,8 @@ const payDoctorScheduledFollowUp = async (req, res) => {
     let sent = sendEmailFunc(
       patient.email,
       `Dear ${patient.name},\n\nYour appointment with ${doctor.name} on ${selectedAppointment.day} at ${selectedAppointment.slot} has been confirmed successfully.\n\nBest Regards,\nSkillIssue Team`,
-      "Appointment Confirmed Successfully"
+      "Appointment Confirmed Successfully",
+      username
     );
 
     if (!sent) {
@@ -2996,10 +3103,11 @@ const payDoctorScheduledFollowUp = async (req, res) => {
       );
     }
 
-    sent = sendEmailFunc(
+    sent = sendEmailFuncD(
       doctor.email,
       `Dear ${doctor.name},\n\nYour appointment with ${patient.name} on ${selectedAppointment.day} at ${selectedAppointment.slot} has been confirmed successfully.\n\nBest Regards,\nSkillIssue Team`,
-      "Appointment Confirmed Successfully"
+      "Appointment Confirmed Successfully",
+      doctor.username
     );
 
     if (!sent) {
