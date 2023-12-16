@@ -15,6 +15,8 @@ import AdbIcon from "@mui/icons-material/Adb";
 import { useNavigate } from "react-router-dom";
 import AccountIcon from '@mui/icons-material/AccountCircle'
 import { useEffect } from "react";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+
 
 let pages = [
   "Profile",
@@ -62,6 +64,14 @@ const ResponsiveAppBar = ({ username, button }) => {
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
+      <IconButton
+            size="large"
+            aria-label="back"
+            onClick={() => navigate(-1)} // Add this line
+            color="inherit"
+          >
+            <ArrowBackIcon />
+          </IconButton>
           <Typography
             variant="h6"
             noWrap

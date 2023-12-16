@@ -1,11 +1,11 @@
-import AppBar from "../../components/appBar";
+import NavBar from "../../components/navBarPatient";
 import CreditCardPaymentComp from "../../components/Patient/CreditCardPaymentComp";
 import {useEffect, useState} from "react";
 
 function CreditCardPayment() {
 return (
     <div className="CreditCardPayment">
-        <AppBar />
+        <NavBar username={localStorage.getItem("username")} />
         <CreditCardPaymentComp />
     </div>
   );
