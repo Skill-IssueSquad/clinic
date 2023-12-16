@@ -98,76 +98,44 @@ Eslint link: [Eslint](https://marketplace.visualstudio.com/items?itemName=dbaeum
 
 # Section 3: How to use
 
-## 3.1 | API's:
+## 3.1 | APIs:
 
 <details>
     <summary>
         Patient Routes (/patient)
     </summary>
 
-`router.post(
-  "/:username/healthrecords"
-)` Allows a patient to upload his/her health records
+`router.post("/:username/healthrecords")` Allows a patient to upload his/her health records
 
-`router.delete("/:username/healthrecords/:recordId")`
+`router.delete("/:username/healthrecords/:recordId")` Allows patient to delete a health records
 
-`router.get("/:username/healthrecords")`
+`router.get("/:username/healthrecords")` Fetches all health records of a patient
 
-router.get("/:username/bookingOptions", getPatientBookingOptions);
-router.get("/freeAppointments", getAllFreeDocAppointments);
-router.get("/:username", getPatientAPI);
-router.get("/getByID/:id", getPatientAPIByID);
-router.get("/email/:username", getPatientemUsername);
-router.get("/:username/appointments", getAllAppointments);
-router.get("/:username/appointments/date", getAppointmentsByDate);
-router.get("/:username/appointments/status", getAppointmentsByStatus);
-router.post("/:username/doctors", viewAllDoctors);
-router.post("/:username/doctors/available", viewAllDoctorsAvailable);
-router.post("/createDoc", createDoc); // TESTING PURPOSES ONLY
-router.post("/:username/bookAppointment", bookAppointment);
-router.post("/:username/tempBook", tempBookAppointment); // TESTING PURPOSES ONLY
-router.post("/:username/reschduleAppointment", rescheduleAppointment);
-router.delete(
-"/:username/appointments/:doctor_id/:appointment_id",
-cancelAppointment
-);
-router.post("/:username/requestFollowUp", requestFollowUp);
-router.post("/:username/tempRequestFollowUp", tempRequestFollowUp); // TESTING PURPOSES ONLY
-router.put("/:username/editWalletBalance", editWalletBalance);
-router.get("/transitPay/:transit_id", getTransitData);
-router.post("/:username/docFollowUpPay", payDoctorScheduledFollowUp);
-router.post("/:username/tempDocFollowUpPay", tempPayDoctorFollowUp);
+`router.get("/freeAppointments")` Fetches all free appointments a patient can reserve
 
-//add family member route
-router.patch("/:username/addFamMember", addFamMember);
+`router.get("/:username")` Gets all the data related to a patient with a specific username
 
-//link family member route
-router.patch("/:username/linkFamMember", linkFamMember);
+`router.post("/:username/bookAppointment")` Allows patient to book an appointment
 
-//get family members route
-router.get("/:username/getFamMember", getFamMembers);
+`router.post("/:username/reschduleAppointment")` Allos patient to reschedule an appointment
 
-//get prescriptions route
-router.get("/:username/prescriptions", getPrescriptions);
+`router.delete("/:username/appointments/:doctor_id:appointment_id")` Allows patient to cancel an appointment
 
-//subscribe health package route (temp and will be removed )
-router.post("/:username/subscriptions/transitSub", tempSub);
-router.post("/:username/subscriptions/subscribe", actualSub);
+`router.post("/:username/requestFollowUp")` Allows patient to request a followUp to an appointment
 
-//cancel health package subscription route
-router.patch("/:username/subscriptions/cancel", cancelHealthPackage);
+`router.patch("/:username/addFamMember")` Allows patient to add a family member to their account
 
-//add family member route
-router.patch("/:username/addFamMember", addFamMember);
+`router.patch("/:username/linkFamMember")` Allows patient to link their account to another family member's account on our service
 
-//send email
-router.patch("/:sendEmail", sendEmail);
+`router.get("/:username/prescriptions")` Fetches all prescriptions of a patient
 
-router.post("/:addNotification",AddNotification);
+`router.post("/:username/subscriptions/subscribe")` Allows patient to subscribe to a health package for themselves and family members
 
-router.get("/getAllUnseenNotifications/:username",getAllUnseenNotifications);
+`router.patch("/:username/subscriptions/cancel")` Allows patient to cancel a health package subscription
 
-router.patch("/markNotificationAsSeen/:username/:notificationId",markNotificationAsSeen);`
+`router.get("/getAllUnseenNotifications/:username")` Fetches all unseen notifications for a certain patient
+
+`router.patch("/markNotificationAsSeen/:username/)` Marks seen notifications
 
 </details>
 
