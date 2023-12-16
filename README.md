@@ -233,7 +233,7 @@ We used Postman to test our different API endpoints.
 ```bash
 http://localhost:8000/patient/bahyone/addFamMember
 ```
-### Test Body:
+### Test Body JSON:
 ```bash
 {
     "name" : "New Fam Member",
