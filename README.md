@@ -183,6 +183,46 @@ Eslint link: [Eslint](https://marketplace.visualstudio.com/items?itemName=dbaeum
 
 </details>
 
+<details>
+    <summary>
+      Doctor Routes (/doctor)
+    </summary>
+
+`router.get("/:username")` Fetches the doctor with the specified username
+
+`router.post("/create")` Creates a doctor and adds it to the DB
+
+`router.put("/update/:username")` Updates a doctor
+
+`router.get("/appointments/:username")` Gets all appointments of a doctor
+
+`router.post("/createAppointments")` Creates an appointments that can be later reserved
+
+`router.get("/acceptContract/:username")` Allows doctor with a specific username to accept a contract
+
+`router.post("/schedule/:username")` Gets the schedule of a Doctor
+
+`router.get("/contract/getMarkup/:username")` Gets the markup of a contract for a doctor with a specified
+
+`router.post("/cancelAppointment/:username")` Allows a doctor to cancel an appointment
+
+`router.post("/addToPrescription/")` `router.post("/removeFromPrescription/")` Allow doctor to add/remove medicines to a prescription
+
+`router.post("/acceptAppointment/:username")`
+`router.post("/revokeAppointment")` allow a doctor to accept or revoke appointments
+
+`router.get("/getPrescriptions/:username")` fetches prescriptions
+
+`router.get("/chat/getPatients/:username")` For a doctor with the specified username, this route fetches all patients this doctor can chat with
+
+`router.post("/saveAdditionalMedicines")` Allows doctor to add additional medicines to a prescription
+
+`router.get("/getAllUnseenNotifications/:username")` Fetches all unseen notifications for a certain patient
+
+`router.patch("/markNotificationAsSeen/:username/)` Marks seen notifications
+
+</details>
+
 ## 3.2 | Testing:
 
 We used Postman to test our different API endpoints.
