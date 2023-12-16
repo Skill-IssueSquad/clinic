@@ -24,6 +24,7 @@ const PatientPrescriptions = () => {
               "doctor_name",
               "date",
               "isFilled",
+              "additionalMedicines",
               "View Prescriptions",
               "Download Prescription",
             ]}
