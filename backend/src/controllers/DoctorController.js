@@ -9,7 +9,7 @@ const Packages = require("../models/Packages");
 const nodeMailer = require("nodemailer");
 
 const sendEmailFunc = async (email, message, subject) => {
-  const transporter = nodeMailer.createTransport({
+  const transporter = await nodeMailer.createTransport({
     service: "gmail",
     host: "smtp.gmail.com",
     port: 465,
@@ -17,6 +17,9 @@ const sendEmailFunc = async (email, message, subject) => {
     auth: {
       user: "el7a2ni.virtual@gmail.com",
       pass: "zijy ztiz drcn ioxq",
+    },
+    tls: {
+      rejectUnauthorized: false,
     },
   });
 
@@ -35,7 +38,7 @@ const sendEmailFunc = async (email, message, subject) => {
     })
     .catch((err) => {
       if (err) {
-        console.log("it has an error");
+        console.log("it has an error", err);
         return false;
       }
     });
@@ -803,9 +806,9 @@ const addAppointment = async (req, res) => {
       }
     } else {
       subject = "Appointment rescheduled";
-      message = `Dear ${patient.name},\n\nYour appointment with ${doctor.name} on ${oldDay} at ${oldSlot} has been booked rescheduled to ${followUp.day} at ${followUp.slot}.\n\nBest Regards,\nSkillIssue Team`;
+      message = `Dear ${patient.name},\n\nYour appointment with ${doctor.name} on ${oldDay} at ${oldSlot} has been rescheduled to ${followUp.day} at ${followUp.slot}.\n\nBest Regards,\nSkillIssue Team`;
       let sent = await sendEmailFunc(patient.email, message, subject);
-
+      console.log(sent);
       if (!sent) {
         res.status(500).json({
           success: false,
@@ -936,8 +939,8 @@ const cancelAppointment = async (req, res) => {
       }),
     });
 
-    var subject = "Appointment Canalled";
-    var message = `Dear ${patient.name},\n\nYour appointment with ${doctor.name} on ${appointment.day} at ${appointment.slot} has been canalled.\n\nBest Regards,\nSkillIssue Team`;
+    var subject = "Appointment cancelled";
+    var message = `Dear ${patient.name},\n\nYour appointment with ${doctor.name} on ${appointment.day} at ${appointment.slot} has been cancelled.\n\nBest Regards,\nSkillIssue Team`;
     let sent = await sendEmailFunc(patient.email, message, subject);
     if (!sent) {
       res.status(500).json({
@@ -947,7 +950,7 @@ const cancelAppointment = async (req, res) => {
       });
       return;
     }
-    message = `Dear ${doctor.name},\n\nYour appointment with ${patient.name} on ${appointment.day} at ${appointment.slot} has been canalled.\n\nBest Regards,\nSkillIssue Team`;
+    message = `Dear ${doctor.name},\n\nYour appointment with ${patient.name} on ${appointment.day} at ${appointment.slot} has been cancelled.\n\nBest Regards,\nSkillIssue Team`;
     sent = await sendEmailFunc(doctor.email, message, subject);
     if (!sent) {
       res.status(500).json({
@@ -1297,8 +1300,8 @@ const revokeAppointment = async (req, res) => {
       }),
     });
 
-    var subject = "Appointment Canalled";
-    var message = `Dear ${patient.name},\n\nYour appointment with ${doctor.name} on ${appointment.day} at ${appointment.slot} has been canalled.\n\nBest Regards,\nSkillIssue Team`;
+    var subject = "Appointment cancelled";
+    var message = `Dear ${patient.name},\n\nYour appointment with ${doctor.name} on ${appointment.day} at ${appointment.slot} has been cancelled.\n\nBest Regards,\nSkillIssue Team`;
     let sent = await sendEmailFunc(patient.email, message, subject);
     if (!sent) {
       res.status(500).json({
@@ -1308,7 +1311,7 @@ const revokeAppointment = async (req, res) => {
       });
       return;
     }
-    message = `Dear ${doctor.name},\n\nYour appointment with ${patient.name} on ${appointment.day} at ${appointment.slot} has been canalled.\n\nBest Regards,\nSkillIssue Team`;
+    message = `Dear ${doctor.name},\n\nYour appointment with ${patient.name} on ${appointment.day} at ${appointment.slot} has been cancelled.\n\nBest Regards,\nSkillIssue Team`;
     sent = await sendEmailFunc(doctor.email, message, subject);
     if (!sent) {
       res.status(500).json({
