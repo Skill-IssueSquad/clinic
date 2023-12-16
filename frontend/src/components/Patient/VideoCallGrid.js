@@ -48,6 +48,29 @@ const VideoCall = () => {
         });
       });
 
+    myPeer.on("call", (call) => {
+      navigator.mediaDevices
+        .getUserMedia({
+          video: true,
+          audio: true,
+        })
+        .then((stream) => {
+          //add our video stream to the video grid
+          addVideoStream(myVideo, stream);
+          call.answer(stream);
+          const video = document.createElement("video");
+
+          //respond to the video stream
+          call.on("stream", (userVideoStream) => {
+            addVideoStream(video, userVideoStream);
+          });
+
+          socket.on("user-connected", (userId) => {
+            connectToNewUser(userId, stream);
+          });
+        });
+    });
+
     //when a user disconnects we want to remove their video
     socket.on("user-disconnected", (userId) => {
       if (peers[userId]) peers[userId].close();
@@ -60,6 +83,7 @@ const VideoCall = () => {
     const video = document.createElement("video");
 
     peers[userId] = call;
+    console.log("peers", peers);
 
     //when we recieve a stream from the user we called we want to add it to our video grid
     call.on("stream", (userVideoStream) => {
