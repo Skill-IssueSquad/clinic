@@ -448,7 +448,7 @@ const addVideoStream = (video, stream) => {
 
 We used Postman to test our different API endpoints.
 
-> ⚠️: **Note:** Use any rout with the appropreiate request to test them, an example is provided below.
+> ⚠️: **Note:** Use any route with the appropriate request to test them through postman, an example is provided below.
 
 ![Example of a Postman test](image.png)
 
