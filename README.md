@@ -50,6 +50,37 @@ Eslint link: [Eslint](https://marketplace.visualstudio.com/items?itemName=dbaeum
 
 We used Postman to test our different API endpoints.
 
+## 3.3 | How to use:
+
+To run backend
+
+```bash
+cd backend && npm run dev
+```
+
+To run frontend
+
+```bash
+cd frontend && npm start
+```
+
+the backend server and client will be running on the specified ports on your env files.
+
+### Environment Variables
+
+To run this project, you will need to add the following environment variables to your .env file
+
+<details>
+    <summary>
+        envs
+    </summary>
+
+`MONGO_URL`
+
+`SOCKET`
+
+</details>
+
 ## 3.3 | Contribution:
 
 Contributions are always welcome!
