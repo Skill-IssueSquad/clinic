@@ -77,8 +77,8 @@ const VideoCall = () => {
     const card = document.createElement("Card");
     card.className = "card";
     //change position of card
-    card.style.position = "relative";
-    card.style.left = "50%";
+    //card.style.position = "relative";
+    card.style.left = "30%";
     card.style.transform = "translateX(-50%)";
     card.style.width = "50%";
     card.style.height = "50%";
@@ -106,7 +106,7 @@ const VideoCall = () => {
 
     card.appendChild(cardContent);
 
-    videoGridRef.current.appendChild(card);
+    videoGridRef.current.append(card);
   };
 
   //return a video grid i will append videos to
