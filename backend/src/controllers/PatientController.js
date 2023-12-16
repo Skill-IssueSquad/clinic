@@ -666,7 +666,7 @@ const viewAllDoctorsAvailable = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data: doctors,
+      data: {doctors: doctors},
       message: "Successfully retrieved all doctors",
     });
   } catch (err) {
