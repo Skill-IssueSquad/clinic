@@ -1,7 +1,7 @@
 // VideoCallPage.js
 import React from "react";
 import VideoCall from "../components/Patient/VideoCallGrid";
-import { auth } from "../Protected/AuthProvider";
+import { auth } from "./Protected/AuthProvider";
 
 const CallDoctor = () => {
   let show = false;

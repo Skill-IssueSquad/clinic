@@ -60,8 +60,6 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-
-
 const io = new Server(process.env.SOCKET_PORT, {
   cors: {
     origin: "http://localhost:3000",
@@ -101,7 +99,6 @@ mongoose
   })
   .catch((err) => console.log(err));
 
-
 app.get("/config", (req, res) => {
   res.send({
     publicKey: process.env.STRIPE_PUBLISHABLE_KEY,
@@ -120,13 +117,15 @@ app.post("/create-payment-intent", async (req, res) => {
   });
 });
 
-app.use(cors({
-  origin: 'http://localhost:3000', // Replace with the actual origin of your frontend
-  credentials: true, // Allow credentials (cookies, etc.) to be sent
-}));
+app.use(
+  cors({
+    origin: "http://localhost:3000", // Replace with the actual origin of your frontend
+    credentials: true, // Allow credentials (cookies, etc.) to be sent
+  })
+);
 
 app.use(cookieParser());
-  
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use("/DoctorStaticData", express.static("DoctorStaticData"));
