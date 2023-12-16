@@ -15,10 +15,10 @@ const Doctor = () => {
 
   return (
     <div>
-      <NavBar name={"Notifications"} username={un} />
+      {/* <NavBar name={"Notifications"} username={un} /> */}
       {show ? (
         <div>
-          <NavBar button={"Home"}/>
+          <NavBar button={"Home"} username={un}/>
           <Appointments username={un} />
         </div>
       ) : (

@@ -15,6 +15,10 @@ import AdbIcon from "@mui/icons-material/Adb";
 import { useNavigate } from "react-router-dom";
 import AccountIcon from '@mui/icons-material/AccountCircle'
 import { useEffect } from "react";
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import axios from 'axios';
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+
 
 let pages = [
   "Home",
@@ -59,11 +63,56 @@ const ResponsiveAppBar = ({ username, button }) => {
       }
     }
   };
+
+  const [hasUnseenNotifications, setHasUnseenNotifications] = React.useState(false);
+
+  useEffect(() => {
+    const fetchUnseenNotifications = async () => {
+      try {
+        // console.log("NavBar: "+username)
+        const response = await axios.get(
+          //${username}
+          `http://localhost:8000/doctor/getAllUnseenNotifications/${username}`,
+          {withCredentials:true},
+        );
+        const unseenNotifications = response.data.data;
+        // console.log("NAVBAR RES: "+response.data.data)
+        const hasUnseen = unseenNotifications.some(notification => !notification.isSeen);
+        setHasUnseenNotifications(hasUnseen);
+
+      } catch (error) {
+        console.error("Error fetching unseen notifications:", error.message);
+      }
+    };
+
+    fetchUnseenNotifications();
+  }, [username]);
+
+
+  const handleBellIconClick = () => {
+    // Navigate to the notifications page or any other desired page
+    const role= localStorage.getItem("role")
+    if(role==="Patient"){
+      navigate('/patient/notifications');
+    }
+    else{
+    navigate("/Doctor_Home/notifications/");
+    }  
+  };
+
   
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
+        <IconButton
+            size="large"
+            aria-label="back"
+            onClick={() => navigate(-1)} // Add this line
+            color="inherit"
+          >
+            <ArrowBackIcon />
+          </IconButton>
           <Typography
             variant="h6"
             noWrap
@@ -142,6 +191,30 @@ const ResponsiveAppBar = ({ username, button }) => {
             })}
           </Box>
 
+          <Box sx={{ flexGrow: 0 }}>
+            <Tooltip title="Notifications">
+              <IconButton
+                aria-label="notifications"
+                color="inherit"
+                onClick={handleBellIconClick}
+              >
+                <NotificationsIcon />
+                {hasUnseenNotifications && (
+                  <span
+                    style={{
+                      position: 'absolute',
+                      top: '8px',
+                      right: '8px',
+                      background: 'red',
+                      borderRadius: '50%',
+                      width: '10px',
+                      height: '10px',
+                    }}
+                  />
+                )}
+              </IconButton>
+            </Tooltip>
+          </Box>
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>

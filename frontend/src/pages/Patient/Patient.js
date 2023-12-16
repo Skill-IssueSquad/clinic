@@ -10,7 +10,7 @@ import { auth } from "../Protected/AuthProvider";
 const Patient = () => {
   let show = false;
 
-  if (auth() && localStorage.getItem('role') === 'Patient') {
+  if (auth() && localStorage.getItem("role") === "Patient") {
     show = true;
   }
 
@@ -30,7 +30,8 @@ const Patient = () => {
         `http://localhost:8000/patient/${localStorage.getItem(
           "username"
         )}/addFamMember`,
-        formData
+        formData,
+        { withCredentials: true }
       );
       console.log(res.data);
       return { message: res.data.message };
@@ -47,7 +48,8 @@ const Patient = () => {
           "username"
         )}/linkFamMember`,
 
-        formData
+        formData,
+        { withCredentials: true }
       );
       console.log(res.data);
       return { message: res.data.message };
@@ -62,7 +64,8 @@ const Patient = () => {
       await axios.patch(
         `http://localhost:8000/patient/${localStorage.getItem(
           "username"
-        )}/subscriptions/cancel`
+        )}/subscriptions/cancel`,
+        { withCredentials: true }
       );
     } catch (error) {
       console.log(error);
@@ -74,8 +77,9 @@ const Patient = () => {
       try {
         await axios
           .get(
-            `http://localhost:8000/patient/${localStorage.getItem("username")}`
-          , {withCredentials: true})
+            `http://localhost:8000/patient/${localStorage.getItem("username")}`,
+            { withCredentials: true }
+          )
           .then((res) => {
             setPatient(res.data.data);
           });
@@ -85,14 +89,24 @@ const Patient = () => {
     };
 
     fetchPatient();
-  }, [() => submitFamMember, () => linkFamMember,  () => handleCancelSubscription]); // Empty dependency array to run once on component mount
+  }, [
+    () => submitFamMember,
+    () => linkFamMember,
+    () => handleCancelSubscription,
+  ]); // Empty dependency array to run once on component mount
 
   if (!patient) return null;
 
   return (
     <div>
       {notification && (
-        <div style={{ padding: '10px', backgroundColor: notification.isError ? 'red' : 'green', color: 'white' }}>
+        <div
+          style={{
+            padding: "10px",
+            backgroundColor: notification.isError ? "red" : "green",
+            color: "white",
+          }}
+        >
           {notification.message}
         </div>
       )}
@@ -101,7 +115,7 @@ const Patient = () => {
           <NavBar
             name={"Patient Dashboard"}
             username={localStorage.getItem("username")}
-            button = {"Profile"}
+            button={"Profile"}
           />
           <PatientDetails
             patient={patient}

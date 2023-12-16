@@ -54,7 +54,6 @@ const sendEmail = async (req, res) => {
           data: null,
           message: "Email sent successfully",
         });
-
       }
     }
   );
@@ -62,6 +61,38 @@ const sendEmail = async (req, res) => {
   //catch{
   //console.log("Message sent: "+ info.messageId)
   //}
+};
+
+const sendEmailFunc = async (email, message, subject) => {
+  const transporter = nodeMailer.createTransport({
+    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: "el7a2ni.virtual@gmail.com",
+      pass: "zijy ztiz drcn ioxq",
+    },
+  });
+
+  return await transporter
+    .sendMail({
+      from: "SkillIssue <el7a2ni.virtual@gmail.com>",
+      to: email,
+      subject: subject,
+      text: message,
+    }).then((info) => {
+      if (info) {
+        console.log("email sent");
+        return true;
+      }
+    }).catch((err) => {
+      if (err) {
+        console.log("it has an error");
+        return false;
+      }
+    }
+    );
 };
 
 const getPatientAPI = async (req, res) => {
@@ -1019,39 +1050,57 @@ const bookAppointment = async (req, res) => {
     // var nRes;
     // await sendEmail(nReq, nRes);
 
-    await axios.patch("http://localhost:8000/patient/sendEmail", {
-        email: patient.email,
-        message: `Dear ${patient.name},\n\nYour appointment with ${doctor.name} on ${req.body.day} at ${req.body.timeSlot} has been booked successfully.\n\nBest Regards,\nSkillIssue Team`,
-        subject: "Appointment Booked Successfully",
-      }, {withCredentials: true})
-      .catch((err) => {
-        console.log(err);
-        if (err) {
-          return sendResponse(
-            500,
-            false,
-            req.body,
-            err.message || "Some error occurred while sending email."
-          );
-        }
-      });
+    let sent = await sendEmailFunc(
+      patient.email,
+      `Dear ${patient.name},\n\nYour appointment with ${doctor.name} on ${req.body.day} at ${req.body.timeSlot} has been booked successfully.\n\nBest Regards,\nSkillIssue Team`,
+      "Appointment Booked Successfully"
+    );
 
-      await axios.patch("http://localhost:8000/doctor/sendEmail", {
-        email: doctor.email,
-        message: `Dear ${doctor.name},\n\nYour appointment with ${patient.name} on ${req.body.day} at ${req.body.timeSlot} has been booked successfully.\n\nBest Regards,\nSkillIssue Team`,
-        subject: "Appointment Booked Successfully",
-      }, {withCredentials: true})
-      .catch((err) => {
-        console.log(err);
-        if (err) {
-          return sendResponse(
-            500,
-            false,
-            req.body,
-            err.message || "Some error occurred while sending email."
-          );
-        }
-      });
+    if (!sent) {
+      return sendResponse(
+        500,
+        false,
+        req.body,
+        "Some error occurred while sending email."
+      );
+    }
+
+    sent = await sendEmailFunc(
+      doctor.email,
+      `Dear ${doctor.name},\n\nYour appointment with ${patient.name} on ${req.body.day} at ${req.body.timeSlot} has been booked successfully.\n\nBest Regards,\nSkillIssue Team`,
+      "Appointment Booked Successfully"
+    );
+
+    if (!sent) {
+      return sendResponse(
+        500,
+        false,
+        req.body,
+        "Some error occurred while sending email."
+      );
+    }
+
+    // await axios
+    //   .patch(
+    //     "http://localhost:8000/doctor/sendEmail",
+    //     {
+    //       email: doctor.email,
+    //       message: `Dear ${doctor.name},\n\nYour appointment with ${patient.name} on ${req.body.day} at ${req.body.timeSlot} has been booked successfully.\n\nBest Regards,\nSkillIssue Team`,
+    //       subject: "Appointment Booked Successfully",
+    //     },
+    //     { withCredentials: true }
+    //   )
+    //   .catch((err) => {
+    //     console.log(err);
+    //     if (err) {
+    //       return sendResponse(
+    //         500,
+    //         false,
+    //         req.body,
+    //         err.message || "Some error occurred while sending email."
+    //       );
+    //     }
+    //   });
 
     return sendResponse(
       200,
@@ -1374,6 +1423,51 @@ const rescheduleAppointment = async (req, res) => {
         );
       }
     });
+
+    // send reschduled email
+    await axios
+      .patch(
+        "http://localhost:8000/patient/sendEmail",
+        {
+          email: patient.email,
+          message: `Dear ${patient.name},\n\nYour appointment with ${doctor.name} on ${editableAppointment.day} at ${editableAppointment.slot} has been rescheduled to ${req.body.day} at ${req.body.slot} successfully.\n\nBest Regards,\nSkillIssue Team`,
+          subject: "Appointment Rescheduled Successfully",
+        },
+        { withCredentials: true }
+      )
+      .catch((err) => {
+        console.log(err);
+        if (err) {
+          return sendResponse(
+            500,
+            false,
+            req.body,
+            err.message || "Some error occurred while sending email."
+          );
+        }
+      });
+
+    await axios
+      .patch(
+        "http://localhost:8000/patient/sendEmail",
+        {
+          email: doctor.email,
+          message: `Dear ${doctor.name},\n\nYour appointment with ${patient.name} on ${editableAppointment.day} at ${editableAppointment.slot} has been rescheduled to ${req.body.day} at ${req.body.slot} successfully.\n\nBest Regards,\nSkillIssue Team`,
+          subject: "Appointment Rescheduled Successfully",
+        },
+        { withCredentials: true }
+      )
+      .catch((err) => {
+        console.log(err);
+        if (err) {
+          return sendResponse(
+            500,
+            false,
+            req.body,
+            err.message || "Some error occurred while sending email."
+          );
+        }
+      });
 
     return sendResponse(
       200,

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import NavBar from "../../components/navBar";
+import NavBar from "../../components/navBarPatient";
 import { auth } from "../Protected/AuthProvider";
 
 const Notifications = () => {
@@ -41,12 +41,11 @@ const Notifications = () => {
   };
   const handleMarkAsSeen = async (notificationId) => {
     try {
-      await axios.patch(
-        `http://localhost:8000/patient/markNotificationAsSeen/${username}/${notificationId}`,{
-          withCredentials:true,
-        }
+      const response = await fetch('http://localhost:8000/patient/markNotificationAsSeen/' +username + "/" + notificationId,
+       {method: "PATCH", credentials: 'include',}
       );
 
+      const json = await response.json();
       // After successful update, fetch and update notifications
       fetchNotifications();
     } catch (error) {
