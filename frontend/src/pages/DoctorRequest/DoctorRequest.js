@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import AdminSideBar from "../../components/Admin/AdminSideBar";
-import DoctorInfo from "../../components/DoctorRequest/ViewInfo";
+import DoctorInfo from "../../components/DoctorRequest/Profile";
 import { auth } from "../Protected/AuthProvider";
+import NavBar from "../../components/navBarDoctorRequest"
 
 const DoctorRequest = () => {
     let show = false;
@@ -13,6 +14,7 @@ const DoctorRequest = () => {
         <div>
         {show? (
             <div>
+                <NavBar button={"Profile"}/>
             <DoctorInfo flag = {true}/>
             </div>):
         (<h2>No access</h2>)

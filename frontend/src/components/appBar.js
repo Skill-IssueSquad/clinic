@@ -61,9 +61,6 @@ function ResponsiveAppBar({ username }) {
 
   const handleCloseUserMenu = (setting) => {
     setAnchorElUser(null);
-    if (setting === "Profile") {
-      navigate("/Doctor_Profile");
-    }
   };
 
   const handleUserMenu = async (text) => {
@@ -127,8 +124,6 @@ function ResponsiveAppBar({ username }) {
           <Typography
             variant="h6"
             noWrap
-            component={Button}
-            onClick={() => navigate("/Doctor_Home")}
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
