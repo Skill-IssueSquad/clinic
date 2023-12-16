@@ -239,6 +239,8 @@ Eslint link: [Eslint](https://marketplace.visualstudio.com/items?itemName=dbaeum
 
 We used Postman to test our different API endpoints.
 
+> ⚠️: **Note:** Use any rout with the appropreiate request to test them, an example is provided below.
+
 ![Example of a Postman test](image.png)
 
 |Element | Input |
