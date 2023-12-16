@@ -39,7 +39,7 @@ const PatientList = ({ username }) => {
   };
   const call = (patient) => {
     navigate(
-      `/videoCall/${String(patient.patientID)}${String(patient.doctorId)}`
+      `/videoCall/${String(patient.patientID)}${String(patient.doctorID)}`
     );
   };
 
