@@ -73,14 +73,30 @@ Eslint link: [Eslint](https://marketplace.visualstudio.com/items?itemName=dbaeum
     
 </details>
 
-<details>
-    
  <summary> As a Doctor, you can: </summary>
  
   - Checkout and update reserved slots on your schedule.
-  - 
+  - Input your hourly rate and get verified on the system.
+  - Add custom available time slots for reservations.
+  - Upload prescriptions for individual patients.
+  - Reschedule and cancel appointments.
+  - Update patient's health records.
+  - Accept or revoke any follow up requests from any patient.
+  - Search for a patient or a group of patients by name.
+  - Start a video confrence with individual patients.
     
 </details>
+
+<details>
+    
+ <summary> As an Admin, you can: </summary>
+ 
+  - Add other system adminstrators.
+  - Remove users from the system (Doctors/Patients/Admins).
+  - Accept or reject doctor applications.
+  - Add, update or delete healthpackages and prices.
+</details>
+
 
 ## 2.2 | Complementary features:
 
