@@ -23,6 +23,9 @@ import Typography from "@mui/joy/Typography";
 import Card from "@mui/joy/Card";
 import Stack from "@mui/joy/Stack";
 import { Box } from "@mui/material";
+//import Box from '@mui/joy/Box';
+import Link from "@mui/joy/Link";
+import Chip from "@mui/joy/Chip";
 
 let fullRows = [];
 
@@ -42,7 +45,7 @@ function displayDate(date) {
 
 let testcols = [];
 
-const PatientMultiLevel = ({ columns, API_GET_URL, reqBody, loadng}) => {
+const PatientMultiLevel = ({ columns, API_GET_URL, reqBody, loadng }) => {
   const navigate = useNavigate();
   const initFilter = {};
   columns.forEach((key) => {
@@ -230,19 +233,19 @@ const PatientMultiLevel = ({ columns, API_GET_URL, reqBody, loadng}) => {
     >
       <Card
         sx={{
-          maxWidth: "100ch",
+          maxWidth: "120ch",
         }}
       >
-       <div style={{ display: "flex", alignItems: "center" }}>
-        {columns.map((key) => (
-          <TextField
-            label={"Filter by " + key}
-            name={key}
-            value={filter[key] || ""}
-            onChange={handleFilterChange}
-            style={{ marginRight: "10px" }} 
-          />
-        ))}
+        <div style={{ display: "flex", alignItems: "center" }}>
+          {columns.map((key) => (
+            <TextField
+              label={"Filter by " + key}
+              name={key}
+              value={filter[key] || ""}
+              onChange={handleFilterChange}
+              style={{ marginRight: "10px" }}
+            />
+          ))}
         </div>
         <TableContainer component={Paper}>
           <Table>
@@ -278,12 +281,31 @@ const PatientMultiLevel = ({ columns, API_GET_URL, reqBody, loadng}) => {
                     <React.Fragment>
                       {key === "name" ? (
                         <TableCell>
-                          <button
-                            className="button"
+                          <Link
+                            href="#common-examples"
+                            underline="none"
+                            variant="outlined"
+                            color="neutral"
                             onClick={() => handleOpenDialog(row)}
+                            endDecorator={
+                              <Chip
+                                color="primary"
+                                variant="solid"
+                                size="sm"
+                                sx={{}}
+                              >
+                                i
+                              </Chip>
+                            }
+                            sx={{
+                              "--Link-gap": "0.5rem",
+                              pl: 1,
+                              py: 0.5,
+                              borderRadius: "md",
+                            }}
                           >
                             {row[key]}
-                          </button>
+                          </Link>
                         </TableCell>
                       ) : (
                         <TableCell>{row[key]}</TableCell>
@@ -311,30 +333,23 @@ const PatientMultiLevel = ({ columns, API_GET_URL, reqBody, loadng}) => {
                 <DialogTitle>{selectedRow.name}</DialogTitle>
                 <DialogContent>
                   {console.log("Current Doc Data ", selectedRow)}
-                  {Object.keys(selectedRow).map((innerKey) =>
-                    innerKey === "patientList" ? null : innerKey ===
-                      "password" ? null : innerKey ===
-                      "__v" ? null : innerKey === "_id" ? null : innerKey ===
-                      "availableSlots" ? (
-                      <div key={innerKey}>
-                        <p>Available slots</p>
-                        {selectedRow[innerKey].map((slot, index) => (
-                          <div key={index}>
-                            <p>
-                              startTime: {displayDate(new Date(slot.startTime))}
-                            </p>
-                            <p>
-                              endTime: {displayDate(new Date(slot.endTime))}
-                            </p>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p key={innerKey}>
-                        {innerKey}: {selectedRow[innerKey]}
-                      </p>
-                    )
-                  )}
+                  {Object.keys(selectedRow).map((innerKey) => {
+                    return [
+                      "name",
+                      "email",
+                      "dateOfBirth",
+                      "affiliatedHospital",
+                      "educationalBackground",
+                      "sessionPrice",
+                    ].includes(innerKey) ? (
+                      <Stack direction={"row"} spacing={"5px"}>
+                        <Typography level="title-md">{innerKey}: </Typography>
+                        <Typography level="body-md">
+                          {selectedRow[innerKey]}
+                        </Typography>
+                      </Stack>
+                    ) : null;
+                  })}
                 </DialogContent>
               </>
             )}

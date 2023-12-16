@@ -115,6 +115,7 @@ const AppointmentsMulti = ({ columns, API_GET_URL }) => {
               docNames.add(row[key]);
             }
             resJson["familyMember_nationalId"] = row["familyMember_nationalId"];
+            resJson["nDate"] = row["day"] + ", " + row["slot"];
           });
           resJson["_id"] = row["_id"]; // slot id
           resJson["doctor_id"] = row["doctor_id"];
@@ -455,10 +456,11 @@ const AppointmentsMulti = ({ columns, API_GET_URL }) => {
                       <TableRow>
                         {Object.keys(row).map((key) =>
                           isMongoDbIsoDate(row[key]) ? (
-                            <TableCell>{displayDate(row[key])}</TableCell>
+                            <TableCell>{row["nDate"]}</TableCell>
                           ) : key !== "familyMember_nationalId" &&
                             key !== "_id" &&
-                            key !== "doctor_id" ? (
+                            key !== "doctor_id" &&
+                            key !== "nDate" ? (
                             <TableCell>{row[key]}</TableCell>
                           ) : null
                         )}

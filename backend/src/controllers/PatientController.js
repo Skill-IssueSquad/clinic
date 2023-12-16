@@ -1493,6 +1493,154 @@ const requestFollowUp = async (req, res) => {
   }
 };
 
+const tempRequestFollowUp = async (req, res) => {
+  // ASSUMES JWT AUTHENTICATION
+  // EXPECTED INPUT: param: self_username, { doctor_id: "69fe353h55g3h34hg53h",
+  // appointment_id: "69fe353h55g3h34hg53h", date: "2022-05-01T00:00:00.000+00:00", day: "2023-4-5", slot: "22:00",
+  // slot_id: "69fe353h55g3h34hg53h"}
+
+  let responseSent = false; // Track whether a response has been sent
+
+  const sendResponse = (statusCode, success, data, message) => {
+    if (!responseSent) {
+      responseSent = true;
+      return res.status(statusCode).json({ success: success, data, message });
+    }
+  };
+
+  try {
+    // get the old appointment
+    const completedAppointment = await Appointments.findById(
+      req.body.appointment_id
+    ).catch((err) => {
+      if (err) {
+        return sendResponse(
+          500,
+          false,
+          req.body,
+          err.message || "Some error occurred while retrieving appointment."
+        );
+      }
+    });
+
+    // auth check
+    const username = req.params.username;
+    const patient = await getPatient(username);
+    let isLinked = patient.linkedAccounts.find((elem) => {
+      String(elem.patient_id) === String(completedAppointment.patient_id);
+    })
+      ? true
+      : false;
+    if (
+      String(patient._id) !== String(completedAppointment.patient_id) &&
+      !isLinked
+    ) {
+      return sendResponse(
+        401,
+        false,
+        {
+          ...req.body,
+          pid: patient._id,
+          app_p_pid: completedAppointment.patient_id,
+        },
+        "Unauthorized to request follow-up for this patient"
+      );
+    }
+
+    // get patient name
+    const currPatient = await Patient.findById(
+      completedAppointment.patient_id
+    ).catch((err) => {
+      return sendResponse(
+        500,
+        false,
+        req.body,
+        err.message || "Some error occurred while retrieving patient name."
+      );
+    });
+
+    // book the new slot
+    const doctorNewSlot = await Doctor.findById(
+       req.body.doctor_id,
+    ).catch((err) => {
+      if (err) {
+        return sendResponse(
+          404,
+          false,
+          req.body,
+          err.message ||
+            "Could not find doctor."
+        );
+      }
+    });
+
+    if (!doctorNewSlot) {
+      return sendResponse(
+        500,
+        false,
+        req.body,
+        err.message || "Some error occurred while updating doctor new slots."
+      );
+    }
+
+    const markup = (await Clinic.findOne({})).markupPercentage;
+
+    let packageDiscount = 0;
+    
+    if (patient.healthPackageType.status === "subscribed") {
+      const package = await Packages.findOne({
+        packageType: patient.healthPackageType.type,
+      });
+
+      packageDiscount = package.discountOnSession;
+
+    }  
+
+    const sessionPrice = (
+      (doctorNewSlot.hourlyRate / 2) *
+      (1 + markup / 100) *
+      (1 - (packageDiscount ? packageDiscount / 100.0 : 0))
+    ).toFixed(2);
+
+    // create entry in payment transit
+    const paymentTransit = await PaymentTransit.create({
+      totalPrice: sessionPrice,
+      items: [
+        {
+            name: `Follow-up with ${doctorNewSlot.name} on ${req.body.day} at ${req.body.slot} for ${currPatient.name}` ,
+            quantity: 1,
+            price: sessionPrice,
+        },
+      ],
+      payload: req.body,
+      postURL: `patient/${username}/requestFollowUp`,
+    }).catch((err) => {
+      if (err) {
+        return sendResponse(
+          500,
+          false,
+          req.body,
+          err.message || "Some error occurred while creating payment entry."
+        );
+      }
+    });
+
+    return sendResponse(
+      200,
+      true,
+      {transit_id: paymentTransit._id},
+      "Follow-up requested-transit successful"
+    );
+  } catch (err) {
+    return sendResponse(
+      500,
+      false,
+      { ...req.body},
+      err.message || "Some error occurred while requesting follow-up transit."
+    );
+  }
+};
+
 const cancelAppointment = async (req, res) => {
   // ASSUMES JWT AUTHENTICATION
   // EXPECTED INPUT: param: username, doctor_id: "69fe353h55g3h34hg53h",
@@ -2437,5 +2585,6 @@ module.exports = {
   requestFollowUp,
   getTransitData,
   payDoctorScheduledFollowUp,
-  tempBookAppointment
+  tempBookAppointment,
+  tempRequestFollowUp,
 };

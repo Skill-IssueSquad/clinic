@@ -5,7 +5,7 @@ import PatientMultiLevel from "../../components/Patient/PatientDoctorsMultiLevel
 import NavBar from "../../components/navBar";
 import { auth } from "../../pages/Protected/AuthProvider";
 import { Card, Typography } from "@mui/joy";
-import { Box } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 
 function PatientDoctors() {
   let show = false;
@@ -60,21 +60,23 @@ function PatientDoctors() {
           >
             <br></br>
             <Typography level="h2">Doctors</Typography>
-            {!loading && <p></p>}
+            <p></p>
+            <Stack direction="column">
             {!loading && (
               
               <Card
                 sx={{
-                  width: "100ch",
+                  width: "105ch",
                 }}
               >
                 <PatientDoctorAvailibityDatePicker
                   onChange={handleApiAndBodyChange}
                 />
-              </Card>
-            )}
 
-            <p></p>
+
+              </Card>
+              
+            )}
 
             <PatientMultiLevel
               columns={[
@@ -87,6 +89,7 @@ function PatientDoctors() {
               reqBody={jsonBody}
               loadng={setLoading}
             />
+            </Stack>
           </Box>
         </div>
       ) : (

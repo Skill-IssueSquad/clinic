@@ -40,8 +40,11 @@ const authAdmin = (async = (req, res, next) => {
 //Authenticate doctor is logged in
 const authDoctor = (async = (req, res, next) => {
   const token = req.cookies.jwt;
+  //console.log (req);
+  console.log(req.cookies)
   if (token) {
     jwt.verify(token, jwtSecret, (err, decodedToken) => {
+      console.log("decodedToken.role ", decodedToken.role);
       if (err) {
         const reply = {
           success: false,
@@ -51,6 +54,7 @@ const authDoctor = (async = (req, res, next) => {
         res.status(401).json(reply);
       } else {
         if (decodedToken.role !== "Doctor") {
+          console.log("decodedToken.role ", decodedToken.role);
           const reply = {
             success: false,
             data: null,

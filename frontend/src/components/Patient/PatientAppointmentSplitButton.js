@@ -34,7 +34,7 @@ export default function AppointmentSplitButton({
     : appointment
     ? [
         "Select Action",
-        old ? "Request Follow-up" : "Reschedule Appointment",
+        old ? "Request Follow-up" : "Reschedule",
         ...(old ? [] : ["Cancel"]),
       ]
     : pending ? ["Select Action", "Pay", "Cancel"]: ["Select Action", ...(old ? [] : ["Cancel"])];
@@ -50,7 +50,7 @@ export default function AppointmentSplitButton({
 
   const handleClick = () => {
     if (canBook || options[selectedIndex] === "Cancel" || pending) {
-      if (options[selectedIndex] === "Reschedule Appointment") {
+      if (options[selectedIndex] === "Reschedule") {
         navigate(`/patient/rescheduleSlot/${doctor_id}/${appointment_id}`);
       } else if (options[selectedIndex] === "Request Follow-up") {
         navigate(`/patient/requestFollowUp/${doctor_id}/${appointment_id}`);

@@ -23,11 +23,13 @@ import {
 import axios from "axios";
 import CircularProgress from "@mui/joy/CircularProgress";
 import { auth } from "../../pages/Protected/AuthProvider";
+import { useNavigate } from "react-router-dom";
 
 let bookingOptions = [];
 
 const RequestFollowUp = ({ doctor_id, appointment_id }) => {
   let show = false;
+  const navigate = useNavigate();
 
   if (auth() && localStorage.getItem("role") === "Patient") {
     show = true;
@@ -169,7 +171,7 @@ const RequestFollowUp = ({ doctor_id, appointment_id }) => {
         const response = await axios.post(
           `http://localhost:8000/patient/${localStorage.getItem(
             "username"
-          )}/requestFollowUp`,
+          )}/tempRequestFollowUp`,
           {
             doctor_id: slot._id,
             appointment_id: appointment_id,
@@ -181,10 +183,12 @@ const RequestFollowUp = ({ doctor_id, appointment_id }) => {
         );
 
         if (response.data.success) {
-          if (response.data.success) {
+          
             handleCloseDialog();
-            setMessage(response.data.message || "Slot reschduled successfully");
-          }
+            //setMessage(response.data.message || "Slot reschduled successfully");
+            navigate(`/patient/payment/${response.data.data.transit_id}`);
+            
+          
         } else {
           handleCloseDialog();
           setMessage(response.data.message || "Slot reschduling failed");

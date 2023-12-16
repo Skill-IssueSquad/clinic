@@ -177,6 +177,12 @@ const login = async (req,res) => {
       let role;
       let reply;
 
+      //console.log("Kelma momayaza 1", user1);
+      //console.log("Kelma momayaza 2", user2);
+      //console.log("Kelma momayaza 3", user3);
+      ///console.log("Kelma momayaza 4", user4);
+      
+
       if(!user1 && !user2 && !user3 && !user4){
         reply = {
           success: false,
@@ -198,16 +204,18 @@ const login = async (req,res) => {
           hashedPassword = user4.password;
           role = "DoctorRequest";
         }
-        else{
+        else if (user3){
           hashedPassword = user3.password;
           role = "Patient";
         }
+
+        //console.log("role ", role);
         
         const bool = await bcrypt.compare(password, hashedPassword);
         if (bool){
           const maxAge = 3 * 24 * 60 * 60;
           const token =  jwt.sign({ username, role: role}, jwtSecret, {expiresIn: maxAge});
-          res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000, sameSite: 'None'});
+          res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000, sameSite: 'None', secure: true});
           reply = {
             success: true,
             data: token,

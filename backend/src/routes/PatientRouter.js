@@ -51,6 +51,7 @@ const {
   getTransitData,
   payDoctorScheduledFollowUp,
   tempBookAppointment,
+  tempRequestFollowUp,
 } = require("../controllers/PatientController");
 
 const { create } = require("../models/Patient");
@@ -84,6 +85,7 @@ router.delete(
   cancelAppointment
 );
 router.post("/:username/requestFollowUp", requestFollowUp);
+router.post("/:username/tempRequestFollowUp", tempRequestFollowUp); // TESTING PURPOSES ONLY
 router.put("/:username/editWalletBalance", editWalletBalance);
 router.get("/transitPay/:transit_id", getTransitData);
 router.post("/:username/docFollowUpPay", payDoctorScheduledFollowUp); 
