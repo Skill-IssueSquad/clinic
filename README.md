@@ -35,7 +35,7 @@ Eslint link: [Eslint](https://marketplace.visualstudio.com/items?itemName=dbaeum
 | [React](https://reactjs.org/)                        | ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)                  |
 | [Node.js](https://nodejs.org/en/)                    | ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)              |
 | [JWT](https://jwt.io/)                               | ![JWT](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens)                          |
-| [Express](https://expressjs.com/)                    | ![Express](https://img.shields.io/badge/Express.js-404D59?style=for-the-badge)                                       |
+| [Express](https://expressjs.com/)                    | ![Express](https://img.shields.io/badge/Express.js-404D59?style=for-the-badge&logo=express&logoColor=blue)           |
 | [MongoDB](https://www.mongodb.com/)                  | ![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white)      |
 | [Mongoose](https://mongoosejs.com/)                  | ![Mongoose](https://img.shields.io/badge/Mongoose-black.svg?style=for-the-badge&logo=mongoose&logoColor=orange)      |
 | [Material-UI](https://material-ui.com/)              | ![MUI](https://img.shields.io/badge/MUI-%230081CB.svg?style=for-the-badge&logo=mui&logoColor=white)                  |
@@ -45,6 +45,7 @@ Eslint link: [Eslint](https://marketplace.visualstudio.com/items?itemName=dbaeum
 | [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) | ![MongoDB](https://img.shields.io/badge/MongoDB%20Atlas-white.svg?style=for-the-badge&logo=mongodb&logoColor=green)  |
 | [Postman](https://www.postman.com/)                  | ![Postman](https://img.shields.io/badge/postman-black.svg?style=for-the-badge&logo=postman&logoColor=orange)         |
 | [VSCode](https://code.visualstudio.com/)             | ![VScode](https://img.shields.io/badge/VS%20code-black.svg?style=for-the-badge&logo=visualstudiocode&logoColor=blue) |
+| [JavaScript](https://www.javascript.com/)            | ![JS](https://img.shields.io/badge/JavaScript-yellow.svg?style=for-the-badge&logo=javascript&logoColor=black)        |
 
 ---
 
@@ -73,18 +74,32 @@ Eslint link: [Eslint](https://marketplace.visualstudio.com/items?itemName=dbaeum
     
 </details>
 
-<details>
-    
  <summary> As a Doctor, you can: </summary>
  
   - Checkout and update reserved slots on your schedule.
-  - 
+  - Input your hourly rate and get verified on the system.
+  - Add custom available time slots for reservations.
+  - Upload prescriptions for individual patients.
+  - Reschedule and cancel appointments.
+  - Update patient's health records.
+  - Accept or revoke any follow up requests from any patient.
+  - Search for a patient or a group of patients by name.
+  - Start a video confrence with individual patients.
     
 </details>
 
-## 2.2 | Complementary features:
+<details>
+    
+ <summary> As an Admin, you can: </summary>
+ 
+  - Add other system adminstrators.
+  - Remove users from the system (Doctors/Patients/Admins).
+  - Accept or reject doctor applications.
+  - Add, update or delete healthpackages and prices.
+</details>
 
-## 2.3 | Code examples and screenshots:
+
+## 2.2 | Code examples and screenshots:
 
 ---
 
@@ -211,6 +226,11 @@ Eslint link: [Eslint](https://marketplace.visualstudio.com/items?itemName=dbaeum
 We used Postman to test our different API endpoints.
 
 ![Example of a Postman test](image.png)
+
+##### Test API:
+```bash
+http://
+```
 
 ## 3.3 | How to use:
 
