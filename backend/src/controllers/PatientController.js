@@ -531,9 +531,19 @@ const viewAllDoctors = async (req, res) => {
 
     const markup = (await Clinic.findOne({})).markupPercentage;
 
-    doctors = doctors.map((doctor) => {
+    var doctorsRes = [];
+
+    for (const doctor of doctors) {
       // get each doctors markup from contract
       // if (doctor.contracts.length > 0) {
+
+      let isPatientToDoc = false;
+      for (const dPatient of doctor.patientList) {
+        if (String(dPatient.patient_id) === String(patient._id)) {
+          isPatientToDoc = true;
+          break;
+        }
+      }
 
       // check on health package type for discount
       let discount = 0;
@@ -545,7 +555,7 @@ const viewAllDoctors = async (req, res) => {
       ).toFixed(2);
 
       // Return a new object with the modified properties
-      return { ...doctor._doc, sessionPrice };
+      doctorsRes.push({ ...doctor._doc, sessionPrice, isPatientToDoc });
       //   } else {
       //     // no contract for this doctor
       //     const sessionPrice = -1;
@@ -553,11 +563,15 @@ const viewAllDoctors = async (req, res) => {
       //     // Return a new object with the modified properties
       //     return { ...doctor._doc, sessionPrice };
       //   }
-    });
+    }
 
     return res.status(200).json({
       success: true,
-      data: { doctors: doctors, amountDue: patient.amountDue },
+      data: {
+        doctors: doctorsRes,
+        amountDue: patient.amountDue,
+        patientId: patient._id,
+      },
       message: "Successfully retrieved all doctors",
     });
   } catch (err) {
