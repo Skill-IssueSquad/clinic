@@ -73,6 +73,9 @@ const sendEmailFunc = async (email, message, subject) => {
       user: "el7a2ni.virtual@gmail.com",
       pass: "zijy ztiz drcn ioxq",
     },
+    tls: {
+      rejectUnauthorized: false,
+    },
   });
 
   return await transporter
@@ -1080,28 +1083,6 @@ const bookAppointment = async (req, res) => {
       );
     }
 
-    // await axios
-    //   .patch(
-    //     "http://localhost:8000/doctor/sendEmail",
-    //     {
-    //       email: doctor.email,
-    //       message: `Dear ${doctor.name},\n\nYour appointment with ${patient.name} on ${req.body.day} at ${req.body.timeSlot} has been booked successfully.\n\nBest Regards,\nSkillIssue Team`,
-    //       subject: "Appointment Booked Successfully",
-    //     },
-    //     { withCredentials: true }
-    //   )
-    //   .catch((err) => {
-    //     console.log(err);
-    //     if (err) {
-    //       return sendResponse(
-    //         500,
-    //         false,
-    //         req.body,
-    //         err.message || "Some error occurred while sending email."
-    //       );
-    //     }
-    //   });
-
     return sendResponse(
       200,
       true,
@@ -1424,50 +1405,80 @@ const rescheduleAppointment = async (req, res) => {
       }
     });
 
-    // send reschduled email
-    await axios
-      .patch(
-        "http://localhost:8000/patient/sendEmail",
-        {
-          email: patient.email,
-          message: `Dear ${patient.name},\n\nYour appointment with ${doctor.name} on ${editableAppointment.day} at ${editableAppointment.slot} has been rescheduled to ${req.body.day} at ${req.body.slot} successfully.\n\nBest Regards,\nSkillIssue Team`,
-          subject: "Appointment Rescheduled Successfully",
-        },
-        { withCredentials: true }
-      )
-      .catch((err) => {
-        console.log(err);
-        if (err) {
-          return sendResponse(
-            500,
-            false,
-            req.body,
-            err.message || "Some error occurred while sending email."
-          );
-        }
-      });
+    let sent = await sendEmailFunc(
+      patient.email,
+      `Dear ${patient.name},\n\nYour appointment with ${doctor.name} on ${editableAppointment.day} at ${editableAppointment.slot} has been rescheduled to ${req.body.day} at ${req.body.slot} successfully.\n\nBest Regards,\nSkillIssue Team`,
+      "Appointment Rescheduled Successfully"
+    );
 
-    await axios
-      .patch(
-        "http://localhost:8000/patient/sendEmail",
-        {
-          email: doctor.email,
-          message: `Dear ${doctor.name},\n\nYour appointment with ${patient.name} on ${editableAppointment.day} at ${editableAppointment.slot} has been rescheduled to ${req.body.day} at ${req.body.slot} successfully.\n\nBest Regards,\nSkillIssue Team`,
-          subject: "Appointment Rescheduled Successfully",
-        },
-        { withCredentials: true }
-      )
-      .catch((err) => {
-        console.log(err);
-        if (err) {
-          return sendResponse(
-            500,
-            false,
-            req.body,
-            err.message || "Some error occurred while sending email."
-          );
-        }
-      });
+    if (!sent) {
+      return sendResponse(
+        500,
+        false,
+        req.body,
+        "Some error occurred while sending email."
+      );
+    }
+
+    sent = await sendEmailFunc(
+      doctor.email,
+      `Dear ${doctor.name},\n\nYour appointment with ${patient.name} on ${editableAppointment.day} at ${editableAppointment.slot} has been rescheduled to ${req.body.day} at ${req.body.slot} successfully.\n\nBest Regards,\nSkillIssue Team`,
+      "Appointment Rescheduled Successfully"
+    );
+
+    if (!sent) {
+      return sendResponse(
+        500,
+        false,
+        req.body,
+        "Some error occurred while sending email."
+      );
+    }
+
+    // send reschduled email
+    // await axios
+    //   .patch(
+    //     "http://localhost:8000/patient/sendEmail",
+    //     {
+    //       email: patient.email,
+    //       message: `Dear ${patient.name},\n\nYour appointment with ${doctor.name} on ${editableAppointment.day} at ${editableAppointment.slot} has been rescheduled to ${req.body.day} at ${req.body.slot} successfully.\n\nBest Regards,\nSkillIssue Team`,
+    //       subject: "Appointment Rescheduled Successfully",
+    //     },
+    //     { withCredentials: true }
+    //   )
+    //   .catch((err) => {
+    //     console.log(err);
+    //     if (err) {
+    //       return sendResponse(
+    //         500,
+    //         false,
+    //         req.body,
+    //         err.message || "Some error occurred while sending email."
+    //       );
+    //     }
+    //   });
+
+    // await axios
+    //   .patch(
+    //     "http://localhost:8000/patient/sendEmail",
+    //     {
+    //       email: doctor.email,
+    //       message: `Dear ${doctor.name},\n\nYour appointment with ${patient.name} on ${editableAppointment.day} at ${editableAppointment.slot} has been rescheduled to ${req.body.day} at ${req.body.slot} successfully.\n\nBest Regards,\nSkillIssue Team`,
+    //       subject: "Appointment Rescheduled Successfully",
+    //     },
+    //     { withCredentials: true }
+    //   )
+    //   .catch((err) => {
+    //     console.log(err);
+    //     if (err) {
+    //       return sendResponse(
+    //         500,
+    //         false,
+    //         req.body,
+    //         err.message || "Some error occurred while sending email."
+    //       );
+    //     }
+    //   });
 
     return sendResponse(
       200,
@@ -1671,6 +1682,38 @@ const requestFollowUp = async (req, res) => {
         err.message || "Some error occurred while requesting appointment."
       );
     }
+
+    // send follow-up email
+    let sent = await sendEmailFunc(
+      patient.email,
+      `Dear ${patient.name},\n\nYour follow-up with ${doctorNewSlot.name} on ${req.body.day} at ${req.body.slot} has been requested successfully.\n\nBest Regards,\nSkillIssue Team`,
+      "Follow-up Requested Successfully"
+    );
+
+    if (!sent) {
+      return sendResponse(
+        500,
+        false,
+        req.body,
+        "Some error occurred while sending email."
+      );
+    }
+
+    sent = await sendEmailFunc(
+      doctorNewSlot.email,
+      `Dear ${doctorNewSlot.name},\n\nYour follow-up with ${patient.name} on ${req.body.day} at ${req.body.slot} has been requested successfully.\n\nBest Regards,\nSkillIssue Team`,
+      "Follow-up Requested Successfully"
+    );
+
+    if (!sent) {
+      return sendResponse(
+        500,
+        false,
+        req.body,
+        "Some error occurred while sending email."
+      );
+    }
+
 
     return sendResponse(
       200,
@@ -2008,6 +2051,36 @@ const cancelAppointment = async (req, res) => {
           );
         }
       });
+    }
+
+    let sent = sendEmailFunc(
+      patient.email,
+      `Dear ${patient.name},\n\nYour appointment with ${doctor.name} on ${selectedAppointment.day} at ${selectedAppointment.slot} has been cancelled successfully.\n\nBest Regards,\nSkillIssue Team`,
+      "Appointment Cancelled Successfully"
+    );
+
+    if (!sent) {
+      return sendResponse(
+        500,
+        false,
+        req.params,
+        "Some error occurred while sending email."
+      );
+    }
+
+    sent = sendEmailFunc(
+      doctor.email,
+      `Dear ${doctor.name},\n\nYour appointment with ${patient.name} on ${selectedAppointment.day} at ${selectedAppointment.slot} has been cancelled successfully.\n\nBest Regards,\nSkillIssue Team`,
+      "Appointment Cancelled Successfully"
+    );
+
+    if (!sent) {
+      return sendResponse(
+        500,
+        false,
+        req.params,
+        "Some error occurred while sending email."
+      );
     }
 
     return sendResponse(
@@ -2800,7 +2873,7 @@ const payDoctorScheduledFollowUp = async (req, res) => {
     });
 
     // add to doc's wallet
-    const modifyMoney = await Doctor.findByIdAndUpdate(
+    const doctor = await Doctor.findByIdAndUpdate(
       selectedAppointment.doctor_id,
       {
         $inc: { walletBalance: selectedAppointment.price.doctor },
@@ -2834,6 +2907,36 @@ const payDoctorScheduledFollowUp = async (req, res) => {
         );
       }
     });
+
+    let sent = sendEmailFunc(
+      patient.email,
+      `Dear ${patient.name},\n\nYour appointment with ${doctor.name} on ${selectedAppointment.day} at ${selectedAppointment.slot} has been confirmed successfully.\n\nBest Regards,\nSkillIssue Team`,
+      "Appointment Confirmed Successfully"
+    );
+
+    if (!sent) {
+      return sendResponse(
+        500,
+        false,
+        req.body,
+        "Some error occurred while sending email."
+      );
+    }
+
+    sent = sendEmailFunc(
+      doctor.email,
+      `Dear ${doctor.name},\n\nYour appointment with ${patient.name} on ${selectedAppointment.day} at ${selectedAppointment.slot} has been confirmed successfully.\n\nBest Regards,\nSkillIssue Team`,
+      "Appointment Confirmed Successfully"
+    );
+
+    if (!sent) {
+      return sendResponse(
+        500,
+        false,
+        req.body,
+        "Some error occurred while sending email."
+      );
+    }
 
     return sendResponse(200, true, editedAppointment, "Payment successful");
   } catch (error) {
