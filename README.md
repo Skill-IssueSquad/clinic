@@ -49,6 +49,7 @@ Eslint link: [Eslint](https://marketplace.visualstudio.com/items?itemName=dbaeum
 ## 3.2 | Testing:
 
 We used Postman to test our different API endpoints.
+
 ![Example of a Postman test](image.png)
 
 ## 3.3 | How to use:
