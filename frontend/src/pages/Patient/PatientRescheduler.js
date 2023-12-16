@@ -1,5 +1,5 @@
 import React from "react";
-import NavBar from "../../components/navBar";
+import NavBar from "../../components/navBarPatient";
 import { useParams } from "react-router-dom";
 import { auth } from "../Protected/AuthProvider";
 import RescheduleSlot from "../../components/Patient/PatientReschedule";

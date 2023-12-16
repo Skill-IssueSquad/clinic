@@ -1,6 +1,6 @@
 import AppBar from "../../components/appBar";
 import WalletBalanceComp from "../../components/Patient/WalletBalance";
-import NavBar from "../../components/navBar";
+import NavBar from "../../components/navBarPatient";
 import { auth } from "../../pages/Protected/AuthProvider";
 
 function WalletBalance() {

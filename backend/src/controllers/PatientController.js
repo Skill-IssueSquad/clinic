@@ -233,6 +233,7 @@ const getPrescriptions = async (req, res) => {
           PharmacySubmitStatus: prescriptionObj.PharmacySubmitStatus,
           isFilled: prescriptionObj.isFilled.toString(),
           medicines: prescriptionObj.medicines,
+          additionalMedicines: prescriptionObj.additionalMedicines,
         };
 
         const appointObj = await Appointments.findOne({
@@ -519,23 +520,20 @@ const viewAllDoctors = async (req, res) => {
     });
 
     let packageDiscount = 0;
-    
+
     if (patient.healthPackageType.status === "subscribed") {
       const package = await Packages.findOne({
         packageType: patient.healthPackageType.type,
       });
 
       packageDiscount = package.discountOnSession;
-
-    }  
+    }
 
     const markup = (await Clinic.findOne({})).markupPercentage;
 
     var doctorsRes = [];
-    
 
     for (const doctor of doctors) {
-
       // get each doctors markup from contract
       // if (doctor.contracts.length > 0) {
 
@@ -556,7 +554,6 @@ const viewAllDoctors = async (req, res) => {
         (1 - (packageDiscount ? packageDiscount / 100.0 : 0))
       ).toFixed(2);
 
-
       // Return a new object with the modified properties
       doctorsRes.push({ ...doctor._doc, sessionPrice, isPatientToDoc });
       //   } else {
@@ -566,11 +563,15 @@ const viewAllDoctors = async (req, res) => {
       //     // Return a new object with the modified properties
       //     return { ...doctor._doc, sessionPrice };
       //   }
-    };
+    }
 
     return res.status(200).json({
       success: true,
-      data: { doctors: doctorsRes, amountDue: patient.amountDue, patientId: patient._id},
+      data: {
+        doctors: doctorsRes,
+        amountDue: patient.amountDue,
+        patientId: patient._id,
+      },
       message: "Successfully retrieved all doctors",
     });
   } catch (err) {
@@ -628,15 +629,14 @@ const viewAllDoctorsAvailable = async (req, res) => {
     console.log("DOCS MATCHING: ", doctors);
 
     let packageDiscount = 0;
-    
+
     if (patient.healthPackageType.status === "subscribed") {
       const package = await Packages.findOne({
         packageType: patient.healthPackageType.type,
       });
 
       packageDiscount = package.discountOnSession;
-
-    }  
+    }
 
     const markup = (await Clinic.findOne({})).markupPercentage;
 
@@ -653,10 +653,8 @@ const viewAllDoctorsAvailable = async (req, res) => {
         (1 - (packageDiscount ? packageDiscount / 100.0 : 0))
       ).toFixed(2);
 
-      
-
       // Return a new object with the modified properties
-      return { ...doctor._doc, sessionPrice};
+      return { ...doctor._doc, sessionPrice };
       //   } else {
       //     // no contract for this doctor
       //     const sessionPrice = -1;
@@ -665,8 +663,6 @@ const viewAllDoctorsAvailable = async (req, res) => {
       //     return { ...doctor._doc, sessionPrice };
       //   }
     });
-
-    
 
     return res.status(200).json({
       success: true,
@@ -721,7 +717,7 @@ const getAllFreeDocAppointments = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data: {doc_name: docName , appointments: appointments},
+      data: { doc_name: docName, appointments: appointments },
       message: "Successfully retrieved all appointments",
     });
   } catch (err) {
@@ -830,7 +826,9 @@ const bookAppointment = async (req, res) => {
     const patient = await getPatient(username);
     let isLinked = patient.linkedAccounts.find((elem) => {
       return String(elem.patient_id) === String(req.body.patient_id);
-    }) ? true : false;
+    })
+      ? true
+      : false;
     if (String(patient._id) !== String(req.body.patient_id) && !isLinked) {
       return sendResponse(
         401,
@@ -876,18 +874,16 @@ const bookAppointment = async (req, res) => {
       );
     }
     let packageDiscount = 0;
-    
+
     if (patient.healthPackageType.status === "subscribed") {
       const package = await Packages.findOne({
         packageType: patient.healthPackageType.type,
       });
 
       packageDiscount = package.discountOnSession;
-
-    }  
+    }
 
     const markup = (await Clinic.findOne({})).markupPercentage;
-
 
     const sessionPrice = (
       (doctor.hourlyRate / 2) *
@@ -938,7 +934,7 @@ const bookAppointment = async (req, res) => {
 
       await Doctor.findByIdAndUpdate(
         { _id: req.body.doctor_id },
-        { 
+        {
           patientList: doctor.patientList,
           $inc: { walletBalance: appointment.price.doctor },
         }
@@ -971,7 +967,6 @@ const bookAppointment = async (req, res) => {
 };
 
 const tempBookAppointment = async (req, res) => {
-  
   // ASSUMES JWT AUTHENTICATION
   // EXPECTED INPUT: param: self_username, { doctor_id: "69fe353h55g3h34hg53h",
   //    startTime: "2022-05-01T00:00:00.000+00:00", day: "2023-4-5", timeSlot: "22:00",
@@ -991,7 +986,9 @@ const tempBookAppointment = async (req, res) => {
     const patient = await getPatient(username);
     let isLinked = patient.linkedAccounts.find((elem) => {
       return String(elem.patient_id) === String(req.body.patient_id);
-    }) ? true : false;
+    })
+      ? true
+      : false;
     if (String(patient._id) !== String(req.body.patient_id) && !isLinked) {
       return sendResponse(
         401,
@@ -1002,9 +999,7 @@ const tempBookAppointment = async (req, res) => {
     }
 
     // edit availableSlots array in doctor
-    const doctor = await Doctor.findById(
-      req.body.doctor_id,
-    ).catch((err) => {
+    const doctor = await Doctor.findById(req.body.doctor_id).catch((err) => {
       if (err) {
         return sendResponse(
           500,
@@ -1024,18 +1019,16 @@ const tempBookAppointment = async (req, res) => {
       );
     }
     let packageDiscount = 0;
-    
+
     if (patient.healthPackageType.status === "subscribed") {
       const package = await Packages.findOne({
         packageType: patient.healthPackageType.type,
       });
 
       packageDiscount = package.discountOnSession;
-
-    }  
+    }
 
     const markup = (await Clinic.findOne({})).markupPercentage;
-
 
     const sessionPrice = (
       (doctor.hourlyRate / 2) *
@@ -1048,9 +1041,9 @@ const tempBookAppointment = async (req, res) => {
       totalPrice: sessionPrice,
       items: [
         {
-            name: `Appointment with ${doctor.name} on ${req.body.day} at ${req.body.timeSlot} for ${req.body.patient_name}` ,
-            quantity: 1,
-            price: sessionPrice,
+          name: `Appointment with ${doctor.name} on ${req.body.day} at ${req.body.timeSlot} for ${req.body.patient_name}`,
+          quantity: 1,
+          price: sessionPrice,
         },
       ],
       payload: req.body,
@@ -1066,11 +1059,10 @@ const tempBookAppointment = async (req, res) => {
       }
     });
 
-    
     return sendResponse(
       200,
       true,
-      {transit_id: paymentTransit._id},
+      { transit_id: paymentTransit._id },
       "Appointment created successfully"
     );
   } catch (err) {
@@ -1081,8 +1073,7 @@ const tempBookAppointment = async (req, res) => {
       err.message || "Some error occurred while creating appointment."
     );
   }
-
-}
+};
 
 const rescheduleAppointment = async (req, res) => {
   // ASSUMES JWT AUTHENTICATION
@@ -1331,7 +1322,9 @@ const requestFollowUp = async (req, res) => {
     const username = req.params.username;
     const patient = await getPatient(username);
     let isLinked = patient.linkedAccounts.find((elem) => {
-      return String(elem.patient_id) === String(completedAppointment.patient_id);
+      return (
+        String(elem.patient_id) === String(completedAppointment.patient_id)
+      );
     })
       ? true
       : false;
@@ -1403,15 +1396,14 @@ const requestFollowUp = async (req, res) => {
     const markup = (await Clinic.findOne({})).markupPercentage;
 
     let packageDiscount = 0;
-    
+
     if (patient.healthPackageType.status === "subscribed") {
       const package = await Packages.findOne({
         packageType: patient.healthPackageType.type,
       });
 
       packageDiscount = package.discountOnSession;
-
-    }  
+    }
 
     const sessionPrice = (
       (doctorNewSlot.hourlyRate / 2) *
@@ -1474,7 +1466,6 @@ const requestFollowUp = async (req, res) => {
       );
     }
 
-
     if (!appointment) {
       return sendResponse(
         500,
@@ -1494,7 +1485,7 @@ const requestFollowUp = async (req, res) => {
     return sendResponse(
       500,
       false,
-      { ...req.body},
+      { ...req.body },
       err.message || "Some error occurred while requesting follow-up."
     );
   }
@@ -1567,19 +1558,18 @@ const tempRequestFollowUp = async (req, res) => {
     });
 
     // book the new slot
-    const doctorNewSlot = await Doctor.findById(
-       req.body.doctor_id,
-    ).catch((err) => {
-      if (err) {
-        return sendResponse(
-          404,
-          false,
-          req.body,
-          err.message ||
-            "Could not find doctor."
-        );
+    const doctorNewSlot = await Doctor.findById(req.body.doctor_id).catch(
+      (err) => {
+        if (err) {
+          return sendResponse(
+            404,
+            false,
+            req.body,
+            err.message || "Could not find doctor."
+          );
+        }
       }
-    });
+    );
 
     if (!doctorNewSlot) {
       return sendResponse(
@@ -1593,15 +1583,14 @@ const tempRequestFollowUp = async (req, res) => {
     const markup = (await Clinic.findOne({})).markupPercentage;
 
     let packageDiscount = 0;
-    
+
     if (patient.healthPackageType.status === "subscribed") {
       const package = await Packages.findOne({
         packageType: patient.healthPackageType.type,
       });
 
       packageDiscount = package.discountOnSession;
-
-    }  
+    }
 
     const sessionPrice = (
       (doctorNewSlot.hourlyRate / 2) *
@@ -1614,9 +1603,9 @@ const tempRequestFollowUp = async (req, res) => {
       totalPrice: sessionPrice,
       items: [
         {
-            name: `Follow-up with ${doctorNewSlot.name} on ${req.body.day} at ${req.body.slot} for ${currPatient.name}` ,
-            quantity: 1,
-            price: sessionPrice,
+          name: `Follow-up with ${doctorNewSlot.name} on ${req.body.day} at ${req.body.slot} for ${currPatient.name}`,
+          quantity: 1,
+          price: sessionPrice,
         },
       ],
       payload: req.body,
@@ -1635,14 +1624,14 @@ const tempRequestFollowUp = async (req, res) => {
     return sendResponse(
       200,
       true,
-      {transit_id: paymentTransit._id},
+      { transit_id: paymentTransit._id },
       "Follow-up requested-transit successful"
     );
   } catch (err) {
     return sendResponse(
       500,
       false,
-      { ...req.body},
+      { ...req.body },
       err.message || "Some error occurred while requesting follow-up transit."
     );
   }
@@ -2400,7 +2389,6 @@ const removeHealthRecord = async (req, res) => {
 };
 
 const getTransitData = async (req, res) => {
-
   let responseSent = false; // Track whether a response has been sent
   const sendResponse = (statusCode, success, data, message) => {
     if (!responseSent) {
@@ -2408,8 +2396,6 @@ const getTransitData = async (req, res) => {
       return res.status(statusCode).json({ success: success, data, message });
     }
   };
-
-
 
   try {
     const tid = req.params.transit_id;
@@ -2420,17 +2406,9 @@ const getTransitData = async (req, res) => {
         req.params,
         err.message || "Some error occurred while retrieving payment transit."
       );
-    
     });
 
-    return sendResponse(
-      200,
-      true,
-      payment,
-      "Data sent successfully"
-    );
-
-
+    return sendResponse(200, true, payment, "Data sent successfully");
   } catch (error) {
     return sendResponse(
       500,
@@ -2438,7 +2416,6 @@ const getTransitData = async (req, res) => {
       req.params,
       error.message || "Some error occurred while performing request"
     );
-    
   }
 };
 
@@ -2548,12 +2525,7 @@ const payDoctorScheduledFollowUp = async (req, res) => {
       }
     });
 
-    return sendResponse(
-      200,
-      true,
-      editedAppointment,
-      "Payment successful"
-    );
+    return sendResponse(200, true, editedAppointment, "Payment successful");
   } catch (error) {
     return res.status(500).json({
       success: false,

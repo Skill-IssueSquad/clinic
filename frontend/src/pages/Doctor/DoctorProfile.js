@@ -9,6 +9,7 @@ import {
   IconButton,
   Box,
 } from "@mui/material";
+import NavBar from "../../components/navBarDoctor"
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
@@ -123,7 +124,7 @@ const UserProfile = () => {
     <div>
       {show ? (
         <div>
-          {/* <AppBar /> */}
+          <NavBar button={"Profile"} />
           {user ? (
             <Container maxWidth="md">
               <div

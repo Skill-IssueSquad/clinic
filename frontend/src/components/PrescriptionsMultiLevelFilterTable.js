@@ -72,7 +72,12 @@ const PrescriptionsMultiLevelFilterTable = ({ columns, API_GET_URL }) => {
     setOpen(false);
   };
 
-  const handleDownload = (doctor_name, medicines, date) => {
+  const handleDownload = (
+    doctor_name,
+    medicines,
+    date,
+    additionalMedicines
+  ) => {
     var doc = new jsPDF("portrait", "px", "a4", false);
     doc.setFontSize(20);
     doc.text("Prescription", 40, 30);
@@ -94,6 +99,10 @@ const PrescriptionsMultiLevelFilterTable = ({ columns, API_GET_URL }) => {
       doc.text("Dose: " + medicine.dose, 40, y + 20);
       y += 40;
     });
+    doc.setFont("helvetica", "bold");
+    doc.text("Additional Medicines: ", 40, y);
+    doc.setFont("helvetica", "normal");
+    doc.text(additionalMedicines, 40, y + 20);
 
     doc.save("prescription.pdf");
   };
@@ -426,7 +435,8 @@ const PrescriptionsMultiLevelFilterTable = ({ columns, API_GET_URL }) => {
                             handleDownload(
                               row["doctor_name"],
                               row["medicines"],
-                              row["date"]
+                              row["date"],
+                              row["additionalMedicines"]
                             )
                           }
                           variant="contained"
