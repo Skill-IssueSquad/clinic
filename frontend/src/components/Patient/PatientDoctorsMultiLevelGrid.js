@@ -26,6 +26,7 @@ import { Box } from "@mui/material";
 //import Box from '@mui/joy/Box';
 import Link from "@mui/joy/Link";
 import Chip from "@mui/joy/Chip";
+import ContactSplitButton from "./PatientContactSplitButton";
 
 let fullRows = [];
 
@@ -58,6 +59,7 @@ const PatientMultiLevel = ({ columns, API_GET_URL, reqBody, loadng }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedRow, setSelectedRow] = useState({});
   const [canBook, setCanBook] = useState(false);
+  const [patientId, setPatientId] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -68,6 +70,7 @@ const PatientMultiLevel = ({ columns, API_GET_URL, reqBody, loadng }) => {
         setLoading(false); // Set loading to false when data is fetched
         loadng(false);
         const initialRows = response.data.data.doctors;
+        setPatientId(response.data.data.patientId);
         setCanBook(response.data.data.amountDue === 0);
         fullRows = initialRows;
 
@@ -272,6 +275,7 @@ const PatientMultiLevel = ({ columns, API_GET_URL, reqBody, loadng }) => {
                   </TableCell>
                 ))}
                 <TableCell>Book Slots</TableCell>
+                <TableCell>Contact</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -321,6 +325,12 @@ const PatientMultiLevel = ({ columns, API_GET_URL, reqBody, loadng }) => {
                       View Free Slots
                     </Button>
                   </TableCell>
+
+                  <TableCell>
+                    <ContactSplitButton canContact={row["isPatientToDoc"]} doctorId={row["_id"]} patientId={patientId} doctorUsername={row["username"]}></ContactSplitButton>
+                  </TableCell>
+
+
                 </TableRow>
               ))}
             </TableBody>
