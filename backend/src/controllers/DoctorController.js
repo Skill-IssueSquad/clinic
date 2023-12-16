@@ -1202,9 +1202,11 @@ const acceptAppointment = async (req, res) => {
       },
       { new: true }
     );
+    console.log(appointment.patient_id);
     var doctor = await Doctor.findOne({ username });
-    var patientID = appointment.patient_id;
-    var patient = await Patient.findById({ patientID });
+    var patientID = String(appointment.patient_id);
+    console.log(patientID);
+    var patient = await Patient.findById(patientID);
     const doctorId = doctor._id;
 
     var subject = "Appointment request accepted";
@@ -1260,7 +1262,7 @@ const revokeAppointment = async (req, res) => {
     const patientMoney = appointment.price.patient;
     const doctorId = appointment.doctor_id;
     const patientId = appointment.patient_id;
-    const doctor = await Doctor.findByIdAndUpdate(
+    var doctor = await Doctor.findByIdAndUpdate(
       { _id: doctorId },
       {
         $dec: { walletBalance: doctorMoney },
