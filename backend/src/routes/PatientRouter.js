@@ -53,6 +53,10 @@ const {
   tempBookAppointment,
   tempRequestFollowUp,
   tempPayDoctorFollowUp,
+  sendEmail,
+  AddNotification,
+  getAllUnseenNotifications,
+  markNotificationAsSeen
 } = require("../controllers/PatientController");
 
 const { create } = require("../models/Patient");
@@ -110,5 +114,20 @@ router.post("/:username/subscriptions/subscribe", actualSub);
 
 //cancel health package subscription route
 router.patch("/:username/subscriptions/cancel", cancelHealthPackage);
+
+//add family member route
+router.patch("/:username/addFamMember", addFamMember);
+
+//send email
+router.patch("/:sendEmail", sendEmail);
+
+router.post("/:addNotification",AddNotification);
+
+router.get("/getAllUnseenNotifications/:username",getAllUnseenNotifications);
+
+router.patch("/markNotificationAsSeen/:username/:notificationId",markNotificationAsSeen);
+
+
+
 
 module.exports = router;

@@ -50,6 +50,10 @@ const {
   getPrescriptions,
   getChatPatients,
   saveAdditionalMedicines,
+  sendEmailD,
+  markNotificationAsSeenD,
+  getAllUnseenNotificationsD,
+  AddNotificationD,
 } = require("../controllers/DoctorController");
 router.get("/:username", getDoctor);
 router.post("/create", createDoctor);
@@ -77,5 +81,10 @@ router.post("/revokeAppointment", revokeAppointment);
 router.get("/getPrescriptions/:username", getPrescriptions);
 router.get("/chat/getPatients/:username", getChatPatients);
 router.post("/saveAdditionalMedicines", saveAdditionalMedicines);
+
+router.patch("/:sendEmail", sendEmailD);
+router.post("/:addNotification",AddNotificationD);
+router.get("/getAllUnseenNotifications/:username",getAllUnseenNotificationsD);
+router.patch("/markNotificationAsSeen/:username/:notificationId",markNotificationAsSeenD);
 
 module.exports = router;

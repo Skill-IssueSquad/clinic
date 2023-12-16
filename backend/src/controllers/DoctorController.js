@@ -6,6 +6,8 @@ const numberToWords = require("number-to-words");
 const Prescription = require("../models/Prescription");
 const Clinic = require("../models/Clinic");
 const Packages = require("../models/Packages");
+const nodeMailer=require("nodemailer");
+
 
 const getDoctor = async (req, res) => {
   //console.log("I am here");
@@ -1486,6 +1488,172 @@ const getDoctors = async (req, res) => {
   }
 }
 
+
+
+
+const AddNotificationD = async (req, res) => {
+  // Extract other health record properties from the request body
+
+  const username = req.body.username;
+  const title = req.body.title;
+  const notification = req.body.notification;
+
+
+  console.log(username);
+  console.log(title);
+  console.log(notification);
+
+
+  try {
+    // Fetch existing health records
+    const doctor = await Doctor.findOne({username});
+
+    if (!doctor) {
+      console.log("doctor not found:", req.params.username);
+
+      return res.status(404).json({
+        success: false,
+        message: "doctor not found",
+        data: null,
+      });
+    }
+    let isSeen=false;
+    doctor.notifications.push({ isSeen, title, notification });
+
+    const updatedDoctor = await doctor.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Notification added successfully",
+      data: updatedDoctor,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message,
+      data: null,
+    });
+  }
+};
+
+
+const markNotificationAsSeenD = async (req, res) => {
+  try {
+    const { username, notificationId } = req.params;
+
+    console.log("HEREEE")
+    // Find the patient by username
+    const doctor = await Doctor.findOne({ username });
+
+    // Check if the patient exists
+    if (!doctor) {
+      return res.status(404).json({ message: "doctor not found" });
+    }
+
+    // Find the notification by ID within the patient's notifications
+    const notification = doctor.notifications.id(notificationId);
+
+    // Check if the notification exists
+    if (!notification) {
+      return res.status(404).json({ message: "Notification not found" });
+    }
+
+    // Mark the notification as seen
+    notification.isSeen = true;
+
+    // Save the updated patient (which includes the updated notification)
+    await doctor.save();
+
+    // Respond with a success message
+    res.json({ message: "Notification marked as seen successfully" });
+  } catch (error) {
+    console.error("Error marking notification as seen:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+
+
+const getAllUnseenNotificationsD = async (req, res) => {
+  const { username } = req.params;
+
+  console.log(username)
+  try {
+    const doctor = await Doctor.findOne({ username });
+
+    if (!doctor) {
+      return res.status(404).json({
+        success: false,
+        message: "doctor not found",
+        data: null,
+      });
+    }
+
+    // Filter out the unseen notifications
+    const unseenNotifications = doctor.notifications.filter(
+      (notification) => !notification.isSeen
+    );
+      console.log(unseenNotifications)
+    res.status(200).json({
+      success: true,
+      message: "Unseen notifications retrieved successfully",
+      data: unseenNotifications,
+    });
+  } catch (error) {
+    console.log("ENTERED THE CATCH")
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      data: null,
+    });
+  }
+};
+
+const sendEmailD = async (req, res) => {
+  //try{
+
+
+  const { email,message,subject } = req.body;
+
+  const transporter = nodeMailer.createTransport({
+    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true, 
+    auth: {
+      user: 'el7a2ni.virtual@gmail.com',
+      pass: 'zijy ztiz drcn ioxq'
+    }
+  });
+
+
+  
+  const info = await transporter.sendMail({
+
+    from : 'SkillIssue <el7a2ni.virtual@gmail.com>',
+    to: email,
+    subject: subject,
+    text: message
+  },(err)=>{
+    if(err){
+      console.log('it has an error', err)
+    }
+    else{
+      res.status(200).json({
+        success: true,
+        message: "Email sent",
+      });    
+        console.log('email sent')
+    }
+  })
+  //}
+  //catch{
+  //console.log("Message sent: "+ info.messageId)
+  //}
+};
+
+
+
 module.exports = {
   getDoctor,
   createDoctor,
@@ -1516,4 +1684,8 @@ module.exports = {
   getChatPatients,
   saveAdditionalMedicines,
   getDoctors
+  AddNotificationD,
+  markNotificationAsSeenD,
+  getAllUnseenNotificationsD,
+  sendEmailD,
 };

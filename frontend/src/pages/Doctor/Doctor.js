@@ -15,6 +15,7 @@ const Doctor = () => {
 
   return (
     <div>
+      <NavBar name={"Notifications"} username={un} />
       {show ? (
         <div>
           <NavBar button={"Home"}/>

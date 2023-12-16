@@ -132,9 +132,9 @@ const ResponsiveAppBar = ({ username, button }) => {
                 <Button
                   key={page}
                   onClick={() => navigate(url)}
-                  sx={{ my: 2, color: "white", display: "block" }}
+                  sx={{ my: 2, color: "black", display: "block" }}
                   style={{fontSize:'14px', margin:'10px', marginTop: '20px', 
-                  backgroundColor: button === page? 'black' : 'transparent'}}
+                  backgroundColor: button === page? 'white' : 'transparent'}}
                 >
                   {page}
                 </Button>

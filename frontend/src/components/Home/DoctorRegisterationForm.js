@@ -154,11 +154,11 @@ const DoctorRegistrationForm = () => {
 
   return (
     <div>
-    <MDBCard style={{width:540, height:640, left:'440px', top: '30px'}}>
+    <MDBCard style={{width:540, height:630, left:'440px', top: '30px'}}>
     <MDBRow >
         <MDBCol >
         <MDBCardBody className='d-flex flex-column'>
-            <h3 className="h1 fw-bold mb-0">Register as a doctor</h3>
+            <h4 className="h1 fw-bold mb-0">Register as a doctor</h4>
 
             <h6 className="fw-normal my-4 pb-1" style={{letterSpacing: '1px'}}>Submit a request to join our platform</h6>
         <form onSubmit={handleSubmit}>
