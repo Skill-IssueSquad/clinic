@@ -37,11 +37,6 @@ function ResponsiveAppBar() {
 
   const handleCloseUserMenu = (setting) => {
     setAnchorElUser(null);
-    if (setting === "Profile") {
-      // Redirect to profile page
-      // console.log("Redirecting to profile pasge");
-      navigate("/Doctor_Profile");
-    }
   };
 
   const handleUserMenu = async (text) => {
@@ -86,8 +81,6 @@ function ResponsiveAppBar() {
           <Typography
             variant="h6"
             noWrap
-            component={Link}
-            to="/Doctor_Home"
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },

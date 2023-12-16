@@ -18,12 +18,6 @@ import { useEffect } from "react";
 
 let pages = [
   "Profile",
-  "Doctors",
-  "Appointments",
-  "Medical History",
-  "Health Packages",
-  "Prescriptions",
-  "Change Password"
 ];
 const settings = ["Logout"];
 
@@ -124,22 +118,9 @@ const ResponsiveAppBar = ({ username, button }) => {
           {/* <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} /> */}
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => {
-              let url = "/patient/";
+              let url;
               if (page === "Profile") {
-                url = "/patient/";
-              } else if (page === "Doctors") {
-                url = "/patient/doctors";
-              } else if (page === "Appointments") {
-                url = "/patient/appointments";
-              } else if (page === "Medical History") {
-                url = `/patient/medicalHistory/?PUN=${username}&IP=${true}`;
-              } else if (page == "Health Packages") {
-                url = "/patient/healthPackages/";
-              } else if (page == "Prescriptions") {
-                url = "/patient/prescriptions/";
-              }
-              else if (page == "Change Password") {
-                url = "/patient/changePassword/";
+                url = "/DoctorRequest/";
               }
               return (
                 <Button
