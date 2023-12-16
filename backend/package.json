@@ -4,7 +4,7 @@
   "description": "",
   "main": "backend.js",
   "scripts": {
-    "dev": "nodemon backend.js & peerjs --port 3002"
+    "dev": "nodemon backend.js & (peerjs --port 3002)"
   },
   "author": "",
   "license": "ISC",
@@ -27,6 +27,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "concurrently": "^8.2.2",
     "dotenv": "^16.3.1",
     "nodemon": "^3.0.1"
   }
