@@ -99,9 +99,7 @@ Eslint link: [Eslint](https://marketplace.visualstudio.com/items?itemName=dbaeum
 </details>
 
 
-## 2.2 | Complementary features:
-
-## 2.3 | Code examples and screenshots:
+## 2.2 | Code examples and screenshots:
 
 ---
 
