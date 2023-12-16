@@ -225,7 +225,7 @@ Eslint link: [Eslint](https://marketplace.visualstudio.com/items?itemName=dbaeum
 
 <details>
     <summary>
-      Doctor Requests (/doctorRequest)
+      Doctor Requests routes (/doctorRequest)
     </summary>
 
 `router.get("/")` gets all doctor requests
