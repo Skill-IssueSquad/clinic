@@ -7,13 +7,13 @@ const VideoCall = () => {
   const videoGridRef = useRef(null);
   const myPeer = new Peer(undefined, {
     host: "/",
-    port: "3001",
+    port: "3002",
   });
   let peers = {};
   const roomId = window.location.pathname.split("/")[2];
 
   useEffect(() => {
-    const socket = io("http://localhost:8001");
+    const socket = io("http://localhost:8002");
     //when we connect we want to create a video stream and send it to the server
     const myVideo = document.createElement("video");
     myVideo.muted = true;
