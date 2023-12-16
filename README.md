@@ -75,15 +75,19 @@ To run this project, you will need to add the following environment variables to
         envs
     </summary>
 
-`MONGO_URL`
+`DATABASE_URL`
 
-`SOCKET`
+`PORT`
+
+`VIDEO_PORT`
+
+`SOCKET_PORT`
 
 </details>
 
 ## 3.3 | Contribution:
 
-Contributions are always welcome!
+There are a lot more features and improvements that could be made to this project, this is why we welcome contributions with open arms!
 
 Please adhere to this project's code of conduct.
 
