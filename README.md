@@ -99,7 +99,6 @@ Eslint link: [Eslint](https://marketplace.visualstudio.com/items?itemName=dbaeum
   - Add, update or delete healthpackages and prices.
 </details>
 
-
 ## 2.2 | Code examples and screenshots:
 
 ---
@@ -220,6 +219,19 @@ Eslint link: [Eslint](https://marketplace.visualstudio.com/items?itemName=dbaeum
 `router.get("/getAllUnseenNotifications/:username")` Fetches all unseen notifications for a certain patient
 
 `router.patch("/markNotificationAsSeen/:username/)` Marks seen notifications
+
+</details>
+
+<details>
+    <summary>
+      Doctor Requests (/doctorRequest)
+    </summary>
+
+`router.get("/")` gets all doctor requests
+
+`router.post("/")` submit a request to join the platform as a doctor
+
+`router.patch("/updateInfo/:username")` Allows to update application info for a doctor who wants to join the platform
 
 </details>
 
