@@ -187,6 +187,11 @@ We used Postman to test our different API endpoints.
 
 ![Example of a Postman test](image.png)
 
+##### Test API:
+```bash
+http://
+```
+
 ## 3.3 | How to use:
 
 To run backend
