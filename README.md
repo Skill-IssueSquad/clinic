@@ -82,7 +82,6 @@ Eslint link: [Eslint](https://marketplace.visualstudio.com/items?itemName=dbaeum
     
 </details>
 
-
 ## 2.2 | Complementary features:
 
 ## 2.3 | Code examples and screenshots:
@@ -97,6 +96,10 @@ Eslint link: [Eslint](https://marketplace.visualstudio.com/items?itemName=dbaeum
     <summary>
         Patient Routes (/patient)
     </summary>
+
+`router.get("/")` Fetches all patients
+
+`router.post("/")` Creates a patient
 
 `router.post("/:username/healthrecords")` Allows a patient to upload his/her health records
 
@@ -129,6 +132,37 @@ Eslint link: [Eslint](https://marketplace.visualstudio.com/items?itemName=dbaeum
 `router.get("/getAllUnseenNotifications/:username")` Fetches all unseen notifications for a certain patient
 
 `router.patch("/markNotificationAsSeen/:username/)` Marks seen notifications
+
+</details>
+
+<details>
+    <summary>
+      Admin Routes (/admin)
+    </summary>
+
+`router.post("/getAdmin/:username")` Gets an admin with a specified username
+
+`router.get("/viewAdmins")` Views all admins
+
+`router.post("/createAdmin")` Creates an admin and adds it to the DB
+`router.delete("/removeAdmin/:username")` Removes the admin with the specified username from the DB
+
+`router.get("/viewDoctors")` Allows an admin to view all registered doctors on a system
+
+`router.delete("/removeDoctor/:username")` Allows an admin to remove a doctor with the specified username from the system
+
+`router.get("/viewPatients")` Allows an admin to view all registered patients on the system
+
+`router.delete("/removePatient/:username")` Allows an admin to remove a patient with the specified username from the system
+
+`router.get("/viewInfo")` Allows admin to view all pending doctor applications.
+
+`router.post("/acceptDoctor", acceptDoctor)` and `router.post("/rejectDoctor")` allow an admin to accept or request a doctor's application on the system.
+
+`router.get("/viewPackages")`
+`router.post("/addPackage")`
+`router.patch("/updatePackage/:packageType")`
+`router.delete("/deletePackage/:packageType")` allow an admin to create, update, view and delete a health package from the system
 
 </details>
 
