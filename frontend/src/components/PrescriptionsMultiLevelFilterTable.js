@@ -114,7 +114,9 @@ const PrescriptionsMultiLevelFilterTable = ({ columns, API_GET_URL }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(API_GET_URL);
+        const response = await axios.get(API_GET_URL, {
+          withCredentials: true,
+        });
         const initialRows = response.data.data;
         fullRows = initialRows;
         fullRows.map((row) => {
@@ -350,16 +352,16 @@ const PrescriptionsMultiLevelFilterTable = ({ columns, API_GET_URL }) => {
   return (
     <Card>
       <div>
-      {columns.map((key) =>
-        !(key === "View Prescriptions" || key === "Download Prescription") ? (
-          <TextField
-            label={"Filter by " + key}
-            name={key}
-            value={filter[key] || ""}
-            onChange={handleFilterChange}
-          />
-        ) : null
-      )}
+        {columns.map((key) =>
+          !(key === "View Prescriptions" || key === "Download Prescription") ? (
+            <TextField
+              label={"Filter by " + key}
+              name={key}
+              value={filter[key] || ""}
+              onChange={handleFilterChange}
+            />
+          ) : null
+        )}
       </div>
 
       <TableContainer component={Paper}>
