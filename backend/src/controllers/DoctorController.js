@@ -1345,6 +1345,8 @@ const getPatient = async (req, res) => {
     const { appID } = req.params;
     const appointment = await Appointments.findById({ _id: appID });
     const patientId = appointment.patient_id;
+    const doctorId = appointment.doctor_id;
+    const doctor = await Doctor.findById({ _id: doctorId });
     const patient = await Patient.findById({ _id: patientId });
     const prescriptionID = appointment.prescription_id;
     if (
@@ -1371,6 +1373,7 @@ const getPatient = async (req, res) => {
     var data = {
       patient,
       discount,
+      docName: doctor.name,
     };
     const send = {
       success: true,
