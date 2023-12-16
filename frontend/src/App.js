@@ -35,6 +35,10 @@ import CreditCardPayment from "./pages/Patient/CreditCardPayment";
 import PatientRescheduleSlots from "./pages/Patient/PatientRescheduler";
 import DoctorPrescriptions from "./pages/Doctor/Prescriptions";
 import DoctorChat from "./pages/Doctor/DoctorChat";
+import NotificationP from "./pages/Patient/NotificationP";
+import NotificationD from "./pages/Doctor/NotificationD";
+
+
 import { useState } from "react";
 import ChangePassword from "./pages/ChangePassword";
 import PatientPrescriptions from "./pages/Patient/PatientPrescriptions";
@@ -167,6 +171,16 @@ function App() {
               element={<DoctorPrescriptions />}
             />
             <Route exact path="/Doctor_Chat" element={<DoctorChat />} />
+            <Route
+              exact
+              path="/patient/notifications/"
+              element={<NotificationP />}
+            />
+            <Route
+              exact
+              path="/Doctor_Home/notifications/"
+              element={<NotificationD />}
+            />
           </Routes>
         </div>
       </BrowserRouter>

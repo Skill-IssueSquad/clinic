@@ -107,7 +107,20 @@ const doctorSchema = new Schema({
   },
   otpExpiry: {
     type: Date,
+  },
+  notifications: [
+    {
+      isSeen: {
+        type: Boolean,
+      },
+      title: {
+        type: String,
+      },
+      notification: {
+        type: String,
+      }
   }
+  ]
 });
 
 const Doctor = mongoose.model("Doctor", doctorSchema);

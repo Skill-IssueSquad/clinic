@@ -12,21 +12,45 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
-import AdbIcon from "@mui/icons-material/Adb";
-import { useNavigate, Link } from "react-router-dom";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-const pages = ["Appointments", "Patients"];
+const pages = [];
 const settings = ["Profile", "Change Password", "Logout"];
 
-function ResponsiveAppBar() {
+function ResponsiveAppBar({ username }) {
   const navigate = useNavigate();
   //const history = useHistory();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [hasUnseenNotifications, setHasUnseenNotifications] =
+    React.useState(false);
+
+  React.useEffect(() => {
+    const fetchUnseenNotifications = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8000/patient/getAllUnseenNotifications/${username}`
+        );
+
+        const unseenNotifications = response.data.data;
+        const hasUnseen = unseenNotifications.some(
+          (notification) => !notification.isSeen
+        );
+        setHasUnseenNotifications(hasUnseen);
+      } catch (error) {
+        console.error("Error fetching unseen notifications:", error.message);
+      }
+    };
+
+    //fetchUnseenNotifications();
+  }, [username]);
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
+
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -38,8 +62,6 @@ function ResponsiveAppBar() {
   const handleCloseUserMenu = (setting) => {
     setAnchorElUser(null);
     if (setting === "Profile") {
-      // Redirect to profile page
-      // console.log("Redirecting to profile pasge");
       navigate("/Doctor_Profile");
     }
   };
@@ -52,6 +74,12 @@ function ResponsiveAppBar() {
             ? "/Doctor_Profile"
             : "/Admin"
         );
+        break;
+      case "Account":
+        navigate("/Admin/ViewAdmins");
+        break;
+      case "Dashboard":
+        navigate("/Admin/ViewDoctors");
         break;
       case "Change Password":
         navigate("/ChangePassword");
@@ -67,7 +95,27 @@ function ResponsiveAppBar() {
           navigate("/");
         }
       }
+        if (response.ok) {
+          localStorage.setItem("token", "");
+          localStorage.setItem("role", "");
+          localStorage.setItem("username", "");
+          navigate("/");
+        }
+      }
     }
+  };
+
+  const handleBellIconClick = () => {
+    // Navigate to the notifications page or any other desired page
+    const role= localStorage.getItem("role")
+    console.log("H1"+role)
+    if(role==="Patient"){
+      navigate('/patient/notifications');
+    }
+    else{
+    navigate("/Doctor_Home/notifications/");
+    }
+  };
   };
 
   return (
@@ -86,8 +134,8 @@ function ResponsiveAppBar() {
           <Typography
             variant="h6"
             noWrap
-            component={Link}
-            to="/Doctor_Home"
+            component={Button}
+            onClick={() => navigate("/Doctor_Home")}
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -130,14 +178,100 @@ function ResponsiveAppBar() {
                 display: { xs: "block", md: "none" },
               }}
             >
+              {pages.map((page) => (
+                <MenuItem
+                  key={page}
+                  onClick={() => {
+                    handleCloseNavMenu();
+                    navigate(
+                      page === "Home" ? "/patient/" : `/patient/${page.toLowerCase()}`
+                    );
+                  }}
+                >
+                  <Typography textAlign="center">{page}</Typography>
+                </MenuItem>
+              ))}
             </Menu>
           </Box>
 
+          <Typography
+            variant="h5"
+            noWrap
+            component={Button}
+            onClick={() => navigate("/Doctor_Home")}
+            sx={{
+              mr: 2,
+              display: { xs: "flex", md: "none" },
+              flexGrow: 1,
+              fontFamily: "monospace",
+              fontWeight: 700,
+              letterSpacing: ".3rem",
+              color: "inherit",
+              textDecoration: "none",
+            }}
+          >
+            EL7A2NI
+          </Typography>
+
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
+            {pages.map((page) => (
+              <Button
+                key={page}
+                onClick={() => navigate(page === "Home" ? "/patient/" : `/patient/${page.toLowerCase()}`)}
+                sx={{ my: 2, color: "white", display: "block" }}
+              >
+                {page}
+              </Button>
+            ))}
+          </Box>
+
+          <Box sx={{ flexGrow: 1 }} />
+
+          <Box sx={{ flexGrow: 0 }}>
+            <Tooltip title="Notifications">
+              <IconButton
+                aria-label="notifications"
+                color="inherit"
+                onClick={handleBellIconClick}
+              >
+            
+              </IconButton>
+            </Tooltip>
+          </Box>
+
+          <Box sx={{ flexGrow: 0 }}>
+            <Tooltip title="Open settings">
+              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                <Avatar alt="Doctor" src="/static/images/doc2.png" />
+              </IconButton>
+            </Tooltip>
+            <Menu
+              sx={{ mt: "45px" }}
+              id="menu-appbar"
+              anchorEl={anchorElUser}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              open={Boolean(anchorElUser)}
+              onClose={handleCloseUserMenu}
+            >
+              {settings.map((text) => (
+                <MenuItem key={text} onClick={() => handleUserMenu(text)}>
+                  <Typography textAlign="center">{text}</Typography>
+                </MenuItem>
+              ))}
+            </Menu>
           </Box>
         </Toolbar>
       </Container>
     </AppBar>
   );
 }
+
 export default ResponsiveAppBar;
