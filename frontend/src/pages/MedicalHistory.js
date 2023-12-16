@@ -98,7 +98,7 @@ const MedicalHistory = () => {
 
   return (
     <div>
-      {isPatient && <NavBar name={"Patient Dashboard"} username={"bahyone"} />}
+      {isPatient && <NavBar name={"Patient Dashboard"} username={patientUsername} />}
       <h1>Medical History</h1>
 
       {email && <p>Patient's Email: {email}</p>}

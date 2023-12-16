@@ -147,9 +147,12 @@ app.use("/doctorRequest", authDoctorRequest, doctorRequestRouter);
 app.get("/getPatient/:appID", getPatient);
 app.post("/balance/:username", equateBalance);
 //get requests for video server
-app.get("/video", (req, res) => {
-  res.redirect(`http://localhost:${3000}/videoCall/${uuidV4()}`);
-});
+// app.post("/video", (req, res) => {
+//   const patientId = req.body.patientId;
+//   const doctorId = req.body.doctorId;
+  
+//   res.redirect(`http://localhost:${3000}/videoCall/${String(patientId)}${String(doctorId)}`);
+// });
 
 videoIo.on("connection", (socket) => {
   socket.on("join-room", (roomId, userId) => {
