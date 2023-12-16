@@ -98,7 +98,6 @@ Eslint link: [Eslint](https://marketplace.visualstudio.com/items?itemName=dbaeum
   - Add, update or delete healthpackages and prices.
 </details>
 
-
 ## 2.2 | Code examples and screenshots:
 
 ---
@@ -221,6 +220,19 @@ Eslint link: [Eslint](https://marketplace.visualstudio.com/items?itemName=dbaeum
 
 </details>
 
+<details>
+    <summary>
+      Doctor Requests (/doctorRequest)
+    </summary>
+
+`router.get("/")` gets all doctor requests
+
+`router.post("/")` submit a request to join the platform as a doctor
+
+`router.patch("/updateInfo/:username")` Allows to update application info for a doctor who wants to join the platform
+
+</details>
+
 ## 3.2 | Testing:
 
 We used Postman to test our different API endpoints.
@@ -228,6 +240,7 @@ We used Postman to test our different API endpoints.
 ![Example of a Postman test](image.png)
 
 ##### Test API:
+
 ```bash
 http://
 ```
