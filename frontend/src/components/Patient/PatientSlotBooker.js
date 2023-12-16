@@ -117,7 +117,7 @@ const SlotBooker = ({ doctor_id }) => {
           params: {
             doctor_id: doctor_id,
           },
-        }
+        }, {withCredentials: true}
       );
 
       setDocName(`Dr. ${fetchedSlots.data.data.doc_name}'s slots`);
@@ -129,7 +129,7 @@ const SlotBooker = ({ doctor_id }) => {
       let bookOptions = await axios.get(
         `http://localhost:8000/patient/${localStorage.getItem(
           "username"
-        )}/bookingOptions`
+        )}/bookingOptions`, {withCredentials: true}
       );
 
       bookingOptions = bookOptions.data.data;

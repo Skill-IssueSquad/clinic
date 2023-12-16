@@ -73,12 +73,40 @@ const VideoCall = () => {
   };
 
   const addVideoStream = (video, stream) => {
+    //create a card element that contains name, role and video
+    const card = document.createElement("Card");
+    card.className = "card";
+    //change position of card
+    //card.style.position = "relative";
+    card.style.left = "30%";
+    card.style.transform = "translateX(-50%)";
+    card.style.width = "50%";
+    card.style.height = "50%";
+    card.style.margin = "10px";
+    card.style.backgroundColor = "white";
+    card.style.borderRadius = "10px";
+
+    const cardContent = document.createElement("CardContent");
+    cardContent.className = "card-content";
+
+    const name = document.createElement("h3");
+    name.innerText = "Username: " + localStorage.getItem("username");
+
+    const role = document.createElement("h3");
+    role.innerText = "Role: " + localStorage.getItem("role");
+
     video.srcObject = stream;
     video.addEventListener("loadedmetadata", () => {
       video.play();
     });
 
-    videoGridRef.current.appendChild(video);
+    card.appendChild(video);
+    cardContent.appendChild(name);
+    cardContent.appendChild(role);
+
+    card.appendChild(cardContent);
+
+    videoGridRef.current.append(card);
   };
 
   //return a video grid i will append videos to

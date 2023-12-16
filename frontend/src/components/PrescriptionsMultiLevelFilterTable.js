@@ -21,6 +21,10 @@ import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import axios from "axios";
 import CircularProgress from "@mui/joy/CircularProgress";
 import jsPDF from "jspdf";
+import Typography from "@mui/joy/Typography";
+import Card from "@mui/joy/Card";
+import Stack from "@mui/joy/Stack";
+import { Box } from "@mui/material";
 
 let fullRows = [];
 let testcols = [];
@@ -344,7 +348,8 @@ const PrescriptionsMultiLevelFilterTable = ({ columns, API_GET_URL }) => {
   }
 
   return (
-    <div>
+    <Card>
+      <div>
       {columns.map((key) =>
         !(key === "View Prescriptions" || key === "Download Prescription") ? (
           <TextField
@@ -355,6 +360,7 @@ const PrescriptionsMultiLevelFilterTable = ({ columns, API_GET_URL }) => {
           />
         ) : null
       )}
+      </div>
 
       <TableContainer component={Paper}>
         <Table>
@@ -458,7 +464,7 @@ const PrescriptionsMultiLevelFilterTable = ({ columns, API_GET_URL }) => {
           </TableBody>
         </Table>
       </TableContainer>
-    </div>
+    </Card>
   );
 };
 

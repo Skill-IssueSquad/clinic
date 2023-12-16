@@ -66,7 +66,7 @@ const PatientMultiLevel = ({ columns, API_GET_URL, reqBody, loadng }) => {
       try {
         setLoading(true); // Set loading to true before fetching data
         loadng(true);
-        const response = await axios.post(API_GET_URL, reqBody);
+        const response = await axios.post(API_GET_URL, reqBody, {withCredentials: true});
         setLoading(false); // Set loading to false when data is fetched
         loadng(false);
         const initialRows = response.data.data.doctors;

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Typography, Slide, Paper, Divider } from "@mui/material";
+import { Typography, Slide, Paper, Divider, IconButton } from "@mui/material";
 import NavBar from "../../components/navBarPatient";
 import AddFamilyMember from "../../components/Patient/addFamilyMember";
 import PatientDetails from "../../components/Patient/PatientDetails";
@@ -10,9 +10,15 @@ import { auth } from "../Protected/AuthProvider";
 const Patient = () => {
   let show = false;
 
-  if (auth() && localStorage.getItem("role") === "Patient") {
+  if (auth() && localStorage.getItem('role') === 'Patient') {
     show = true;
   }
+
+  const [notification, setNotification] = useState(null);
+
+  const showNotification = (message, isError = false) => {
+    setNotification({ message, isError });
+  };
 
   const [patient, setPatient] = useState(null);
   const [addFamilyMemberVisible, setAddFamilyMemberVisible] = useState(false);
@@ -32,7 +38,7 @@ const Patient = () => {
       console.log(error);
       return { message: error.message };
     }
-  }; // Empty dependency array since this function doesn't depend on any changing variables
+  };
 
   const linkFamMember = async (formData) => {
     try {
@@ -50,6 +56,7 @@ const Patient = () => {
       return { message: error.message };
     }
   };
+
   const handleCancelSubscription = async () => {
     try {
       await axios.patch(
@@ -68,7 +75,7 @@ const Patient = () => {
         await axios
           .get(
             `http://localhost:8000/patient/${localStorage.getItem("username")}`
-          )
+          , {withCredentials: true})
           .then((res) => {
             setPatient(res.data.data);
           });
@@ -82,10 +89,13 @@ const Patient = () => {
 
   if (!patient) return null;
 
-  //if (!prescriptions) return null;
-
   return (
     <div>
+      {notification && (
+        <div style={{ padding: '10px', backgroundColor: notification.isError ? 'red' : 'green', color: 'white' }}>
+          {notification.message}
+        </div>
+      )}
       {show ? (
         <div className="patient">
           <NavBar

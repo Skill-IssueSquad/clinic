@@ -7,7 +7,7 @@ import { auth } from "../../pages/Protected/AuthProvider";
 
 //get patient detials
 const patientDetails = async (username) => {
-  const res = await axios.get(`http://localhost:8000/patient/${username}`);
+  const res = await axios.get(`http://localhost:8000/patient/${username}`, {withCredentials: true});
   return res.data.data;
 };
 

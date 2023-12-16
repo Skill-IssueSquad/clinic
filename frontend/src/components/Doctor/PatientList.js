@@ -37,17 +37,23 @@ const PatientList = ({ username }) => {
   const chat = (patient) => {
     navigate("/Doctor_Chat", { state: { username: patient.username } });
   };
+  const call = (patient) => {
+    navigate(
+      `/videoCall/${String(patient.patientID)}${String(patient.doctorID)}`
+    );
+  };
 
   return (
     <div>
       <h1>Chat with patients</h1>
-      <div style={{ maxWidth: 300 }}>
+      <div style={{ maxWidth: 450 }}>
         <TableContainer component={Paper}>
-          <Table sx={{ maxWidth: 300 }} aria-label="simple table">
+          <Table sx={{ maxWidth: 450 }} aria-label="simple table">
             <TableHead>
               <TableRow>
                 <TableCell>Patient Name</TableCell>
                 <TableCell>Chat</TableCell>
+                <TableCell>Video Call</TableCell>
               </TableRow>
             </TableHead>
 
@@ -68,6 +74,18 @@ const PatientList = ({ username }) => {
                         onClick={() => chat(patient)}
                       >
                         Chat
+                      </Button>
+                    </TableCell>
+
+                    <TableCell>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => {
+                          call(patient);
+                        }}
+                      >
+                        Video Call
                       </Button>
                     </TableCell>
                   </TableRow>

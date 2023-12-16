@@ -2,6 +2,11 @@ import { useEffect } from "react";
 import { auth } from "../Protected/AuthProvider";
 import PrescriptionsMultiLevelFilterTable from "../../components/PrescriptionsMultiLevelFilterTable";
 import NavBar from "../../components/navBarPatient";
+import Typography from "@mui/joy/Typography";
+import Card from "@mui/joy/Card";
+import Stack from "@mui/joy/Stack";
+import { Box } from "@mui/material";
+
 const PatientPrescriptions = () => {
   let show = false;
 
@@ -20,6 +25,14 @@ const PatientPrescriptions = () => {
             username={localStorage.getItem("username")}
             button = {"Prescriptions"}
           />
+          <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            minHeight="50vh">
+          <Typography level="h2">Prescriptions</Typography>
+          <p></p>
           <PrescriptionsMultiLevelFilterTable
             columns={[
               "doctor_name",
@@ -33,6 +46,8 @@ const PatientPrescriptions = () => {
               "username"
             )}/prescriptions`}
           />
+          </Box>
+
         </div>
       ) : (
         <h1>Not Authorized</h1>
