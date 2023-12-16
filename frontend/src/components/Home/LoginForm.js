@@ -129,17 +129,15 @@ function App() {
     };
 
   return (
-    <MDBContainer className="my-4">
-
-      <MDBCard style={{borderRadius: '5px'}}>
+    <MDBCard style={{width:'1000px', height:'605px', marginLeft:'200px', marginTop:'35px', borderRadius:'5px'}}>
         <MDBRow className='g-0'>
 
           <MDBCol md='6'>
-            <MDBCardImage src='clinicLogin.jpg' alt="login form" className='rounded-start w-100' style={{ height: '600px', borderRadius: '5px' }}/>
+            <MDBCardImage src='clinicLogin.jpg' alt="login form" className='rounded-start w-100' style={{ height: '605px', borderRadius: '5px' }}/>
           </MDBCol>
 
           <MDBCol md='6'>
-            <MDBCardBody className='d-flex flex-column'>
+            <MDBCardBody className='d-flex flex-column' style={{width:'460px', height:'605px'}}>
 
               <div className='d-flex flex-row mt-2'>
                 <MDBCardImage src='/clinicLogo.png' alt='Logo' style={{ width: '80px', height: '80px' }} />
@@ -197,7 +195,6 @@ function App() {
           </MDBCol>
         </MDBRow>
       </MDBCard>
-    </MDBContainer>
   );
 }
 

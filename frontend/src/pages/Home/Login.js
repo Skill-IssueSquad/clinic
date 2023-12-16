@@ -3,7 +3,7 @@ import LoginForm from "../../components/Home/LoginForm";
 
 const Login = () => {
     return(
-        <div style={{backgroundColor: '#f0f0f0', padding: '15px'}}>
+        <div>
             <LoginForm flag = {true}/>
         </div>
     );

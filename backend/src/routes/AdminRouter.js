@@ -2,6 +2,7 @@ const router = require("express").Router();
 const {authAdmin} = require("../middleware/Authentication");
 
 const {
+    getAdmin,
     viewAdmins,
     createAdmin,
     removeAdmin,
@@ -18,6 +19,7 @@ const {
     deleteHealthPackage
 } = require("../controllers/AdminController");
 
+router.post("/getAdmin/:username", getAdmin);
 router.get("/viewAdmins",  viewAdmins);
 router.post("/createAdmin",  createAdmin);
 router.delete("/removeAdmin/:username",  removeAdmin);

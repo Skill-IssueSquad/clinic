@@ -135,7 +135,9 @@ const handleUpdate = async (field, data)=>{
           </Box>
         </DialogContent>
         <DialogActions>
-          {/* <Button onClick={handleClose}>Cancel</Button> */}
+        <Button autoFocus color= 'secondary' onClick={handleClose}>
+           Cancel
+          </Button>
           <Button  type="submit"  onClick={handleSubmit}>Submit</Button>
         </DialogActions>
       </Dialog>

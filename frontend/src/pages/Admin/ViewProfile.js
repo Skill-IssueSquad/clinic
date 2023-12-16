@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import AdminSideBar from "../../components/Admin/AdminSideBar";
-import PatientTable from "../../components/Admin/PatientTable";
+import Profile from "../../components/Admin/Profile";
 import { auth } from "../Protected/AuthProvider";
 
 const ViewPatients = () => {
@@ -12,7 +12,7 @@ const ViewPatients = () => {
 
     return (  
         <div>
-        {show &&  <AdminSideBar flag = {false} ViewComponent={<PatientTable />} item="Patient"/>}
+        {show &&  <AdminSideBar flag = {false} ViewComponent={<Profile />} item="View Profile"/>}
         {!show && <h2>No access</h2>}
        
         </div>

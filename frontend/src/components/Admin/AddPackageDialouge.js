@@ -9,12 +9,14 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import CircularProgress from '@mui/material/CircularProgress';
 
 
 
 export default function FormDialog({}) {
   const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
+  const [showProgress, setShowProgress] = useState(false);
 
 
   const handleClickOpen = () => {
@@ -43,16 +45,28 @@ export default function FormDialog({}) {
 
   const [errors, setErrors] = useState({});
 
+  let validationErrors = {};
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
       [name]: value,
     });
+    validationErrors = errors;
+    switch(name){
+      case "packageType": validationErrors.packageType = ""; break;
+      case "price_per_year": validationErrors.price_per_year = ''; break;
+      case "discountOnSession": validationErrors.discountOnSession = ""; break;
+      case "discountOnMedicinePurchase": validationErrors.discountOnMedicinePurchase = ""; break;
+      default: validationErrors.discountOnFamilySubscription = ""; break;
+    }
+  setErrors(validationErrors);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setShowProgress(true);
     const validationErrors = await validateForm(formData);
     if (Object.keys(validationErrors).length === 0) {
       // Submit the form or perform further actions here
@@ -62,26 +76,32 @@ export default function FormDialog({}) {
     }
   };
 
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      // Submit the form when Enter key is pressed
+      handleSubmit(event);
+    }
+  };
+
   const validateForm = async (data) => {
-    const errors = {};
     if (!data.packageType) {
-        errors.packageType = 'Package type is required';
+      validationErrors.packageType = 'Package type is required';
     }
     if (!data.price_per_year) {
-    errors.price_per_year= 'Price is required';
+      validationErrors.price_per_year= 'Price is required';
     }
     if (!data.discountOnSession) {
-        errors.discountOnSession = 'Session discount is required';
+      validationErrors.discountOnSession = 'Session discount is required';
     }
     if (!data.discountOnMedicinePurchase) {
-        errors.discountOnMedicinePurchase = 'Medicine discount is required';
+      validationErrors.discountOnMedicinePurchase = 'Medicine discount is required';
     }    
     if (!data.discountOnFamilySubscription) {
-        errors.discountOnFamilySubscription = 'Family subscription discount is required';
+      validationErrors.discountOnFamilySubscription = 'Family subscription discount is required';
     }
     else{
         try{
-            const response = await fetch('/admin/addPackage', {method: 'POST', 
+            const response = await fetch('http://localhost:8000/admin/addPackage', {method: 'POST', 
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -103,15 +123,18 @@ export default function FormDialog({}) {
               navigate('/Admin/ViewPackages'); setOpen(false);
             }
             else{
-                errors.username = "Package already exists";
-                return errors;
+                validationErrors.username = "Package already exists";
+                setShowProgress(false);
+                return validationErrors;
             }
               
         }catch(error){
             console.error('Error fetching data:', error);
+            setShowProgress(false);
         }
     }
-    return errors;
+    setShowProgress(false);
+    return validationErrors;
   };
 
   return (
@@ -122,8 +145,8 @@ export default function FormDialog({}) {
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Add a New Health Package</DialogTitle>
         <DialogContent>
-
-        <form onSubmit={handleSubmit} style={{ boxSizing:'border-box', width:400, height:450}}>
+        <div>
+        <form onSubmit={handleSubmit} style={{ boxSizing:'border-box', width:400, height:480}}>
         <TextField
           label="Package Type"
           name="packageType"
@@ -133,6 +156,7 @@ export default function FormDialog({}) {
           helperText={errors.packageType}
           fullWidth
           style={{ marginBottom: '20px', marginTop: '5px' }}
+          onKeyDown={handleKeyDown}
         />
         <br />
         <TextField
@@ -145,6 +169,7 @@ export default function FormDialog({}) {
           helperText={errors.price_per_year}
           fullWidth
           style={{ marginBottom: '20px' }}
+          onKeyDown={handleKeyDown}
         />
         <br />
         <TextField
@@ -156,6 +181,7 @@ export default function FormDialog({}) {
           helperText={errors.discountOnSession}
           fullWidth
           style={{ marginBottom: '20px'}}
+          onKeyDown={handleKeyDown}
         />
         <br />
         <TextField
@@ -167,6 +193,7 @@ export default function FormDialog({}) {
           helperText={errors.discountOnMedicinePurchase}
           fullWidth
           style={{ marginBottom: '20px' }}
+          onKeyDown={handleKeyDown}
         />
         <br />
         <TextField
@@ -178,13 +205,17 @@ export default function FormDialog({}) {
           helperText={errors.discountOnFamilySubscription}
           fullWidth
           style={{ marginBottom: '20px' }}
+          onKeyDown={handleKeyDown}
         />
-        <br />
-       
-        <Button type="submit" variant="contained" color="primary">
-          Add 
-        </Button>
       </form>
+      </div>
+        <Button autoFocus color= 'secondary' onClick={handleClose}>
+           Cancel
+          </Button>
+        <Button type="submit" variant="contained" color="primary" style={{marginLeft:'225px'}}  onClick={handleSubmit} disabled={showProgress}>
+          {!showProgress && "Register"}
+          {showProgress && <CircularProgress color="inherit" size={25}/>}
+        </Button>
         </DialogContent>
        
       </Dialog>

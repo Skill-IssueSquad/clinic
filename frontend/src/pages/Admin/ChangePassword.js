@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import AdminSideBar from "../../components/Admin/AdminSideBar";
-import PatientTable from "../../components/Admin/PatientTable";
+import ChangePassword from "../../components/Admin/ChangePasswordForm";
 import { auth } from "../Protected/AuthProvider";
 
 const ViewPatients = () => {
@@ -12,7 +12,7 @@ const ViewPatients = () => {
 
     return (  
         <div>
-        {show &&  <AdminSideBar flag = {false} ViewComponent={<PatientTable />} item="Patient"/>}
+        {show &&  <AdminSideBar flag = {false} ViewComponent={<ChangePassword />} item="Change Password"/>}
         {!show && <h2>No access</h2>}
        
         </div>
