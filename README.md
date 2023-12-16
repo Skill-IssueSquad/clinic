@@ -74,6 +74,7 @@ Eslint link: [Eslint](https://marketplace.visualstudio.com/items?itemName=dbaeum
     
 </details>
 
+<details>
  <summary> As a Doctor, you can: </summary>
  
   - Checkout and update reserved slots on your schedule.
@@ -106,6 +107,7 @@ Eslint link: [Eslint](https://marketplace.visualstudio.com/items?itemName=dbaeum
 # Section 3: How to use
 
 ## 3.1 | APIs:
+> ⚠️: **Note:** Click to expand.
 
 <details>
     <summary>
@@ -187,11 +189,30 @@ We used Postman to test our different API endpoints.
 
 ![Example of a Postman test](image.png)
 
-##### Test API:
+### Test API:
 ```bash
-http://
+http://localhost:8000/patient/bahyone/addFamMember
 ```
+### Test Body:
+```bash
+{
+    "name" : "New Fam Member",
+    "national_id" : "0123456789",
+    "age" : "15",
+    "gender" : "M",
+    "relation" : "son",
+    "healthPackageType" : null
+}
+```
+### Expected reply JSON:
+```bash
+{
+    "success" : false,
+    "data" : null,
+    "message" : "Not authorized, token not available"
 
+}
+```
 ## 3.3 | How to use:
 
 To run backend
