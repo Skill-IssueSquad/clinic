@@ -1459,6 +1459,33 @@ const saveAdditionalMedicines = async (req, res) => {
   }
 };
 
+const getDoctors = async (req, res) => {
+  try {
+    const doctors = await Doctor.find({});
+    var doctorList = [];
+    for (var doctor of doctors) {
+      const doctorInfo = {
+        name: `${doctor.name}(${doctor.username})`,
+        username: doctor.username,
+      };
+      doctorList.push(doctorInfo);
+    }
+    const send = {
+      success: true,
+      data: doctorList,
+      message: "Doctors found successfully",
+    };
+    res.status(200).json(send);
+  } catch (error) {
+    const send = {
+      success: false,
+      data: null,
+      message: error.message,
+    };
+    res.status(500).json(send);
+  }
+}
+
 module.exports = {
   getDoctor,
   createDoctor,
@@ -1488,4 +1515,5 @@ module.exports = {
   getPrescriptions,
   getChatPatients,
   saveAdditionalMedicines,
+  getDoctors
 };
