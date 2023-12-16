@@ -77,18 +77,11 @@ Eslint link: [Eslint](https://marketplace.visualstudio.com/items?itemName=dbaeum
     
  <summary> As a Doctor, you can: </summary>
  
-  - Reserve and book slots for visits or checkups.
-  - Start a video conference with a doctor.
-  - Upload and download prescriptions and medical health history documents.
-  - Subscribeto health packages for yourself or family members.
-  - Get a virtual wallet for payments.
-  - Live text chat with a doctor.
-  - Link other accounts as family members and relatives.
-  - Save credit cards for future payments.
-  - Find any doctors in any fields.
-  - Claim refunds on eligible items.
+  - Checkout and update reserved slots on your schedule.
+  - 
     
 </details>
+
 
 ## 2.2 | Complementary features:
 
