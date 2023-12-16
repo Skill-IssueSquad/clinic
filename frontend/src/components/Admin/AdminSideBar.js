@@ -167,7 +167,6 @@ export default function PersistentDrawerLeft({flag, ViewComponent, item}) {
           <Typography   
             variant="h6"
             noWrap
-            component="a"
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
@@ -290,7 +289,7 @@ export default function PersistentDrawerLeft({flag, ViewComponent, item}) {
           ))}
         </List>
       </Drawer>
-      <Main open={open}>
+      <Main open={open} style={{marginTop:'50px'}}>
         {viewComponent}
       </Main>
     </Box>

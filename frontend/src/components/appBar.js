@@ -27,25 +27,6 @@ function ResponsiveAppBar({ username }) {
   const [hasUnseenNotifications, setHasUnseenNotifications] =
     React.useState(false);
 
-  React.useEffect(() => {
-    const fetchUnseenNotifications = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:8000/patient/getAllUnseenNotifications/${username}`
-        );
-
-        const unseenNotifications = response.data.data;
-        const hasUnseen = unseenNotifications.some(
-          (notification) => !notification.isSeen
-        );
-        setHasUnseenNotifications(hasUnseen);
-      } catch (error) {
-        console.error("Error fetching unseen notifications:", error.message);
-      }
-    };
-
-    //fetchUnseenNotifications();
-  }, [username]);
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -61,51 +42,6 @@ function ResponsiveAppBar({ username }) {
 
   const handleCloseUserMenu = (setting) => {
     setAnchorElUser(null);
-  };
-
-  const handleUserMenu = async (text) => {
-    switch (text) {
-      case "Profile":
-        navigate(
-          localStorage.getItem("role").toLocaleLowerCase() === "doctor"
-            ? "/Doctor_Profile"
-            : "/Admin"
-        );
-        break;
-      case "Account":
-        navigate("/Admin/ViewAdmins");
-        break;
-      case "Dashboard":
-        navigate("/Admin/ViewDoctors");
-        break;
-      case "Change Password":
-        navigate("/ChangePassword");
-        break;
-      default: {
-        const response = await fetch("/account/logout", { method: "GET" });
-        const json = await response.json();
-        if (response.ok) {
-          //setToken();
-          localStorage.setItem("token", "");
-          localStorage.setItem("role", "");
-          localStorage.setItem("username", "");
-          navigate("/");
-        }
-      }
-      
-    }
-  }
-
-  const handleBellIconClick = () => {
-    // Navigate to the notifications page or any other desired page
-    const role= localStorage.getItem("role")
-    console.log("H1"+role)
-    if(role==="Patient"){
-      navigate('/patient/notifications');
-    }
-    else{
-    navigate("/Doctor_Home/notifications/");
-    }
   };
 
   return (
