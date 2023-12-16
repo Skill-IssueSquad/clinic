@@ -54,7 +54,7 @@ const sendEmail = async (req, res) => {
           data: null,
           message: "Email sent successfully",
         });
-        
+
       }
     }
   );
@@ -1022,6 +1022,23 @@ const bookAppointment = async (req, res) => {
     await axios.patch("http://localhost:8000/patient/sendEmail", {
         email: patient.email,
         message: `Dear ${patient.name},\n\nYour appointment with ${doctor.name} on ${req.body.day} at ${req.body.timeSlot} has been booked successfully.\n\nBest Regards,\nSkillIssue Team`,
+        subject: "Appointment Booked Successfully",
+      }, {withCredentials: true})
+      .catch((err) => {
+        console.log(err);
+        if (err) {
+          return sendResponse(
+            500,
+            false,
+            req.body,
+            err.message || "Some error occurred while sending email."
+          );
+        }
+      });
+
+      await axios.patch("http://localhost:8000/doctor/sendEmail", {
+        email: doctor.email,
+        message: `Dear ${doctor.name},\n\nYour appointment with ${patient.name} on ${req.body.day} at ${req.body.timeSlot} has been booked successfully.\n\nBest Regards,\nSkillIssue Team`,
         subject: "Appointment Booked Successfully",
       }, {withCredentials: true})
       .catch((err) => {

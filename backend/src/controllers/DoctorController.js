@@ -1626,10 +1626,16 @@ const sendEmailD = async (req, res) => {
     (err) => {
       if (err) {
         console.log("it has an error", err);
+        return res.status(500).json({
+          success: false,
+          message: "Email not sent",
+          data: null,
+        });
       } else {
-        res.status(200).json({
+        return res.status(200).json({
           success: true,
           message: "Email sent",
+          data: null,
         });
         console.log("email sent");
       }
