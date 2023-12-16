@@ -95,15 +95,9 @@ function ResponsiveAppBar({ username }) {
           navigate("/");
         }
       }
-        if (response.ok) {
-          localStorage.setItem("token", "");
-          localStorage.setItem("role", "");
-          localStorage.setItem("username", "");
-          navigate("/");
-        }
-      }
+      
     }
-  };
+  }
 
   const handleBellIconClick = () => {
     // Navigate to the notifications page or any other desired page
@@ -115,7 +109,6 @@ function ResponsiveAppBar({ username }) {
     else{
     navigate("/Doctor_Home/notifications/");
     }
-  };
   };
 
   return (
