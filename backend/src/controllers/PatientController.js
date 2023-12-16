@@ -2637,6 +2637,46 @@ const AddNotification = async (req, res) => {
   }
 };
 
+const addNotificationFunc = async (username, title, notification) => {
+  // Extract other health record properties from the request body
+
+  // console.log(username);
+  // console.log(title);
+  // console.log(notification);
+
+  try {
+    // Fetch existing health records
+    const patient = await Patient.findOne({ username });
+
+    if (!patient) {
+      console.log("Patient not found:", req.params.username);
+
+      return {
+        success: false,
+        message: "Patient not found",
+        data: null,
+      };
+    }
+    let isSeen = false;
+    patient.notifications.push({ isSeen, title, notification });
+
+    const updatedPatient = await patient.save();
+
+    return {
+      success: true,
+      message: "Notification added successfully",
+      data: updatedPatient,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message,
+      data: null,
+    };
+  }
+}
+
+
 const markNotificationAsSeen = async (req, res) => {
   try {
     const { username, notificationId } = req.params;
