@@ -138,12 +138,12 @@ app.get("/getPatientDiscount", async (req, res) => {
 
     const findPatient = await Patient.findOne({ username: patientUsername }).catch(
       (err) => {
-        return res.status(400).json({ success: false, data: {discount: 0}, message: err || "Error"});
+        return res.status(200).json({ success: false, data: {discount: 0}, message: err || "Error"});
       }
     );
 
     if (!findPatient) {
-      return res.status(400).json({ success: false, data: {discount: 0}, message: "Patient not found"});
+      return res.status(200).json({ success: false, data: {discount: 0}, message: "Patient not found"});
     } else {
       // get health package discount
 
@@ -151,12 +151,12 @@ app.get("/getPatientDiscount", async (req, res) => {
         // get health package discount
         const healthPackage = await Packages.findOne({ name: findPatient.healthPackageType }).catch(
           (err) => {
-            return res.status(400).json({ success: false, data: {discount: 0}, message: err || "Error"});
+            return res.status(200).json({ success: false, data: {discount: 0}, message: err || "Error"});
           }
         );
 
         if (!healthPackage) {
-          return res.status(400).json({ success: false, data: {discount: 0}, message: "Health package not found"});
+          return res.status(200).json({ success: false, data: {discount: 0}, message: "Health package not found"});
         } else {
           return res.status(200).json({ success: true, data: {discount: healthPackage.discount}, message: "Health package discount found"});
         }

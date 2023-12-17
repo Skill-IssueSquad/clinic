@@ -13,7 +13,6 @@ const prescriptionSchema = new mongoose.Schema({
     type: [
       {
         medicineName: {
-        medicineName: {
           type: String,
           required: true,
         },
