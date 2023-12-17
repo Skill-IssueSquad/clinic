@@ -459,7 +459,7 @@ We used Postman to test our different API endpoints.
 
 > ⚠️: **Note:** Use any route with the appropriate request to test them through postman, an example is provided below.
 
-![Example of a Postman test](image.png)
+![Example of a Postman test](https://github.com/Skill-IssueSquad/clinic/blob/main/Images/image.png)
 
 | Element         | Input                                                                                                                                    |
 | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
