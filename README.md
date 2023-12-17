@@ -101,6 +101,25 @@ Eslint link: [Eslint](https://marketplace.visualstudio.com/items?itemName=dbaeum
 
 ## 2.2 | Code examples and screenshots:
 
+<details>
+    <summary> Doctor profile</summary>
+
+![Doctor profile](https://github.com/Skill-IssueSquad/clinic/blob/main/Images/Doctor%20Profile.png)
+</details>
+
+<details>
+    <summary> Chat between doctor and patient</summary>
+
+![Chat](https://github.com/Skill-IssueSquad/clinic/blob/main/Images/Chat%20doctor%20patient.png)
+</details>
+
+<details>
+    <summary> Appointment requests</summary>
+
+![Requests](https://github.com/Skill-IssueSquad/clinic/blob/main/Images/Appointment%20Requests.png)
+</details>
+
+
 ### Code examples:
 
 <details>
