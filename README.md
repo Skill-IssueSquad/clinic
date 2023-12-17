@@ -290,10 +290,11 @@ const addVideoStream = (video, stream) => {
 
 </details>
 
-> ⚠️ : **WARNING**: Large expanded text field for structure
 
 <details>
     <summary> Project structure  </summary>
+    
+[View Here](https://raw.githubusercontent.com/Skill-IssueSquad/clinic/main/Structure.txt?token=GHSAT0AAAAAACGHHI2Q3DA2ZVT4CBADMW2CZL6HR5A)
 </details>
 
 ---
