@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { auth } from "../Protected/AuthProvider";
 import io from "socket.io-client";
 import { Typography, TextField, Button, Paper } from "@mui/material";
+import NavBar from "../../components/navBarPatient";
 
 const socket = io.connect("http://localhost:8003");
 const Chat = () => {
@@ -103,6 +104,7 @@ const Chat = () => {
   };
   return (
     <div>
+      <NavBar username={localStorage.getItem("username")} />
       {show ? (
         <div style={{ display: "flex", justifyContent: "center" }}>
           <Paper

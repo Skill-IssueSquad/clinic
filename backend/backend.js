@@ -8,6 +8,8 @@ const doctorRouter = require("./src/routes/DoctorRouter");
 const adminRouter = require("./src/routes/AdminRouter");
 const PatientRegisteration = require("./src/routes/patientRegisteration");
 const DoctorRegisteration = require("./src/routes/doctorRegisteration");
+const Patient = require("./src/models/Patient");
+const Packages = require("../models/Packages");
 const patientRouter = require("./src/routes/PatientRouter");
 const { equateBalance } = require("./src/controllers/Balance");
 const { completeAppointments } = require("./src/controllers/DoctorController");
@@ -127,6 +129,43 @@ app.use(
     credentials: true, // Allow credentials (cookies, etc.) to be sent
   })
 );
+
+app.get("/getPatientDiscount", async (req, res) => {
+  try {
+    const patientUsername = req.body.username;
+
+    const findPatient = await Patient.findOne({ username: patientUsername }).catch(
+      (err) => {
+        return res.status(400).json({ success: false, data: {discount: 0}, message: err || "Error"});
+      }
+    );
+
+    if (!findPatient) {
+      return res.status(400).json({ success: false, data: {discount: 0}, message: "Patient not found"});
+    } else {
+      // get health package discount
+
+      if (findPatient.healthPackageType !== "unsubscribed") {
+        // get health package discount
+        const healthPackage = await Packages.findOne({ name: findPatient.healthPackageType }).catch(
+          (err) => {
+            return res.status(400).json({ success: false, data: {discount: 0}, message: err || "Error"});
+          }
+        );
+
+        if (!healthPackage) {
+          return res.status(400).json({ success: false, data: {discount: 0}, message: "Health package not found"});
+        } else {
+          return res.status(200).json({ success: true, data: {discount: healthPackage.discount}, message: "Health package discount found"});
+        }
+      }
+    
+    }
+    
+  } catch (error) {
+    return res.status(400).json({ success: false, data: req.body, message: error.message || "Error"});
+  }
+});
 
 app.use(cookieParser());
 

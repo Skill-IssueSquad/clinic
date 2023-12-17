@@ -26,6 +26,7 @@ import Typography from "@mui/joy/Typography";
 import PaySuccess from "../../components/Patient/PaySuccess";
 import StripePayCard from "../../components/Patient/stripePay";
 
+
 //get patient details
 const patientDetails = async (username) => {
   const res = await axios.get(`http://localhost:8000/patient/${username}`);
@@ -129,176 +130,183 @@ const Payment = () => {
   };
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      justifyContent="center"
-      minHeight={success ? "103.5vh" : "90vh"}
-    >
-      <Card variant="outlined">
-        <WalletBalanceComp
-          username={localStorage.getItem("username")}
-          refresh={refresh}
-        />
+    <div>
+      <NavBar
+        username={localStorage.getItem("username")}
+      />
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        minHeight={success ? "103.5vh" : "90vh"}
+      >
+        <Card variant="outlined">
+          <WalletBalanceComp
+            username={localStorage.getItem("username")}
+            refresh={refresh}
+          />
 
-        {success && <PaySuccess></PaySuccess>}
-        <Box
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          justifyContent="center"
-          minHeight="20vh"
-        >
-          {orderData && <OrderDetails data={orderData} />}
+          {success && <PaySuccess></PaySuccess>}
+          <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            minHeight="20vh"
+          >
+            {orderData && <OrderDetails data={orderData} />}
 
-          <br></br>
+            <br></br>
 
-          <Card variant="outlined">
-            <Box
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-              justifyContent="center"
-              sx={{
-                maxWidth: "100ch",
-              }}
-            >
-              <Stack
-                spacing={10}
-                direction="row"
+            <Card variant="outlined">
+              <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
                 sx={{
                   maxWidth: "100ch",
                 }}
               >
-                <Box
-                  display="flex"
-                  flexDirection="column"
-                  alignItems="center"
-                  justifyContent="center"
+                <Stack
+                  spacing={10}
+                  direction="row"
+                  sx={{
+                    maxWidth: "100ch",
+                  }}
                 >
-                  <Typography level="h3">Payment Options</Typography>
-                </Box>
-                <Divider orientation="vertical"></Divider>
-                <Box
-                  display="flex"
-                  flexDirection="column"
-                  alignItems="center"
-                  justifyContent="center"
-                >
-                  <Stack spacing={2} direction="row">
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={handleWalletPayment}
-                      disabled={success}
-                    >
-                      Pay By Wallet
-                    </Button>
-                    <Divider orientation="vertical">Or</Divider>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      disabled={success}
-                      onClick={openPayCardDialog}
-                    >
-                      Pay By Card
-                    </Button>
-                  </Stack>
-                </Box>
-              </Stack>
-            </Box>
-          </Card>
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    <Typography level="h3">Payment Options</Typography>
+                  </Box>
+                  <Divider orientation="vertical"></Divider>
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    <Stack spacing={2} direction="row">
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleWalletPayment}
+                        disabled={success}
+                      >
+                        Pay By Wallet
+                      </Button>
+                      <Divider orientation="vertical">Or</Divider>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        disabled={success}
+                        onClick={openPayCardDialog}
+                      >
+                        Pay By Card
+                      </Button>
+                    </Stack>
+                  </Box>
+                </Stack>
+              </Box>
+            </Card>
 
-          <Dialog
-            open={openCardDialog}
-            PaperProps={{
-              style: {
-                width: "50ch",
-              },
-            }}
-          >
-            <DialogTitle>
-              {" "}
-              {success == null
-                ? "Stripe Payment"
-                : success
-                ? "Payment Successful"
-                : "Payment Failed"}{" "}
-            </DialogTitle>
-            <DialogContent>
-              {success == null ? (
-                <StripePayCard
-                  amount={price}
-                  orderData={orderData}
-                  onPay={handlePayment}
-                  onSuccess={onSuccess}
-                ></StripePayCard>
-              ) : (
-                <Box
-                  display="flex"
-                  flexDirection="column"
-                  alignItems="center"
-                  justifyContent="center"
-                >
-                  {success ? (
-                    <Typography>
-                      Your payment has been done successfully.
-                    </Typography>
-                  ) : (
-                    <Typography>Payment failed</Typography>
-                  )}
-                </Box>
-              )}
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={closePayCardDialog}>CLOSE</Button>
-            </DialogActions>
-          </Dialog>
+            <Dialog
+              open={openCardDialog}
+              PaperProps={{
+                style: {
+                  width: "50ch",
+                },
+              }}
+            >
+              <DialogTitle>
+                {" "}
+                {success == null
+                  ? "Stripe Payment"
+                  : success
+                  ? "Payment Successful"
+                  : "Payment Failed"}{" "}
+              </DialogTitle>
+              <DialogContent>
+                {success == null ? (
+                  <StripePayCard
+                    amount={price}
+                    orderData={orderData}
+                    onPay={handlePayment}
+                    onSuccess={onSuccess}
+                  ></StripePayCard>
+                ) : (
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    {success ? (
+                      <Typography>
+                        Your payment has been done successfully.
+                      </Typography>
+                    ) : (
+                      <Typography>Payment failed</Typography>
+                    )}
+                  </Box>
+                )}
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={closePayCardDialog}>CLOSE</Button>
+              </DialogActions>
+            </Dialog>
 
-          <Dialog open={openDialog} onClose={handleDialog}>
-            <DialogTitle>
-              {" "}
-              {success == null
-                ? "Processing"
-                : success
-                ? "Payment Successful"
-                : "Payment Failed"}{" "}
-            </DialogTitle>
-            <DialogContent>
-              {success == null ? (
-                <Box
-                  display="flex"
-                  flexDirection="column"
-                  alignItems="center"
-                  justifyContent="center"
-                >
-                  <CircularProgress size="md" />
-                </Box>
-              ) : (
-                <Box
-                  display="flex"
-                  flexDirection="column"
-                  alignItems="center"
-                  justifyContent="center"
-                >
-                  {success ? (
-                    <Typography>
-                      Your payment has been done successfully.
-                    </Typography>
-                  ) : (
-                    <Typography>Payment failed. Not enough balance.</Typography>
-                  )}
-                </Box>
-              )}
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleDialog}>OK</Button>
-            </DialogActions>
-          </Dialog>
-        </Box>
-      </Card>
-    </Box>
+            <Dialog open={openDialog} onClose={handleDialog}>
+              <DialogTitle>
+                {" "}
+                {success == null
+                  ? "Processing"
+                  : success
+                  ? "Payment Successful"
+                  : "Payment Failed"}{" "}
+              </DialogTitle>
+              <DialogContent>
+                {success == null ? (
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    <CircularProgress size="md" />
+                  </Box>
+                ) : (
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    {success ? (
+                      <Typography>
+                        Your payment has been done successfully.
+                      </Typography>
+                    ) : (
+                      <Typography>
+                        Payment failed. Not enough balance.
+                      </Typography>
+                    )}
+                  </Box>
+                )}
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleDialog}>OK</Button>
+              </DialogActions>
+            </Dialog>
+          </Box>
+        </Card>
+      </Box>
+    </div>
   );
 };
 
