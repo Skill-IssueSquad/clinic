@@ -290,6 +290,12 @@ const addVideoStream = (video, stream) => {
 
 </details>
 
+> ⚠️ : **WARNING**: Large expanded text field for structure (~127,000 lines)
+
+<details>
+    <summary> Project structure  </summary>
+</details>
+
 ---
 
 # Section 3: How to use
