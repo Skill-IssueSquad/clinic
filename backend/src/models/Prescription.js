@@ -7,11 +7,12 @@ const prescriptionSchema = new mongoose.Schema({
   },
   isFilled: {
     type: Boolean,
-    required: true,
+    required: false,
   },
   medicines: {
     type: [
       {
+        medicineName: {
         medicineName: {
           type: String,
           required: true,
@@ -23,6 +24,10 @@ const prescriptionSchema = new mongoose.Schema({
         medicineID: {
           type: String,
           required: true,
+        },
+        taken: {
+          type: Boolean,
+          required: false,
         },
       },
     ],

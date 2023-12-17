@@ -11,6 +11,8 @@ const DoctorRegisteration = require("./src/routes/doctorRegisteration");
 const Patient = require("./src/models/Patient");
 const Packages = require("./src/models/Packages");
 const patientRouter = require("./src/routes/PatientRouter");
+const prescriptionRouter = require("./src/routes/prescriptionFromPharmacyRoute");
+
 const { equateBalance } = require("./src/controllers/Balance");
 const { completeAppointments } = require("./src/controllers/DoctorController");
 const multer = require("multer");
@@ -183,7 +185,8 @@ app.use("/AdminStaticData", express.static("AdminStaticData"));
 app.use("/register/patient", PatientRegisteration);
 app.use("/register/doctor", DoctorRegisteration);
 //app.use("/patient", authPatient, patientRouter);
-app.use("/patient", patientRouter);
+//app.use("/patient", patientRouter);
+
 app.use("/account", accountRouter);
 app.use("/doctorRequest", authDoctorRequest, doctorRequestRouter);
 app.get("/getPatient/:appID", getPatient);
