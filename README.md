@@ -304,18 +304,22 @@ const addVideoStream = (video, stream) => {
     <summary> Doctor profile</summary>
 
 ![Doctor profile](https://github.com/Skill-IssueSquad/clinic/blob/main/Images/Doctor%20Profile.png)
+This screenshot displays the doctor's relevant information like name, email,etc.
+
 </details>
 
 <details>
     <summary> Chat between doctor and patient</summary>
 
 ![Chat](https://github.com/Skill-IssueSquad/clinic/blob/main/Images/Chat%20doctor%20patient.png)
+This screenshot displays a chat that allows the patient to directly communicate with the doctor.
 </details>
 
 <details>
     <summary> Appointment requests</summary>
 
 ![Requests](https://github.com/Skill-IssueSquad/clinic/blob/main/Images/Appointment%20Requests.png)
+This screenshot displays patient requests with the patient's name and the date and time of their request where the request can be accepted or rejected.
 </details>
 
 ---
