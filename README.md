@@ -290,11 +290,14 @@ const addVideoStream = (video, stream) => {
 
 </details>
 
-> ⚠️ : **WARNING**: Large expanded text field for structure
 
 <details>
     <summary> Project structure  </summary>
+    
+[View Here](https://raw.githubusercontent.com/Skill-IssueSquad/clinic/main/Structure.txt?token=GHSAT0AAAAAACGHHI2Q3DA2ZVT4CBADMW2CZL6HR5A)
 </details>
+
+### Screenshots:
 
 ---
 
@@ -509,7 +512,7 @@ To run this project, you will need to add the following environment variables to
 
 </details>
 
-## 3.3 | Contribution:
+## 3.4 | Contribution:
 
 There are a lot more features and improvements that could be made to this project, this is why we welcome contributions with open arms!
 
