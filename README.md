@@ -295,7 +295,7 @@ const addVideoStream = (video, stream) => {
 <details>
     <summary> Project structure  </summary>
     
-[View Here](https://raw.githubusercontent.com/Skill-IssueSquad/clinic/main/Structure.txt?token=GHSAT0AAAAAACGHHI2Q3DA2ZVT4CBADMW2CZL6HR5A)
+[View Here](https://raw.githubusercontent.com/Skill-IssueSquad/clinic/main/Structure.txt)
 </details>
 
 ### Screenshots:
