@@ -510,7 +510,7 @@ To run this project, you will need to add the following environment variables to
 
 </details>
 
-## 3.3 | Contribution:
+## 3.4 | Contribution:
 
 There are a lot more features and improvements that could be made to this project, this is why we welcome contributions with open arms!
 
