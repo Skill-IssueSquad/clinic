@@ -297,6 +297,8 @@ const addVideoStream = (video, stream) => {
 [View Here](https://raw.githubusercontent.com/Skill-IssueSquad/clinic/main/Structure.txt?token=GHSAT0AAAAAACGHHI2Q3DA2ZVT4CBADMW2CZL6HR5A)
 </details>
 
+### Screenshots:
+
 ---
 
 # Section 3: How to use
