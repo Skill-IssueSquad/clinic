@@ -2007,4 +2007,5 @@ module.exports = {
   getAllUnseenNotificationsD,
   getAllSeenNotificationsD,
   sendEmailD,
+  sendEmailFunc
 };

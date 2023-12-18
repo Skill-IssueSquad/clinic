@@ -31,6 +31,7 @@ const {
 const {
   getPatient,
   getDoctors,
+  sendEmailFunc
 } = require("./src/controllers/DoctorController");
 const doctorRequest = require("./src/models/DoctorRequest");
 // router.get("/getPatient/:appID", getPatient);
@@ -184,13 +185,14 @@ app.use("/admin", authAdmin, adminRouter);
 app.use("/AdminStaticData", express.static("AdminStaticData"));
 app.use("/register/patient", PatientRegisteration);
 app.use("/register/doctor", DoctorRegisteration);
-//app.use("/patient", authPatient, patientRouter);
+app.use("/patient", authPatient, patientRouter);
 //app.use("/patient", patientRouter);
 
 app.use("/account", accountRouter);
 app.use("/doctorRequest", authDoctorRequest, doctorRequestRouter);
 app.get("/getPatient/:appID", getPatient);
 app.get("/getDoctors/", getDoctors);
+app.post("/notifyPatient", sendEmailFunc);
 app.post("/balance/:username", equateBalance);
 //get requests for video server
 // app.post("/video", (req, res) => {
