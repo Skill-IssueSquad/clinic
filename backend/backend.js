@@ -159,6 +159,7 @@ app.get("/getPatient/:appID", getPatient);
 app.get("/getDoctors/", getDoctors);
 app.post("/notifyPatient", sendEmailFunc);
 app.post("/balance/:username", equateBalance);
+app.use("/getPrescription",prescriptionRouter);
 //get requests for video server
 // app.post("/video", (req, res) => {
 //   const patientId = req.body.patientId;
